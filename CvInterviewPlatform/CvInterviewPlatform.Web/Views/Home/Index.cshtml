@@ -1,0 +1,84 @@
+﻿@model CvInterviewPlatform.Web.Models.User
+@{
+    ViewData["Title"] = "Ana Panel";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        @* Sol Taraf: Profil Kartı *@
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm text-center p-4">
+                <div class="mb-3">
+                    @if (!string.IsNullOrEmpty(Model.ProfilePictureUrl))
+                    {
+                        <img src="@Model.ProfilePictureUrl" class="rounded-circle img-thumbnail shadow-sm" style="width: 150px; height: 150px; object-fit: cover;" alt="Profil Fotoğrafı" />
+                    }
+                    else
+                    {
+                        <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" class="rounded-circle img-thumbnail shadow-sm" style="width: 150px; height: 150px;" alt="Varsayılan Avatar" />
+                    }
+                </div>
+                <h4 class="fw-bold mb-1">@Model.FirstName @Model.LastName</h4>
+                <p class="text-muted small">@@@Model.Username</p>
+                <hr />
+                <div class="text-start mb-3">
+                    <p class="mb-1 text-muted small"><strong>E-posta:</strong></p>
+                    <p class="fw-semibold">@Model.Email</p>
+                    <p class="mb-1 text-muted small"><strong>Telefon:</strong></p>
+                    <p class="fw-semibold">@Model.PhoneNumber</p>
+
+                    <div class="d-grid gap-2 mt-3">
+                        <a asp-action="Settings" asp-controller="Home" class="btn btn-outline-dark btn-sm fw-bold">
+                            <i class="bi bi-gear-fill me-1"></i> Profil Ayarlarını Düzenle
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        @* Sağ Taraf: Dosya Yönetimi ve Süreçler *@
+        <div class="col-md-8">
+            <div class="card shadow-sm p-4 mb-4">
+                <h4 class="fw-bold text-primary mb-3"><i class="bi bi-folder-symlink-fill"></i> Belgelerim ve Dosya Yükleme</h4>
+                <p class="text-muted small">Profil fotoğrafınızı veya güncel CV (PDF) belgenizi buradan yükleyebilirsiniz. Dosyalar yerel sunucumuzda güvenle saklanır.</p>
+
+                <form asp-action="UploadDocuments" asp-controller="Home" method="post" enctype="multipart/form-data" class="mt-3">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Profil Fotoğrafı Güncelle</label>
+                            <input type="file" name="profilePicture" class="form-control" accept="image/*" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">CV Yükle (Sadece PDF)</label>
+                            <input type="file" name="cvFile" class="form-control" accept=".pdf" />
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary fw-bold mt-2"><i class="bi bi-cloud-arrow-up-fill"></i> Seçilen Dosyaları Kaydet</button>
+                </form>
+            </div>
+
+            <div class="card shadow-sm p-4">
+                <h4 class="fw-bold text-success mb-3"><i class="bi bi-file-earmark-check-fill"></i> Mevcut CV Durumu</h4>
+                @if (!string.IsNullOrEmpty(Model.CvUrl))
+                {
+                    <div class="alert alert-success d-flex align-items-center justify-content-between mb-0" role="alert">
+                        <div>
+                            <i class="bi bi-file-earmark-pdf-fill fs-4 me-2"></i>
+                            <span class="fw-semibold">CV belgeniz sistemde yüklü durumda!</span>
+                        </div>
+                        <a href="@Model.CvUrl" target="_blank" class="btn btn-outline-success btn-sm fw-bold">
+                            <i class="bi bi-eye-fill"></i> Görüntüle / İndir
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-warning mb-0" role="alert">
+                        <i class="bi bi-exclamation-circle-fill me-2"></i> Henüz bir CV belgesi yüklemediniz. Lütfen yukarıdaki panelden PDF formatında bir CV yükleyin.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
