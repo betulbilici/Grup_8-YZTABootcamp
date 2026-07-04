@@ -159,5 +159,5 @@ Projemizin ilk sprint süreci; fikir geliştirme, pazar araştırması, rol dağ
 
 **Özetle;** Sprint 1 süreci; ekip kaynaşması,ürün fikri ve uygulamanın altyapısını oluşturan temel çalışmalarla başarıyla kapatılmıştır.
 
-* **Sprint Değerlendirme Katılımcıları:** Aslıhan Yeşilyurt Şengül,Abdülkadir Süslü,Pelin Çelik
+* **Sprint Değerlendirme Katılımcıları:** Aslıhan Yeşilyurt Şengül,Abdülkadir Süslü,Pelin Çelik 
   </details>
