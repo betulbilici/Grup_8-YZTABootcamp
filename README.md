@@ -129,3 +129,17 @@ Uygulamamız; özgeçmişleri ile gerçek mülakat beklentileri arasındaki boş
   </details>
 
 </details>
+<br>
+
+  <!-- 3. ALT SEKME: SPRINT PUAN DEĞERLENDİRMESİ -->
+  <details>
+    <summary><h3>📈 Sprint Puan Değerlendirmesi</h3></summary>
+    <br>
+
+### 🎯 Hedeflenen ve Tamamlanan Sprint Puanı:Buraya puan gelecek
+---
+###  Puanlama Mantığı 
+<img width="740" height="274" alt="puan mantığı" src="https://github.com/user-attachments/assets/4a32fa65-474e-42be-8b44-c2485819f807" />
+
+
+  </details>
