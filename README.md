@@ -53,7 +53,7 @@ Uygulama, iş arama sürecini tamamen kişiselleştirerek kullanıcıların mül
 </details>
 
 <details>
-  <summary><h2>👥 Hedef Kitle (Target Audience)</h2></summary>
+  <summary><h2>👥 Hedef Kitle </h2></summary>
   <br>
 
 Uygulamamız; özgeçmişleri ile gerçek mülakat beklentileri arasındaki boşluğu yapay zeka yardımıyla doldurmak isteyen tüm iş arayanlara, kariyerini değiştirenlere ve öğrencilere hitap etmektedir.
