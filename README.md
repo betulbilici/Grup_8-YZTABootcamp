@@ -73,3 +73,19 @@ Uygulamamız; özgeçmişleri ile gerçek mülakat beklentileri arasındaki boş
 * **Kişisel Durum Değerlendirmesi:** Geçmiş iş deneyimlerinin, adım atacakları yeni sektördeki mülakatlarda nasıl karşılık bulacağını simüle etmek isteyen bireyler.
 
 </details>
+
+<details>
+  <summary><h2>🏃‍♂️ Sprint 1</h2></summary>
+  <br>
+
+  <!-- Alt Açılır Sekme: Site Ekran Görüntüleri -->
+  <details>
+    <summary><h3>📷 Site Ekran Görüntüleri </h3></summary>
+    <br>
+
+    <h4>🔐 Giriş Ekranı (Login Page)</h4>
+    <p>Kullanıcıların kullanıcı adı veya Gmail adresleriyle sisteme giriş yaptığı güvenli erişim ekranı.</p>
+    blob:https://web.whatsapp.com/235b6ce4-7b6d-4ce7-8b86-8d5e7bab153a<img width="1600" height="761" alt="image" src="https://github.com/user-attachments/assets/63651d64-2630-468d-9363-c04a3a212907" />
+
+    
+    <br><hr><br>
