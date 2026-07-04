@@ -76,75 +76,56 @@ Uygulamamız; özgeçmişleri ile gerçek mülakat beklentileri arasındaki boş
 
 <details>
   <summary><h2>🏃‍♂️ Sprint 1</h2></summary>
+  
   <br>
 
+  <!-- BİRİNCİ ALT SEKME: SİTE EKRAN GÖRÜNTÜLERİ -->
   <details>
     <summary><h3>📷 Site Ekran Görüntüleri </h3></summary>
     <br>
-
-### 🔐 Giriş Ekranı 
-Kullanıcıların kullanıcı adı veya Gmail adresleriyle sisteme giriş yaptığı güvenli erişim ekranı.
-
-<img width="1600" height="761" alt="WhatsApp Image 2026-07-04 at 12 17 17" src="https://github.com/user-attachments/assets/c9521b72-bd8e-42ff-9c71-6169693b0af7" />
-
-    
----
-
-### 📝 Kayıt Ekranı 
-Yeni kullanıcıların ad, soyad, e-posta ve telefon bilgileriyle hesap oluşturduğu kayıt alanı.
-
-<img width="1600" height="765" alt="yeni hesap" src="https://github.com/user-attachments/assets/03d744cf-8e76-4870-ad9a-e5ca31331ed7" />
-
-
----
-
-### 🔑 Şifre Yenileme Ekranı 
-5 aşamalı kimlik doğrulama altyapısına sahip şifre güncelleme ve kurtarma ekranı.
-
-<img width="1600" height="767" alt="sifre yenileme" src="https://github.com/user-attachments/assets/4a1a68ba-4ab5-4a27-9a8c-f893cce68e21" />
-
-
----
-
-### 📊 Aday Paneli / Ana Sayfa 
-Profil fotoğrafının güncellendiği, PDF formatında CV yüklemesinin yapıldığı ve dinamik CV durumunun takip edildiği ana kontrol paneli.
-
-<img width="1600" height="764" alt="profil ayarlari" src="https://github.com/user-attachments/assets/ecec3d03-206f-4a11-8090-377d43fe2dd7" />
-
-
----
-
-### ⚙️ Hesap ve Profil Ayarları 
-Kullanıcıların kişisel bilgilerini düzenlediği ve profil içi şifre değişikliği yaptığı ayarlar ekranı.
-
-<img width="1600" height="767" alt="sifre yenileme" src="https://github.com/user-attachments/assets/4995b277-b217-485e-b07f-818319fb646b" />
-
-
+    <h3>🔐 Giriş Ekranı </h3>
+    <p>Kullanıcıların kullanıcı adı veya Gmail adresleriyle sisteme giriş yaptığı güvenli erişim ekranı.</p>
+    <p><img width="1600" height="761" alt="WhatsApp Image 2026-07-04 at 12 17 17" src="https://github.com/user-attachments/assets/e7bb2561-293f-43ab-8cbc-f1b7b6a56659" />
+</p>
+    <hr>
+    <h3>📝 Kayıt Ekranı </h3>
+    <p>Yeni kullanıcıların ad, soyad, e-posta ve telefon bilgileriyle hesap oluşturduğu kayıt alanı.</p>
+    <p><img width="1600" height="765" alt="yeni hesap" src="https://github.com/user-attachments/assets/f34a265f-615e-4a3a-888f-5a09256dfee5" />
+</p>
+    <hr>
+    <h3>🔑 Şifre Yenileme Ekranı </h3>
+    <p>Şifre güncelleme ve kurtarma ekranı.</p>
+    <p><img width="1600" height="767" alt="sifre yenileme" src="https://github.com/user-attachments/assets/462099af-5bb7-4824-94fb-a9f00bb21072" />
+</p>
+    <hr>
+    <h3>📊 Aday Paneli / Ana Sayfa </h3>
+    <p>Profil fotoğrafının güncellendiği, PDF formatında CV yüklemesinin yapıldığı ve dinamik CV durumunun takip edildiği ana kontrol paneli.</p>
+    <p><img width="1600" height="754" alt="dosya yukleme" src="https://github.com/user-attachments/assets/149aa0ba-7398-47fc-9b7c-0a2ba7119cca" />
+</p>
+    <hr>
+    <h3>⚙️ Hesap ve Profil Ayarları </h3>
+    <p>Kullanıcıların kişisel bilgilerini düzenlediği ve profil içi şifre değişikliği yaptığı ayarlar ekranı.</p>
+    <p><img width="1600" height="764" alt="profil ayarlari" src="https://github.com/user-attachments/assets/c66a056b-ac0b-495a-a4ba-bc6971ec2c40" />
+</p>
   </details>
 
-</details>
+  <br>
 
-<br>
-
-<!-- Alt Açılır Sekme 2: Proje Yönetimi -->
-
-<details>
+  <!-- İKİNCİ ALT SEKME: PROJE YÖNETİMİ -->
+  <details>
     <summary><h3>📊 Proje Yönetimi </h3></summary>
     <br>
-
-### 📋  İş Takibi ve Planlama
-Projemizin ilk sprint sürecini planlarken, görev dağılımlarını ve iş akışlarını takip etmek için kullandığımız yönetim panolarımız.
-
-#### 
-<img width="1144" height="701" alt="Ekran Resmi 2026-07-04 16 22 05" src="https://github.com/user-attachments/assets/1c540c08-a27f-43e2-ab38-c717fda61c41" />
-
-
----
-
-#### 
-<img width="1245" height="707" alt="Ekran Resmi 2026-07-04 16 22 30" src="https://github.com/user-attachments/assets/b08c1f94-f0c1-48d8-8b31-d0bc74e026d2" />
-
-
+    <h3>📋 Sprint 1 - İş Takibi ve Planlama</h3>
+    <p>Projemizin ilk sprint sürecini planlarken, görev dağılımlarını ve iş akışlarını takip etmek için kullandığımız yönetim panolarımız.</p>
+    <br>
+   
+<h4></h4>
+    <p><img width="1144" height="701" alt="Ekran Resmi 2026-07-04 16 22 05" src="https://github.com/user-attachments/assets/98000d84-deed-4efe-ba4d-8315cdcbb6bf" />
+</p>
+    <hr>
+    <h4></h4>
+    <p><img width="1245" height="707" alt="Ekran Resmi 2026-07-04 16 22 30" src="https://github.com/user-attachments/assets/bc3709cf-be0d-46a6-9e4f-d17372a370e8" />
+</p>
   </details>
 
 </details>
