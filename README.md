@@ -142,16 +142,22 @@ Uygulamamız; özgeçmişleri ile gerçek mülakat beklentileri arasındaki boş
 <img width="740" height="274" alt="puan mantığı" src="https://github.com/user-attachments/assets/4a32fa65-474e-42be-8b44-c2485819f807" />
 
 
-  </details>
-     <summary><h3>📋 Sprint Değerlendirmesi:</h3></summary>
-     <br>
-  
-  Projemizin ilk sprint süreci; fikir geliştirme, pazar araştırması, rol dağılımı ve uygulamanın temel mimarisinin kurulması adımlarıyla tamamlanmıştır. Sprint boyunca gerçekleştirilen faaliyetler şu şekildedir:
+ <br>
+
+  <!-- 4. ALT SEKME: SPRINT REVIEW (DEĞERLENDİRME) -->
+  <details>
+    <summary><h3>📋 Sprint Değerlendirmesi </h3></summary>
+    <br>
+
+Projemizin ilk sprint süreci; fikir geliştirme, pazar araştırması, rol dağılımı ve uygulamanın temel mimarisinin kurulması adımlarıyla başarıyla tamamlanmıştır. Sprint boyunca gerçekleştirilen faaliyetler şu şekildedir:
 
 * **Rol Dağılımı ve İlk Planlama:** İlk Scrum toplantımızla birlikte ekip içi roller netleştirilmiş, vizyon ve fikir geliştirme seansları için yol haritası belirlenmiştir.
 * **Fikir Geliştirme ve Pazar Araştırması:** İlk hafta tamamen ürün fikrinin olgunlaştırılması, detaylandırılması ve kapsamlı bir pazar araştırması yapılmasına ayrılmıştır.
-* **Kaynak ve Görev Planlaması:** Fikir netleştikten sonra developer ekibinin müsaitlik durumları analiz edilmiş ve adil bir görev dağılımı gerçekleştirilmiştir.İlk hafta temel geliştirme ve entegrasyon çalışmalarında developer olarak **Abdülkadir Süslü** aktif rol üstlenmiştir.
+* **Kaynak ve Görev Planlaması:** Fikir netleştikten sonra developer ekibinin müsaitlik durumları analiz edilmiş ve adil bir görev dağılımı gerçekleştirilmiştir. İlk hafta temel geliştirme ve entegrasyon çalışmalarında developer olarak **Abdülkadir Süslü** aktif rol üstlenmiştir.
 * **Proje ve Süreç Yönetimi Araçları:** İş takibi, backlog yönetimi ve sprint planlaması için **Trello** platformu aktif hale getirilmiştir. Günlük operasyonel iletişim WhatsApp üzerinden sürdürülürken, resmi kararlar ve görevler Trello panolarına işlenmiştir.
-* **Ekip Koordinasyonu ve Senkronizasyon:** Product Owner, Scrum Master ve Developer ekibi arasında düzenlenen düzenli toplantılarla takım içi sinerji maksimum düzeyde tutulmuştur. 
+* **Ekip Koordinasyonu ve Senkronizasyon:** Product Owner,Scrum Master ve Developer ekibi arasında düzenlenen düzenli toplantılarla takım içi sinerji maksimum düzeyde tutulmuştur. 
 
-**Özetle;** Sprint 1 süreci;ekip kaynaşması,ürün fikri ve uygulamanın altyapısını oluşturan temel çalışmalarla başarıyla kapatılmıştır.
+**Özetle;** Sprint 1 süreci; ekip kaynaşması,ürün fikri ve uygulamanın altyapısını oluşturan temel çalışmalarla başarıyla kapatılmıştır.
+
+* **Sprint Değerlendirme Katılımcıları:** Aslıhan Yeşilyurt Şengül,Abdülkadir Süslü,Pelin Çelik
+  </details>
