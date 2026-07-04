@@ -124,8 +124,11 @@ Kullanıcıların kişisel bilgilerini düzenlediği ve profil içi şifre deği
 
 </details>
 
+<br>
+
 <!-- Alt Açılır Sekme 2: Proje Yönetimi -->
-  <details>
+
+<details>
     <summary><h3>📊 Proje Yönetimi </h3></summary>
     <br>
 
