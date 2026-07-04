@@ -85,7 +85,7 @@ Uygulamamız; özgeçmişleri ile gerçek mülakat beklentileri arasındaki boş
 
     <h4>🔐 Giriş Ekranı (Login Page)</h4>
     <p>Kullanıcıların kullanıcı adı veya Gmail adresleriyle sisteme giriş yaptığı güvenli erişim ekranı.</p>
-    blob:https://web.whatsapp.com/235b6ce4-7b6d-4ce7-8b86-8d5e7bab153a<img width="1600" height="761" alt="image" src="https://github.com/user-attachments/assets/63651d64-2630-468d-9363-c04a3a212907" />
+   <img width="1600" height="761" alt="WhatsApp Image 2026-07-04 at 12 17 17" src="https://github.com/user-attachments/assets/82913077-19e5-48c6-bfbd-6d90b99a6ba0" />
 
     
     <br><hr><br>
