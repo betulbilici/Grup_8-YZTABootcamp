@@ -10,7 +10,7 @@
 | **Burak Ege Kaya** | Developer |
 
 <details>
-  <summary><h2>🎯 Ürün Açıklaması (Product Description)</h2></summary>
+  <summary><h2>🎯 Ürün Açıklaması </h2></summary>
   <br>
 
 Günümüzün son derece rekabetçi iş piyasasında, sadece güçlü bir özgeçmişe sahip olmak ne yazık ki tek başına yeterli olmamakta; hayalindeki işe kabul edilmenin yolu, mülakat aşamasında doğru ve etkili bir performans sergilemekten geçmektedir. Birçok iş arayan, başvurduğu pozisyonun tam olarak ne tür sorular getireceğini öngöremediği için mülakat sürecinde büyük bir stres ve heyecan yaşamaktadır. **Cv Match AI Uygulaması**, iş arayanların mülakat öncesindeki bu belirsizliklerini ortadan kaldıran ve onları gerçek birer mülakat profesyoneline dönüştüren yapay zeka destekli yenilikçi bir hazırlık ve simülasyon platformudur.
@@ -21,7 +21,7 @@ Uygulama, iş arama sürecini tamamen kişiselleştirerek kullanıcıların mül
 
 </details>
 
-## 🚀 Ürün Özellikleri (Product Features)
+## 🚀 Ürün Özellikleri 
 
 <details>
   <summary><b>🔐 1. Kimlik Doğrulama ve Güvenlik</b></summary>
