@@ -79,7 +79,7 @@ Uygulamamız; özgeçmişleri ile gerçek mülakat beklentileri arasındaki boş
   <br>
 
   <details>
-    <summary><h3>📷 Site Ekran Görüntüleri (App Screenshots)</h3></summary>
+    <summary><h3>📷 Site Ekran Görüntüleri </h3></summary>
     <br>
 
 ### 🔐 Giriş Ekranı 
@@ -118,6 +118,28 @@ Profil fotoğrafının güncellendiği, PDF formatında CV yüklemesinin yapıld
 Kullanıcıların kişisel bilgilerini düzenlediği ve profil içi şifre değişikliği yaptığı ayarlar ekranı.
 
 <img width="1600" height="767" alt="sifre yenileme" src="https://github.com/user-attachments/assets/4995b277-b217-485e-b07f-818319fb646b" />
+
+
+  </details>
+
+</details>
+
+<!-- Alt Açılır Sekme 2: Proje Yönetimi -->
+  <details>
+    <summary><h3>📊 Proje Yönetimi </h3></summary>
+    <br>
+
+### 📋  İş Takibi ve Planlama
+Projemizin ilk sprint sürecini planlarken, görev dağılımlarını ve iş akışlarını takip etmek için kullandığımız yönetim panolarımız.
+
+#### 
+<img width="1144" height="701" alt="Ekran Resmi 2026-07-04 16 22 05" src="https://github.com/user-attachments/assets/1c540c08-a27f-43e2-ab38-c717fda61c41" />
+
+
+---
+
+#### 
+<img width="1245" height="707" alt="Ekran Resmi 2026-07-04 16 22 30" src="https://github.com/user-attachments/assets/b08c1f94-f0c1-48d8-8b31-d0bc74e026d2" />
 
 
   </details>
