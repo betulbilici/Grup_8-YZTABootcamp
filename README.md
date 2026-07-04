@@ -83,7 +83,7 @@ Uygulamamız; özgeçmişleri ile gerçek mülakat beklentileri arasındaki boş
     <summary><h3>📷 Site Ekran Görüntüleri </h3></summary>
     <br>
 
-    <h4>🔐 Giriş Ekranı (Login Page)</h4>
+   <h4>🔐 Giriş Ekranı (Login Page)</h4>
     <p>Kullanıcıların kullanıcı adı veya Gmail adresleriyle sisteme giriş yaptığı güvenli erişim ekranı.</p>
    <img width="1600" height="761" alt="WhatsApp Image 2026-07-04 at 12 17 17" src="https://github.com/user-attachments/assets/82913077-19e5-48c6-bfbd-6d90b99a6ba0" />
 
