@@ -51,3 +51,25 @@ Uygulama, iş arama sürecini tamamen kişiselleştirerek kullanıcıların mül
 * **Profil İçi Şifre Değiştirme:** Kullanıcılar hesaplarına giriş yapmış durumdayken, mevcut şifrelerini doğrulayıp yeni bir şifre girerek güvenlik ayarlarını panel üzerinden kolayca güncelleyebilirler.
 
 </details>
+
+<details>
+  <summary><h2>👥 Hedef Kitle (Target Audience)</h2></summary>
+  <br>
+
+Uygulamamız; özgeçmişleri ile gerçek mülakat beklentileri arasındaki boşluğu yapay zeka yardımıyla doldurmak isteyen tüm iş arayanlara, kariyerini değiştirenlere ve öğrencilere hitap etmektedir.
+
+### 🎓 Yeni Mezunlar ve Öğrenciler:
+* **Mülakat Hazırlığı:** İş gücü piyasasına yeni adım atacak olan ve profesyonel mülakat deneyimi olmayan öğrenciler ile yeni mezunlar.
+* **Özgeçmiş Optimizasyonu:** Üniversite projelerinin ve stajlarının, hedefledikleri iş ilanlarındaki beklentilerle ne kadar uyuştuğunu anlamak isteyen genç yetenekler.
+* **Kaygı Yönetimi:** Gerçek mülakatlar öncesinde yapay zeka destekli güvenli bir ortamda pratik yaparak mülakat stresini ve heyecanını azaltmak isteyen bireyler.
+
+### 💼 Aktif İş Arayanlar:
+* **Nokta Atışı Hazırlık:** Belirli kurumsal pozisyonlara aktif olarak başvuran ve o pozisyonun getirebileceği özel sorulara karşı antrenman yapmak isteyen adaylar.
+* **Özgüven Artırma:** İnsan kaynakları veya teknik ekiplerin karşısına çıkmadan önce kendi yetkinliklerini test etmek ve yapıcı geri bildirimler almak isteyen iş arayanlar.
+* **Kritik Eksik Analizi:** Yapay zekanın hesapladığı uyumluluk skoruna göre, özgeçmişlerinde hangi anahtar kelimeleri veya yetenekleri öne çıkarmaları gerektiğini keşfetmek isteyenler.
+
+### 🔄 Kariyer Değiştirmek İsteyenler:
+* **Sektörel Adaptasyon:** Mevcut sektöründen farklı bir alana geçiş yapmak isteyen ve ellerindeki CV'yi tamamen yeni bir iş kolunun gereksinimlerine göre test etmek isteyen profesyoneller.
+* **Kişisel Durum Değerlendirmesi:** Geçmiş iş deneyimlerinin, adım atacakları yeni sektördeki mülakatlarda nasıl karşılık bulacağını simüle etmek isteyen bireyler.
+
+</details>
