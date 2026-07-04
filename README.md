@@ -20,3 +20,34 @@ Uygulama, iş arama sürecini tamamen kişiselleştirerek kullanıcıların mül
 **Sonuç olarak;** yapay zekanın gücünü arkasına alan **Cv Match AI**, geleneksel ve stresli mülakat hazırlığı dönemini kapatarak interaktif bir deneyim çağı başlatmaktadır. İş arayanların potansiyellerini en doğru şekilde yansıtmalarına odaklanan bu platform; belirsizlikleri ortadan kaldırır, eksikleri avantaja çevirir ve kariyer hedeflerinize giden yoldaki en güvenilir rehberiniz olur.
 
 </details>
+
+## 🚀 Ürün Özellikleri (Product Features)
+
+<details>
+  <summary><b>🔐 1. Kimlik Doğrulama ve Güvenlik</b></summary>
+  <br>
+
+* **Sisteme Giriş Yap:** Kullanıcılar, kayıtlı kullanıcı adları veya Gmail adresleri ile şifrelerini girerek platforma güvenli bir şekilde erişebilirler. Ekran, "Şifremi Unuttum?" seçeneğiyle şifre kurtarma desteği sunar. 
+* **Yeni Hesap Oluştur:** İş arayanların kullanıcı adı, ad, soyad, Gmail adresi, telefon numarası ve şifre bilgilerini girerek sisteme hızlıca kayıt olabileceği kullanıcı dostu bir kayıt ekranıdır.
+* **Şifre Yenileme / Güncelleme:** Şifresini unutan kullanıcıların hesap güvenliğini korumak amacıyla, sistemde kayıtlı olan 5 kritik kimlik bilgisini eksiksiz doğrulayarak yeni şifre belirleyebilecekleri güvenli bir yapı sunar.
+
+</details>
+
+<details>
+  <summary><b>📂 2. Aday Paneli ve Dosya Yönetimi</b></summary>
+  <br>
+
+* **Güvenli CV Yükleme (Sadece PDF):** İş arayan kullanıcılar, güncel özgeçmişlerini sadece PDF formatında olacak şekilde sisteme kolayca yükleyebilirler. Yüklenecek dosyalar, yapay zeka analizi için yerel sunucumuzda güvenle saklanır. 
+* **Profil Fotoğrafı Güncelleme:** Kullanıcılar, aday panellerini kişiselleştirmek için kendi profil fotoğraflarını seçip güncelleyebilirler.
+* **Dinamik CV Durum Takibi:** Kullanıcının henüz bir CV yükleyip yüklemediğini gerçek zamanlı olarak kontrol eden ve kullanıcıyı PDF yüklemeye yönlendiren bilgilendirici bir durum panosu içerir.
+
+</details>
+
+<details>
+  <summary><b>⚙️ 3. Hesap ve Profil Ayarları</b></summary>
+  <br>
+
+* **Profil Bilgilerini Düzenleme:** Kullanıcılar benzersiz kullanıcı adları sabit kalmak şartıyla; ad, soyad, e-posta ve telefon numarası gibi kişisel bilgilerini istedikleri zaman güncelleyebilirler.
+* **Profil İçi Şifre Değiştirme:** Kullanıcılar hesaplarına giriş yapmış durumdayken, mevcut şifrelerini doğrulayıp yeni bir şifre girerek güvenlik ayarlarını panel üzerinden kolayca güncelleyebilirler.
+
+</details>
