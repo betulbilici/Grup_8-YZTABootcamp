@@ -111,32 +111,39 @@ Uygulamamız; özgeçmişleri ile gerçek mülakat beklentileri arasındaki boş
 
   <br>
 
-  <!-- İKİNCİ ALT SEKME: PROJE YÖNETİMİ -->
+ <!-- İKİNCİ ALT SEKME: PROJE YÖNETİMİ -->
   <details>
-    <summary><h3>📊 Proje Yönetimi </h3></summary>
+   <!-- İKİNCİ ALT SEKME: PROJE YÖNETİMİ -->
+  <details>
+    <summary><h3>📊 Proje Yönetimi</h3></summary>
     <br>
-    <h3>📋 Sprint 1 - İş Takibi ve Planlama</h3>
-    <p>Projemizin ilk sprint sürecini planlarken, görev dağılımlarını ve iş akışlarını takip etmek için kullandığımız yönetim panolarımız.</p>
-    <br>
-   
-<h4></h4>
-    <p><img width="1144" height="701" alt="Ekran Resmi 2026-07-04 16 22 05" src="https://github.com/user-attachments/assets/98000d84-deed-4efe-ba4d-8315cdcbb6bf" />
-</p>
-    <hr>
-    <h4></h4>
-    <p><img width="1245" height="707" alt="Ekran Resmi 2026-07-04 16 22 30" src="https://github.com/user-attachments/assets/bc3709cf-be0d-46a6-9e4f-d17372a370e8" />
-</p>
-  </details>
 
-</details>
-<br>
+### 📋 Sprint 1 - İş Takibi ve Planlama
+Projemizin ilk sprint sürecini planlarken, görev dağılımlarını ve iş akışlarını takip etmek için kullandığımız yönetim panolarımız.
+
+![Ekran Resmi 1](https://github.com/user-attachments/assets/98000d84-deed-4efe-ba4d-8315cdcbb6bf)
+
+---
+
+![Ekran Resmi 2](https://github.com/user-attachments/assets/bc3709cf-be0d-46a6-9e4f-d17372a370e8)
+
+---
+
+### 🔗 Product Backlog
+Projemizin süreç takibine ve detaylı iş listesine erişmek için:  
+[Cv Match AI Trello Board]((https://trello.com/b/s876BIHf/1st-sprint))
+
+  </details>
+    
+
+  </details>
 
   <!-- 3. ALT SEKME: SPRINT PUAN DEĞERLENDİRMESİ -->
   <details>
     <summary><h3>📈 Sprint Notları</h3></summary>
     <br>
 
-### 🎯 Hedeflenen ve Tamamlanan Sprint Puanı:Buraya puan gelecek
+### 🎯 Hedeflenen ve Tamamlanan Sprint Puanı:21
 ---
 ###  Puanlama Mantığı 
 <img width="740" height="274" alt="puan mantığı" src="https://github.com/user-attachments/assets/4a32fa65-474e-42be-8b44-c2485819f807" />
