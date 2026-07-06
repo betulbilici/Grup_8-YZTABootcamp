@@ -6,7 +6,7 @@
 | **Aslıhan Yeşilyurt Şengül** | Scrum Master |
 | **Pelin Çelik** | Product Owner |
 | **Betül Bilici** | Developer |
-| **Abdülkadir Süslü** | Developer |
+| **Abdulkadir Süslü** | Developer |
 | **Burak Ege Kaya** | Developer |
 
 <details>
