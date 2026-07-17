@@ -204,3 +204,45 @@ Projemizin ilk sprint sürecini; fikir geliştirme, pazar araştırması, rol da
 </details>
 
 </details>
+
+## 🛠️ Yerel Kurulum ve Çalıştırma Rehberi (Local Setup)
+
+Bu proje Google Firestore, Gemini AI ve Python tabanlı bir PDF Parser (Docling) mikroservisi ile çalışmaktadır. Takım üyelerinin projeyi kendi yerel bilgisayarlarında çalıştırabilmesi için aşağıdaki adımları uygulaması gerekir:
+
+### 1. Gemini API Anahtarı Tanımlama (Güvenlik Önlemi)
+API anahtarının GitHub'a sızmasını önlemek amacıyla `appsettings.json` dosyasında anahtar gizlenmiştir. Projeyi çalıştırmak için kendi terminalinizde (`CvInterviewPlatform.Web` klasörünün içindeyken) şu komutları sırasıyla çalıştırın:
+
+```bash
+# Projede User Secrets özelliğini etkinleştirin
+dotnet user-secrets init
+
+# Kendi Gemini API Anahtarınızı yerel profilinize kaydedin
+dotnet user-secrets set "Gemini:ApiKey" "KENDI_GEMINI_API_ANAHTARINIZ"
+```
+
+*Alternatif olarak işletim sisteminizde `GEMINI_API_KEY` adıyla bir Çevre Değişkeni (Environment Variable) tanımlayabilirsiniz.*
+
+### 2. Firebase Yetkilendirme Anahtarı
+Projenin veritabanına erişebilmesi için `firebase-key.json` dosyasına ihtiyacı vardır. Güvenlik sebebiyle bu dosya `.gitignore` listesindedir ve GitHub'a yüklenmez. 
+* Takım liderinizden `firebase-key.json` dosyasını temin edin ve `CvInterviewPlatform.Web` klasörünün içerisine yerleştirin.
+
+### 3. PDF Parser Mikroservisini Başlatma (Python)
+CV'leri okumak için kullanılan parser servisini başlatmak için:
+1. `CvParserService` klasörüne gidin.
+2. Gerekli kütüphaneleri yükleyin:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Servisi başlatın:
+   ```bash
+   python main.py
+   ```
+   *Mikroservis varsayılan olarak `http://127.0.0.1:8000` portunda çalışacaktır.*
+
+### 4. .NET Web Uygulamasını Çalıştırma
+Ana projeyi başlatmak için `CvInterviewPlatform.Web` klasöründeyken şu komutu çalıştırabilirsiniz:
+```bash
+dotnet run
+```
+Uygulama çalıştıktan sonra tarayıcınızdan erişim sağlayabilirsiniz.
+

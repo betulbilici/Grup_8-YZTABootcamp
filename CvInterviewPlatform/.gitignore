@@ -1,9 +1,0 @@
-## .NET Core derleme klasörleri
-[Bb]in/
-[Oo]bj/
-
-## Firebase Gizli Anahtarı
-firebase-key.json
-**/firebase-key.json
-
-.vs/

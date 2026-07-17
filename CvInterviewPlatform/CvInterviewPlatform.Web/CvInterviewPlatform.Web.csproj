@@ -4,10 +4,18 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>8526765c-28dd-4ea0-8dcb-6e503fb914c1</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Google.Cloud.Firestore" Version="4.3.0" />
+    <PackageReference Include="Google.GenAI" Version="1.12.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="firebase-key.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -1,8 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Google.Cloud.Firestore;
 using CvInterviewPlatform.Web.Models;
+using CvInterviewPlatform.Web.Services;
 using System.IO;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 
 namespace CvInterviewPlatform.Web.Controllers
 {
@@ -10,27 +14,29 @@ namespace CvInterviewPlatform.Web.Controllers
     {
         private readonly FirestoreDb _db;
         private readonly IWebHostEnvironment _env;
+        private readonly CvParserService _cvParserService;
 
-        // Firestore servisini ve sunucu klasör yapýsýna eriþmek için IWebHostEnvironment'ý enjekte ediyoruz
-        public HomeController(FirestoreService firestoreService, IWebHostEnvironment env)
+        // Firestore servisini ve sunucu klasÃ¶r yapÄ±sÄ±na eriÅŸmek iÃ§in IWebHostEnvironment'Ä± enjekte ediyoruz
+        public HomeController(FirestoreService firestoreService, IWebHostEnvironment env, CvParserService cvParserService)
         {
             _db = firestoreService.Db;
             _env = env;
+            _cvParserService = cvParserService;
         }
 
         // Ana Ekran (Dashboard)
         public async Task<IActionResult> Index()
         {
-            // Session'dan giriþ yapan kullanýcýnýn adýný kontrol ediyoruz
+            // Session'dan giriÅŸ yapan kullanÄ±cÄ±nÄ±n adÄ±nÄ± kontrol ediyoruz
             string username = HttpContext.Session.GetString("Username");
 
-            // Eðer giriþ yapýlmadýysa doðrudan giriþ sayfasýna postyalýyoruz
+            // EÄŸer giriÅŸ yapÄ±lmadÄ±ysa doÄŸrudan giriÅŸ sayfasÄ±na postyalÄ±yoruz
             if (string.IsNullOrEmpty(username))
             {
                 return RedirectToAction("SignIn", "Account");
             }
 
-            // Firestore'dan kullanýcýnýn güncel verilerini çekiyoruz
+            // Firestore'dan kullanÄ±cÄ±nÄ±n gÃ¼ncel verilerini Ã§ekiyoruz
             DocumentReference docRef = _db.Collection("Users").Document(username);
             DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
 
@@ -41,11 +47,11 @@ namespace CvInterviewPlatform.Web.Controllers
 
             User user = snapshot.ConvertTo<User>();
 
-            // Verileri arayüze (View) model olarak gönderiyoruz
+            // Verileri arayÃ¼ze (View) model olarak gÃ¶nderiyoruz
             return View(user);
         }
 
-        // Profil Resmi ve CV Yükleme Tetikleyicisi
+        // Profil Resmi ve CV YÃ¼kleme Tetikleyicisi
         [HttpPost]
         public async Task<IActionResult> UploadDocuments(IFormFile profilePicture, IFormFile cvFile)
         {
@@ -55,12 +61,12 @@ namespace CvInterviewPlatform.Web.Controllers
             DocumentReference docRef = _db.Collection("Users").Document(username);
             Dictionary<string, object> updates = new Dictionary<string, object>();
 
-            // 1. Profil Resmi Yükleme Ýþlemi
+            // 1. Profil Resmi YÃ¼kleme Ä°ÅŸlemi
             if (profilePicture != null && profilePicture.Length > 0)
             {
-                // wwwroot/uploads/profiles klasörünü hedefliyoruz
+                // wwwroot/uploads/profiles klasÃ¶rÃ¼nÃ¼ hedefliyoruz
                 string profileFolder = Path.Combine(_env.WebRootPath, "uploads", "profiles");
-                Directory.CreateDirectory(profileFolder); // Klasör yoksa otomatik oluþturur
+                Directory.CreateDirectory(profileFolder); // KlasÃ¶r yoksa otomatik oluÅŸturur
 
                 string uniqueProfileName = username + "_profile" + Path.GetExtension(profilePicture.FileName);
                 string filePath = Path.Combine(profileFolder, uniqueProfileName);
@@ -73,10 +79,10 @@ namespace CvInterviewPlatform.Web.Controllers
                 updates["profilePictureUrl"] = "/uploads/profiles/" + uniqueProfileName;
             }
 
-            // 2. CV (PDF) Yükleme Ýþlemi
+            // 2. CV (PDF) YÃ¼kleme Ä°ÅŸlemi
             if (cvFile != null && cvFile.Length > 0)
             {
-                // wwwroot/uploads/cvs klasörünü hedefliyoruz
+                // wwwroot/uploads/cvs klasÃ¶rÃ¼nÃ¼ hedefliyoruz
                 string cvFolder = Path.Combine(_env.WebRootPath, "uploads", "cvs");
                 Directory.CreateDirectory(cvFolder);
 
@@ -89,18 +95,43 @@ namespace CvInterviewPlatform.Web.Controllers
                 }
 
                 updates["cvUrl"] = "/uploads/cvs/" + uniqueCvName;
+
+                // CV metin iÃ§eriÄŸini ayÄ±klamak ve Firestore'a kaydetmek iÃ§in parser servisini Ã§aÄŸÄ±rÄ±yoruz
+                try
+                {
+                    string parsedContent = await _cvParserService.ParsePdfAsync(filePath);
+                    if (!string.IsNullOrEmpty(parsedContent))
+                    {
+                        updates["cvContent"] = parsedContent;
+                        TempData["Success"] = "CV belgeniz baÅŸarÄ±yla yÃ¼klendi ve yapay zeka analizi iÃ§in hazÄ±rlandÄ±.";
+                    }
+                    else
+                    {
+                        TempData["Warning"] = "CV dosyanÄ±z yÃ¼klendi ancak iÃ§eriÄŸi metne dÃ¶nÃ¼ÅŸtÃ¼rÃ¼lemedi. Yapay zeka mÃ¼lakat sÄ±rasÄ±nda Ã¶zgeÃ§miÅŸinizi okuyamayabilir.";
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    TempData["Warning"] = "CV dosyanÄ±z yÃ¼klendi ancak yapay zeka analiz servisi (FastAPI) ÅŸu an kapalÄ± olduÄŸu iÃ§in metin okunamadÄ±.";
+                }
             }
 
-            // Eðer herhangi bir dosya yüklendiyse Firestore dokümanýný tek seferde güncelliyoruz
+            // EÄŸer herhangi bir dosya yÃ¼klendiyse Firestore dokÃ¼manÄ±nÄ± tek seferde gÃ¼ncelliyoruz
             if (updates.Count > 0)
             {
                 await docRef.UpdateAsync(updates);
+                
+                // Sadece profil resmi gÃ¼ncellendiyse baÅŸarÄ± mesajÄ± ekleyelim
+                if (TempData["Success"] == null && TempData["Warning"] == null)
+                {
+                    TempData["Success"] = "Profil fotoÄŸrafÄ±nÄ±z baÅŸarÄ±yla gÃ¼ncellendi.";
+                }
             }
 
             return RedirectToAction("Index");
         }
 
-        // Ayarlar Sayfasýný Açan Metot (GET)
+        // Ayarlar SayfasÄ±nÄ± AÃ§an Metot (GET)
         [HttpGet]
         public async Task<IActionResult> Settings()
         {
@@ -116,7 +147,7 @@ namespace CvInterviewPlatform.Web.Controllers
             return View(user);
         }
 
-        // Ayarlarý Güncelleyen Metot (POST)
+        // AyarlarÄ± GÃ¼ncelleyen Metot (POST)
         [HttpPost]
         public async Task<IActionResult> UpdateSettings(string firstName, string lastName, string email, string phoneNumber, string currentPassword, string newPassword)
         {
@@ -130,40 +161,40 @@ namespace CvInterviewPlatform.Web.Controllers
             // 1. Format Kontrolleri (Regex)
             if (!System.Text.RegularExpressions.Regex.IsMatch(email ?? "", @"^[a-zA-Z0-9._%+-]+@gmail\.com$"))
             {
-                ViewBag.Error = "Lütfen geçerli bir Gmail adresi girin!";
+                ViewBag.Error = "LÃ¼tfen geÃ§erli bir Gmail adresi girin!";
                 return View("Settings", user);
             }
 
             if (!System.Text.RegularExpressions.Regex.IsMatch(phoneNumber ?? "", @"^0?5[0-9]{9}$"))
             {
-                ViewBag.Error = "Lütfen geçerli bir telefon numarasý girin!";
+                ViewBag.Error = "LÃ¼tfen geÃ§erli bir telefon numarasÄ± girin!";
                 return View("Settings", user);
             }
 
-            // 2. Benzersizlik Kontrolleri (Deðiþen bilgiler baþka birinde var mý?)
-            // E-posta kontrolü
+            // 2. Benzersizlik Kontrolleri (DeÄŸiÅŸen bilgiler baÅŸka birinde var mÄ±?)
+            // E-posta kontrolÃ¼
             QuerySnapshot emailSnapshot = await _db.Collection("Users").WhereEqualTo("email", email).GetSnapshotAsync();
             foreach (var doc in emailSnapshot.Documents)
             {
                 if (doc.Id != username)
                 {
-                    ViewBag.Error = "Bu Gmail adresi baþka bir kullanýcýya ait!";
+                    ViewBag.Error = "Bu Gmail adresi baÅŸka bir kullanÄ±cÄ±ya ait!";
                     return View("Settings", user);
                 }
             }
 
-            // Telefon kontrolü
+            // Telefon kontrolÃ¼
             QuerySnapshot phoneSnapshot = await _db.Collection("Users").WhereEqualTo("phoneNumber", phoneNumber).GetSnapshotAsync();
             foreach (var doc in phoneSnapshot.Documents)
             {
                 if (doc.Id != username)
                 {
-                    ViewBag.Error = "Bu telefon numarasý baþka bir kullanýcýya ait!";
+                    ViewBag.Error = "Bu telefon numarasÄ± baÅŸka bir kullanÄ±cÄ±ya ait!";
                     return View("Settings", user);
                 }
             }
 
-            // 3. Güncelleme Paketi Hazýrlama
+            // 3. GÃ¼ncelleme Paketi HazÄ±rlama
             Dictionary<string, object> updates = new Dictionary<string, object>
             {
                 { "firstName", firstName },
@@ -172,28 +203,28 @@ namespace CvInterviewPlatform.Web.Controllers
                 { "phoneNumber", phoneNumber }
             };
 
-            // 4. Þifre Deðiþtirilmek Ýsteniyorsa
+            // 4. Åžifre DeÄŸiÅŸtirilmek Ä°steniyorsa
             if (!string.IsNullOrEmpty(newPassword))
             {
-                // Mevcut þifre doðru mu kontrol et
+                // Mevcut ÅŸifre doÄŸru mu kontrol et
                 if (!CvInterviewPlatform.Web.Helpers.PasswordHasher.VerifyPassword(currentPassword, user.PasswordHash))
                 {
-                    ViewBag.Error = "Mevcut þifrenizi hatalý girdiniz! Þifre deðiþtirilemedi.";
+                    ViewBag.Error = "Mevcut ÅŸifrenizi hatalÄ± girdiniz! Åžifre deÄŸiÅŸtirilemedi.";
                     return View("Settings", user);
                 }
 
                 updates["passwordHash"] = CvInterviewPlatform.Web.Helpers.PasswordHasher.HashPassword(newPassword);
             }
 
-            // Firestore'u güncelle
+            // Firestore'u gÃ¼ncelle
             await docRef.UpdateAsync(updates);
 
-            // Session isim bilgisini de güncelle ki Navbar anýnda yenilensin
+            // Session isim bilgisini de gÃ¼ncelle ki Navbar anÄ±nda yenilensin
             HttpContext.Session.SetString("FirstName", firstName);
 
-            ViewBag.Success = "Profil bilgileriniz baþarýyla güncellendi!";
+            ViewBag.Success = "Profil bilgileriniz baÅŸarÄ±yla gÃ¼ncellendi!";
 
-            // Güncel veriyi tekrar çekip sayfaya basýyoruz
+            // GÃ¼ncel veriyi tekrar Ã§ekip sayfaya basÄ±yoruz
             snapshot = await docRef.GetSnapshotAsync();
             user = snapshot.ConvertTo<User>();
 

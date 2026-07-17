@@ -1,0 +1,30 @@
+## OS files
+desktop.ini
+[Dd]esktop.ini
+$RECYCLE.BIN/
+Thumbs.db
+
+## .NET Core build folders and user settings
+[Bb]in/
+[Oo]bj/
+*.user
+.vs/
+
+## Python caches
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+
+## Firebase Secret Key
+firebase-key.json
+**/firebase-key.json
+
+## Temporary helper scripts
+update_program.py
+
+## User-uploaded content
+CvInterviewPlatform/CvInterviewPlatform.Web/wwwroot/uploads/cvs/*
+CvInterviewPlatform/CvInterviewPlatform.Web/wwwroot/uploads/profiles/*
+!**/wwwroot/uploads/**/.gitkeep

@@ -1,16 +1,19 @@
 using CvInterviewPlatform.Web;
+using CvInterviewPlatform.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 // Firestore Servisini .NET sistemine tekil (Singleton) olarak kaydediyoruz
 builder.Services.AddSingleton<FirestoreService>();
+builder.Services.AddSingleton<GeminiService>();
+builder.Services.AddHttpClient<CvParserService>();
 
-// Session servislerini projeye ekliyoruz ve ayarlarýný yapýyoruz
-// Session servislerini projeye ekliyoruz ve ayarlarýný yapýyoruz
+// Session servislerini projeye ekliyoruz ve ayarlarn yapyoruz
+// Session servislerini projeye ekliyoruz ve ayarlarn yapyoruz
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // Oturum 30 dakika iþlem yapýlmazsa düþer
-    options.Cookie.HttpOnly = true; // Güvenlik için: Session çerezlerine JavaScript ile eriþilemez
-    options.Cookie.IsEssential = true; // KVKK/GDPR çerez onaylarýna takýlmamasý için zorunlu iþaretliyoruz
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Oturum 30 dakika ilem yaplmazsa der
+    options.Cookie.HttpOnly = true; // Gvenlik iin: Session erezlerine JavaScript ile eriilemez
+    options.Cookie.IsEssential = true; // KVKK/GDPR erez onaylarna taklmamas iin zorunlu iaretliyoruz
 });
 
 
@@ -29,7 +32,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-// Session mekanizmasýný boru hattýna (pipeline) dahil ediyoruz
+// Session mekanizmasn boru hattna (pipeline) dahil ediyoruz
 app.UseSession();
 app.UseAuthorization();
 

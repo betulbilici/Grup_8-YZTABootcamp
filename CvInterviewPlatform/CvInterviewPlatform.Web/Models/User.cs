@@ -1,4 +1,4 @@
-﻿using Google.Cloud.Firestore;
+using Google.Cloud.Firestore;
 
 namespace CvInterviewPlatform.Web.Models
 {
@@ -31,5 +31,8 @@ namespace CvInterviewPlatform.Web.Models
 
         [FirestoreProperty("cvUrl")]
         public string? CvUrl { get; set; } = null;
+
+        [FirestoreProperty("cvContent")]
+        public string? CvContent { get; set; } = null;
     }
 }

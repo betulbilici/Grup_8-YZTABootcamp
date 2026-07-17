@@ -1,0 +1,618 @@
+@model CvInterviewPlatform.Web.Models.InterviewSession
+@{
+    ViewData["Title"] = $"{Model.JobTitle} Mülakatı";
+}
+
+<style>
+    #sttBtn.recording {
+        background-color: #dc3545 !important;
+        color: #ffffff !important;
+        border-color: #dc3545 !important;
+        animation: pulseMic 1.5s infinite;
+    }
+    
+    @@keyframes pulseMic {
+        0% {
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+        }
+    }
+
+    .timer-warning {
+        color: #dc3545 !important;
+        animation: blinkTimer 1s infinite;
+    }
+    
+    @@keyframes blinkTimer {
+        0% { opacity: 1; }
+        50% { opacity: 0.4; }
+        100% { opacity: 1; }
+    }
+</style>
+
+<!-- Bootstrap Icons & MarkedJS (Markdown render etmek için) CDN'leri -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<!-- html2pdf.js (Değerlendirme Raporunu PDF İndirmek için) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<div class="container py-4">
+    <!-- Üst Başlık ve Geri Dönüş Linki -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 fw-bold text-dark mb-1">@Model.JobTitle Mülakatı</h1>
+            <p class="text-muted mb-0">Başlangıç: @Model.StartedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Panale Dön
+        </a>
+    </div>
+
+    @if (!Model.IsCompleted)
+    {
+        <!-- 1. MÜLAKAT DEVAM EDİYORSA -->
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <!-- İlerleme Durumu -->
+                <div class="card border-0 shadow-sm rounded-3 mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="d-flex align-items-center">
+                                <span class="fw-bold text-primary me-3">Soru @Model.CurrentQuestionNumber / 5</span>
+                                <div class="d-flex align-items-center text-secondary fw-bold border border-secondary-subtle px-2 py-1 rounded bg-light" id="timerContainer" style="font-size: 0.95rem;">
+                                    <i class="bi bi-hourglass-split me-1 text-primary"></i>
+                                    <span id="countdownTimer">05:00</span>
+                                </div>
+                            </div>
+                            <span class="text-muted small">%@((Model.CurrentQuestionNumber - 1) * 20) Tamamlandı</span>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" 
+                                 role="progressbar" 
+                                 style="width: @((Model.CurrentQuestionNumber - 1) * 20)%;" 
+                                 aria-valuenow="@((Model.CurrentQuestionNumber - 1) * 20)" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="100">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aktif Soru Alanı -->
+                <div class="card border-0 shadow-sm rounded-3 mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-start mb-3">
+                            <div class="bg-primary-subtle text-primary rounded-circle p-3 me-3">
+                                <i class="bi bi-chat-left-dots-fill fs-4"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h5 class="fw-semibold text-secondary mb-1">İK Uzmanı (Kıdemli Yapay Zeka)</h5>
+                                        <p class="fs-5 text-dark fw-bold mb-0" id="questionText">
+                                            @Model.History[Model.CurrentQuestionNumber - 1].Question
+                                        </p>
+                                    </div>
+                                    <button type="button" id="ttsBtn" class="btn btn-outline-primary btn-sm rounded-circle ms-2" style="width: 38px; height: 38px; flex-shrink: 0;" title="Sesli Oku / Sustur">
+                                        <i class="bi bi-volume-up-fill fs-5"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Cevap Gönderme Formu -->
+                        <form id="answerForm" asp-controller="Interview" asp-action="SubmitAnswer" method="post">
+                            <input type="hidden" name="id" value="@Model.SessionId" />
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <label for="answer" class="form-label fw-bold text-dark mb-0">Cevabınız</label>
+                                    <button type="button" id="sttBtn" class="btn btn-outline-secondary btn-sm fw-bold">
+                                        <i class="bi bi-mic-fill me-1"></i> Sesli Yanıtla
+                                    </button>
+                                </div>
+                                <textarea class="form-control border-2" id="answer" name="answer" rows="6" 
+                                          placeholder="Cevabınızı buraya detaylıca yazınız veya 'Sesli Yanıtla' butonuna basarak konuşun..." 
+                                          required></textarea>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted small"><i class="bi bi-info-circle me-1"></i>Karakter sınırlaması yoktur.</span>
+                                <button type="submit" id="submitBtn" class="btn btn-success btn-lg px-4 fw-bold shadow-sm">
+                                    Cevabı Gönder <i class="bi bi-send-fill ms-1"></i>
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Yükleniyor Göstergesi -->
+                        <div id="loadingIndicator" class="d-none text-center py-4">
+                            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                                <span class="visually-hidden">Yükleniyor...</span>
+                            </div>
+                            <h5 class="mt-3 text-primary fw-bold">Cevabınız Değerlendiriliyor...</h5>
+                            <p class="text-muted">İK Uzmanımız cevabınızı analiz ediyor ve bir sonraki adımı hazırlıyor. Lütfen bekleyin.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sağ Panel: Mülakat Geçmişi Akışı -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-3 text-dark"><i class="bi bi-list-task me-2 text-primary"></i>Şimdiye Kadarki Akış</h5>
+                        
+                        @if (Model.CurrentQuestionNumber == 1)
+                        {
+                            <p class="text-muted small mb-0">Henüz mülakatın başındasınız. Cevap verdikçe geçmiş buraya yansıyacaktır.</p>
+                        }
+                        else
+                        {
+                            <div class="vstack gap-3" style="max-height: 450px; overflow-y: auto; padding-right: 5px;">
+                                @for (int i = 0; i < Model.CurrentQuestionNumber - 1; i++)
+                                {
+                                    var step = Model.History[i];
+                                    <div class="bg-light p-3 rounded-3 border-start border-primary border-4">
+                                        <p class="small fw-bold text-primary mb-1">Soru @(i + 1)</p>
+                                        <p class="small text-dark mb-2">@step.Question</p>
+                                        <p class="small fw-bold text-success mb-1">Cevabınız</p>
+                                        <p class="small text-muted mb-0 text-truncate">@step.Answer</p>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- 2. MÜLAKAT TAMAMLANDIYSA (DEĞERLENDİRME EKRANI) -->
+        <div class="row g-4">
+            <!-- Sol Sütun: Yapay Zeka İK Değerlendirmesi -->
+            <div class="col-lg-7">
+                <div class="card border-0 shadow rounded-3" id="evaluationCard">
+                    <div class="card-header bg-primary text-white p-4 border-0 rounded-top-3">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-award-fill fs-2 me-3"></i>
+                            <div>
+                                <h3 class="fw-bold mb-0">İK Değerlendirme Raporu</h3>
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-4">
+                        <!-- Markdown render edilen alan -->
+                        <div id="markdown-evaluation" class="text-dark"></div>
+                        
+                        <!-- Raporu İndirme Butonları -->
+                        <hr class="my-4" data-html2canvas-ignore="true">
+                        <div class="d-flex gap-2 justify-content-end" data-html2canvas-ignore="true">
+                            <button type="button" id="downloadTxtBtn" class="btn btn-outline-secondary fw-bold">
+                                <i class="bi bi-file-earmark-text-fill me-1"></i> Metin Olarak İndir (.txt)
+                            </button>
+                            <button type="button" id="downloadPdfBtn" class="btn btn-primary fw-bold">
+                                <i class="bi bi-file-pdf-fill me-1"></i> Raporu PDF Olarak İndir
+                            </button>
+                        </div>
+                        
+                        <!-- Gizli ham markdown metni -->
+                        <div id="raw-evaluation" class="d-none">@Model.FinalEvaluation</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sağ Sütun: Detaylı Mülakat Görüşme Geçmişi (Transcript) -->
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-body p-4">
+                        <h4 class="fw-bold mb-4 text-dark"><i class="bi bi-chat-square-text-fill text-success me-2"></i>Mülakat Görüşme Akışı</h4>
+                        
+                        <div class="vstack gap-4">
+                            @for (int i = 0; i < Model.History.Count; i++)
+                            {
+                                var step = Model.History[i];
+                                <div class="transcript-step pb-3 border-bottom">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="badge bg-primary me-2">Soru @(i + 1)</span>
+                                        <span class="text-muted small">@step.AskedAt.ToLocalTime().ToString("HH:mm")</span>
+                                    </div>
+                                    <div class="bg-primary-subtle text-primary-emphasis p-3 rounded-3 mb-2 small">
+                                        <strong>İK Uzmanı:</strong> @step.Question
+                                    </div>
+                                    <div class="bg-success-subtle text-success-emphasis p-3 rounded-3 small">
+                                        <strong>Cevabınız:</strong> @step.Answer
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Sayfa yüklendiğinde Markdown değerlendirmesini HTML'e çeviriyoruz
+        document.addEventListener("DOMContentLoaded", function() {
+            var rawDiv = document.getElementById("raw-evaluation");
+            var targetDiv = document.getElementById("markdown-evaluation");
+            if (rawDiv && targetDiv) {
+                var markdownText = rawDiv.textContent;
+                targetDiv.innerHTML = marked.parse(markdownText);
+            }
+
+            // --- SESLİ MÜLAKAT ENTEGRASYONU (TTS & STT) & SÜREÇ SAYAÇ ---
+            let speechUtterance = null;
+            let isSpeaking = false;
+            let recognition = null;
+            let isRecording = false;
+            let timerInterval = null;
+
+            @if (!Model.IsCompleted)
+            {
+                <text>
+                // 5 Dakikalık Mülakat Geri Sayım Sayacı (Cheat-Proof LocalStorage Destekli)
+                const storageKey = "timer_" + "@Model.SessionId" + "_" + "@Model.CurrentQuestionNumber";
+                let remainingTime = localStorage.getItem(storageKey);
+                if (remainingTime === null) {
+                    remainingTime = 300; // 5 dakika (300 saniye)
+                    localStorage.setItem(storageKey, remainingTime);
+                } else {
+                    remainingTime = parseInt(remainingTime, 10);
+                }
+
+                const timerText = document.getElementById("countdownTimer");
+                const timerContainer = document.getElementById("timerContainer");
+                
+                function updateTimerDisplay() {
+                    const minutes = Math.floor(remainingTime / 60);
+                    const seconds = remainingTime % 60;
+                    timerText.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                    // Son 1 dakikada uyarı rengi (Kırmızı ve Yanıp sönme)
+                    if (remainingTime <= 60) {
+                        timerContainer.classList.remove("text-secondary", "border-secondary-subtle");
+                        timerContainer.classList.add("timer-warning", "border-danger");
+                        const icon = timerContainer.querySelector("i");
+                        if (icon) {
+                            icon.classList.remove("text-primary");
+                            icon.classList.add("text-danger");
+                        }
+                    }
+                }
+
+                updateTimerDisplay();
+
+                timerInterval = setInterval(function() {
+                    if (remainingTime > 0) {
+                        remainingTime--;
+                        localStorage.setItem(storageKey, remainingTime);
+                        updateTimerDisplay();
+                    } else {
+                        clearInterval(timerInterval);
+                        localStorage.removeItem(storageKey);
+
+                        // Süre dolduğunda boş cevaba izin verme, placeholder doldur
+                        const answerTextarea = document.getElementById("answer");
+                        if (answerTextarea) {
+                            if (!answerTextarea.value.trim()) {
+                                answerTextarea.value = "[Mülakat süresi dolduğu için aday bu soruya cevap yazamadı.]";
+                            }
+                        }
+
+                        // Formu gönder
+                        const answerForm = document.getElementById("answerForm");
+                        if (answerForm) {
+                            alert("Süreniz doldu! Cevabınız otomatik olarak kaydedilip bir sonraki soruya geçiliyor.");
+                            answerForm.submit();
+                        }
+                    }
+                }, 1000);
+                </text>
+            }
+
+            // 1. Text-to-Speech (Yapay Zeka Soru Okuma)
+            function speakText(text) {
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel(); // Mevcut tüm konuşmaları iptal et
+
+                    speechUtterance = new SpeechSynthesisUtterance(text);
+                    speechUtterance.lang = 'tr-TR';
+                    
+                    // Türkçe ses seçimi yapmaya çalışıyoruz
+                    const voices = window.speechSynthesis.getVoices();
+                    const trVoice = voices.find(voice => voice.lang.includes('tr'));
+                    if (trVoice) {
+                        speechUtterance.voice = trVoice;
+                    }
+
+                    speechUtterance.onstart = function() {
+                        setTtsState(true);
+                    };
+
+                    speechUtterance.onend = function() {
+                        setTtsState(false);
+                    };
+
+                    speechUtterance.onerror = function() {
+                        setTtsState(false);
+                    };
+
+                    window.speechSynthesis.speak(speechUtterance);
+                }
+            }
+
+            function stopSpeaking() {
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    setTtsState(false);
+                }
+            }
+
+            function setTtsState(speaking) {
+                isSpeaking = speaking;
+                const ttsBtn = document.getElementById("ttsBtn");
+                if (ttsBtn) {
+                    if (speaking) {
+                        ttsBtn.innerHTML = '<i class="bi bi-volume-mute-fill fs-5"></i>';
+                        ttsBtn.classList.remove("btn-outline-primary");
+                        ttsBtn.classList.add("btn-primary");
+                    } else {
+                        ttsBtn.innerHTML = '<i class="bi bi-volume-up-fill fs-5"></i>';
+                        ttsBtn.classList.remove("btn-primary");
+                        ttsBtn.classList.add("btn-outline-primary");
+                    }
+                }
+            }
+
+            // Sayfa yüklendiğinde sorunun otomatik okunması (Mülakat devam ediyorsa)
+            const questionTextElement = document.getElementById("questionText");
+            let autoPlayTriggered = false;
+
+            function triggerAutoPlay() {
+                if (autoPlayTriggered) return;
+                autoPlayTriggered = true;
+                speakText(questionTextElement.textContent.trim());
+            }
+
+            if (questionTextElement) {
+                // Tarayıcı seslerinin yüklenmesi için küçük bir gecikme ekliyoruz
+                setTimeout(() => {
+                    triggerAutoPlay();
+                }, 800);
+
+                // Tarayıcı sesleri değiştiğinde tetiklenir (bazen ilk yüklemede getVoices boş döner)
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.onvoiceschanged = function() {
+                        triggerAutoPlay();
+                    };
+                }
+            }
+
+            const ttsBtn = document.getElementById("ttsBtn");
+            if (ttsBtn && questionTextElement) {
+                ttsBtn.addEventListener("click", function() {
+                    // Tarayıcının kendi konuşma durumunu sorguluyoruz
+                    if (window.speechSynthesis && window.speechSynthesis.speaking) {
+                        stopSpeaking();
+                    } else {
+                        speakText(questionTextElement.textContent.trim());
+                    }
+                });
+            }
+
+            // 2. Speech-to-Text (Konuşarak Cevap Verme)
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.continuous = true;
+                recognition.interimResults = false;
+                recognition.lang = 'tr-TR';
+
+                recognition.onstart = function() {
+                    setSttState(true);
+                };
+
+                recognition.onend = function() {
+                    setSttState(false);
+                };
+
+                recognition.onerror = function(event) {
+                    console.error("Ses tanıma hatası:", event.error);
+                    setSttState(false);
+                };
+
+                recognition.onresult = function(event) {
+                    const answerArea = document.getElementById("answer");
+                    if (answerArea) {
+                        let finalTranscript = '';
+                        for (let i = event.resultIndex; i < event.results.length; ++i) {
+                            if (event.results[i].isFinal) {
+                                finalTranscript += event.results[i][0].transcript;
+                            }
+                        }
+                        if (finalTranscript) {
+                            if (answerArea.value && !answerArea.value.endsWith(' ')) {
+                                answerArea.value += ' ';
+                            }
+                            answerArea.value += finalTranscript;
+                        }
+                    }
+                };
+            } else {
+                // Tarayıcı desteklemiyorsa butonu gizle
+                const sttBtn = document.getElementById("sttBtn");
+                if (sttBtn) {
+                    sttBtn.classList.add("d-none");
+                }
+            }
+
+            function setSttState(recording) {
+                isRecording = recording;
+                const sttBtn = document.getElementById("sttBtn");
+                if (sttBtn) {
+                    if (recording) {
+                        sttBtn.classList.add("recording");
+                        sttBtn.innerHTML = '<i class="bi bi-mic-mute-fill me-1"></i> Kaydı Durdur';
+                    } else {
+                        sttBtn.classList.remove("recording");
+                        sttBtn.innerHTML = '<i class="bi bi-mic-fill me-1"></i> Sesli Yanıtla';
+                    }
+                }
+            }
+
+            const sttBtn = document.getElementById("sttBtn");
+            if (sttBtn && recognition) {
+                sttBtn.addEventListener("click", function() {
+                    if (isRecording) {
+                        recognition.stop();
+                    } else {
+                        stopSpeaking(); // Kayıt başlarken hoparlörü sustur (geri beslemeyi önlemek için)
+                        recognition.start();
+                    }
+                });
+            }
+
+            // Form gönderildiğinde yükleniyor animasyonunu açıyoruz
+            var form = document.getElementById("answerForm");
+            if (form) {
+                form.addEventListener("submit", function() {
+                    // Mülakat seslerini ve kaydını kapat
+                    stopSpeaking();
+                    if (recognition && isRecording) {
+                        recognition.stop();
+                    }
+
+                    // Sayaç temizleme
+                    @if (!Model.IsCompleted)
+                    {
+                        <text>
+                        const storageKey = "timer_" + "@Model.SessionId" + "_" + "@Model.CurrentQuestionNumber";
+                        localStorage.removeItem(storageKey);
+                        if (timerInterval) {
+                            clearInterval(timerInterval);
+                        }
+                        </text>
+                    }
+
+                    // Butonu devre dışı bırak ve gizle
+                    var submitBtn = document.getElementById("submitBtn");
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.classList.add("d-none");
+                    }
+                    // Form elemanlarını gizle
+                    var answer = document.getElementById("answer");
+                    if (answer) {
+                        answer.readOnly = true;
+                    }
+                    // Yükleniyor göstergesini aç
+                    var loader = document.getElementById("loadingIndicator");
+                    if (loader) {
+                        loader.classList.remove("d-none");
+                    }
+                });
+            }
+
+            // 3. Değerlendirme Raporunu İndirme Fonksiyonları
+            const downloadPdfBtn = document.getElementById("downloadPdfBtn");
+            const downloadTxtBtn = document.getElementById("downloadTxtBtn");
+
+            if (downloadPdfBtn) {
+                downloadPdfBtn.addEventListener("click", function() {
+                    const cardElement = document.getElementById("evaluationCard");
+                    const jobTitle = "@Model.JobTitle";
+                    
+                    // Yazdırma işlemi için temiz bir pencere açıyoruz
+                    const printWindow = window.open('', '_blank', 'width=900,height=800');
+                    if (!printWindow) {
+                        alert("Tarayıcınız pencere açılmasını engelledi. Lütfen pop-up engelleyicisini kapatıp tekrar deneyin.");
+                        return;
+                    }
+
+                    // Pencere içeriğini oluşturuyoruz
+                    printWindow.document.write(
+                        '<!DOCTYPE html>' +
+                        '<html>' +
+                        '<head>' +
+                        '    <title>' + jobTitle + ' - İK Değerlendirme Raporu</title>' +
+                        '    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">' +
+                        '    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">' +
+                        '    <style>' +
+                        '        body {' +
+                        '            padding: 30px;' +
+                        '            background-color: #ffffff;' +
+                        '            font-family: \'Segoe UI\', Roboto, Helvetica, Arial, sans-serif;' +
+                        '        }' +
+                        '        .card {' +
+                        '            border: 1px solid #dee2e6 !important;' +
+                        '            box-shadow: none !important;' +
+                        '        }' +
+                        '        [data-html2canvas-ignore="true"] {' +
+                        '            display: none !important;' +
+                        '        }' +
+                        '        @@media print {' +
+                        '            body {' +
+                        '                padding: 0;' +
+                        '            }' +
+                        '            .card {' +
+                        '                border: none !important;' +
+                        '            }' +
+                        '            * {' +
+                        '                -webkit-print-color-adjust: exact !important;' +
+                        '                print-color-adjust: exact !important;' +
+                        '            }' +
+                        '        }' +
+                        '    </style>' +
+                        '</head>' +
+                        '<body>' +
+                        '    <div class="container">' +
+                                 cardElement.outerHTML +
+                        '    </div>' +
+                        '    <script>' +
+                        '        window.onload = function() {' +
+                        '            setTimeout(function() {' +
+                        '                window.print();' +
+                        '                window.close();' +
+                        '            }, 400);' +
+                        '        };' +
+                        '    <\/script>' +
+                        '</body>' +
+                        '</html>'
+                    );
+                    printWindow.document.close();
+                });
+            }
+
+            if (downloadTxtBtn) {
+                downloadTxtBtn.addEventListener("click", function() {
+                    const rawDiv = document.getElementById("raw-evaluation");
+                    if (rawDiv) {
+                        const markdownText = rawDiv.textContent;
+                        const jobTitle = "@Model.JobTitle";
+                        const filename = `${jobTitle.replace(/[^a-zA-Z0-9]/g, "_")}_IK_Degerlendirme.txt`;
+
+                        const blob = new Blob([markdownText], { type: "text/plain;charset=utf-8" });
+                        const link = document.createElement("a");
+                        link.href = URL.createObjectURL(blob);
+                        link.download = filename;
+                        
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(link.href);
+                    }
+                });
+            }
+        });
+    </script>
+}

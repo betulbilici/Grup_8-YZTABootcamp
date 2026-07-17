@@ -1,9 +1,23 @@
-﻿@model CvInterviewPlatform.Web.Models.User
+@model CvInterviewPlatform.Web.Models.User
 @{
     ViewData["Title"] = "Ana Panel";
 }
 
 <div class="container mt-4">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+        </div>
+    }
+    @if (TempData["Warning"] != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["Warning"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+        </div>
+    }
     <div class="row">
         @* Sol Taraf: Profil Kartı *@
         <div class="col-md-4 mb-4">
@@ -43,19 +57,28 @@
                 <h4 class="fw-bold text-primary mb-3"><i class="bi bi-folder-symlink-fill"></i> Belgelerim ve Dosya Yükleme</h4>
                 <p class="text-muted small">Profil fotoğrafınızı veya güncel CV (PDF) belgenizi buradan yükleyebilirsiniz. Dosyalar yerel sunucumuzda güvenle saklanır.</p>
 
-                <form asp-action="UploadDocuments" asp-controller="Home" method="post" enctype="multipart/form-data" class="mt-3">
+                <form id="uploadForm" asp-action="UploadDocuments" asp-controller="Home" method="post" enctype="multipart/form-data" class="mt-3">
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">Profil Fotoğrafı Güncelle</label>
-                            <input type="file" name="profilePicture" class="form-control" accept="image/*" />
+                            <input type="file" id="profilePictureInput" name="profilePicture" class="form-control" accept="image/*" />
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">CV Yükle (Sadece PDF)</label>
-                            <input type="file" name="cvFile" class="form-control" accept=".pdf" />
+                            <input type="file" id="cvFileInput" name="cvFile" class="form-control" accept=".pdf" />
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary fw-bold mt-2"><i class="bi bi-cloud-arrow-up-fill"></i> Seçilen Dosyaları Kaydet</button>
+                    <button type="submit" id="saveBtn" class="btn btn-primary fw-bold mt-2"><i class="bi bi-cloud-arrow-up-fill"></i> Seçilen Dosyaları Kaydet</button>
                 </form>
+
+                <!-- Yükleniyor Spinner'ı -->
+                <div id="uploadLoader" class="d-none text-center py-4">
+                    <div class="spinner-border text-primary" role="status" style="width: 2.5rem; height: 2.5rem;">
+                        <span class="visually-hidden">Yükleniyor...</span>
+                    </div>
+                    <h5 class="mt-3 text-primary fw-bold" id="loaderMessage">Dosyalarınız İşleniyor...</h5>
+                    <p class="text-muted small mb-0" id="loaderSubMessage">Lütfen bekleyin, sayfayı kapatmayın veya yenilemeyin.</p>
+                </div>
             </div>
 
             <div class="card shadow-sm p-4">
@@ -82,3 +105,42 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var form = document.getElementById("uploadForm");
+            var profileInput = document.getElementById("profilePictureInput");
+            var cvInput = document.getElementById("cvFileInput");
+            var loader = document.getElementById("uploadLoader");
+            var loaderMessage = document.getElementById("loaderMessage");
+            var loaderSubMessage = document.getElementById("loaderSubMessage");
+
+            if (form) {
+                form.addEventListener("submit", function(event) {
+                    var cvSelected = cvInput && cvInput.files && cvInput.files.length > 0;
+                    var profileSelected = profileInput && profileInput.files && profileInput.files.length > 0;
+
+                    if (!cvSelected && !profileSelected) {
+                        event.preventDefault();
+                        alert("Lütfen yüklemek için en az bir dosya seçin.");
+                        return;
+                    }
+
+                    // Formu gizle ve yükleniyor spinner'ını göster
+                    form.classList.add("d-none");
+                    loader.classList.remove("d-none");
+
+                    // Seçime göre mesajı özelleştir
+                    if (cvSelected) {
+                        loaderMessage.textContent = "CV'niz Yapay Zeka Tarafından Analiz Ediliyor...";
+                        loaderSubMessage.textContent = "Yapay zekamız CV metnini okuyor ve veritabanına kaydediyor. Bu işlem birkaç saniye sürebilir, lütfen sayfayı yenilemeyin veya kapatmayın.";
+                    } else if (profileSelected) {
+                        loaderMessage.textContent = "Profil Fotoğrafınız Güncelleniyor...";
+                        loaderSubMessage.textContent = "Görsel yükleniyor, lütfen bekleyin.";
+                    }
+                });
+            }
+        });
+    </script>
+}
