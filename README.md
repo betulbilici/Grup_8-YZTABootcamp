@@ -205,7 +205,12 @@ Projemizin ilk sprint sürecini; fikir geliştirme, pazar araştırması, rol da
 
 </details>
 
-## 🛠️ Yerel Kurulum ve Çalıştırma Rehberi (Local Setup)
+<br>
+
+<!-- 🛠️ YEREL KURULUM VE ÇALIŞTIRMA REHBERİ AÇILIR SEKME -->
+<details>
+<summary><h2>🛠️ Yerel Kurulum ve Çalıştırma Rehberi (Local Setup)</h2></summary>
+<br>
 
 Bu proje Google Firestore, Gemini AI ve Python tabanlı bir PDF Parser (Docling) mikroservisi ile çalışmaktadır. Takım üyelerinin projeyi kendi yerel bilgisayarlarında çalıştırabilmesi için aşağıdaki adımları uygulaması gerekir:
 
