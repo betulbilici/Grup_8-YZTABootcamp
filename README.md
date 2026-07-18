@@ -277,19 +277,19 @@ Uygulamamızı geliştirirken Gemini ücretsiz öğrenci versiyonundan yararland
   
   ---
 
-  #### Yapay Zeka Mülakat Portalı 
+  #### Profil Ayarları ve CV Yükleme Alanı
 <img width="1600" height="762" alt="null(2)" src="https://github.com/user-attachments/assets/c547d646-9027-459b-9065-21ccd542f879" />
 
   
   ---
   
-  #### Profil Ayarları ve CV Yükleme Alanı
+  #### 
   <img width="1600" height="760" alt="dosya yükleme ekranı(3) " src="https://github.com/user-attachments/assets/60034646-06cb-455b-aab4-9f6a83c784d2" />
 
   
   ---
   
-  #### Yapay Zeka CV Analiz Süreci
+  #### Yapay Zeka Mülakat Portalı
 <img width="1600" height="762" alt="boş mülakat geçmişi(4)" src="https://github.com/user-attachments/assets/96909acc-a4b2-460e-b48b-176c4ab94427" />
 
   
