@@ -328,3 +328,90 @@ Uygulamamızı geliştirirken Gemini ücretsiz öğrenci versiyonundan yararland
 
 
   </details>
+  <br>
+
+  <!-- 📊 SPRINT 2 ALT SEKME: PROJE YÖNETİMİ -->
+  <details>
+    <summary><h3>📊 Proje Yönetimi</h3></summary>
+    <br>
+ Projemizin ikinci sprint sürecini planlarken, görev dağılımlarını ve iş akışlarını takip etmek için kullandığımız yönetim panolarımız:
+    
+  <img width="1439" height="700" alt="1" src="https://github.com/user-attachments/assets/5810d292-ff36-454e-9410-d77615bd0e41" />
+  <img width="1438" height="712" alt="2" src="https://github.com/user-attachments/assets/2e278fb8-68e8-4283-90b7-fed57122f736" />
+  <img width="1439" height="711" alt="3" src="https://github.com/user-attachments/assets/5f04bd82-b1af-4a19-bd15-4e5b0de74256" />
+
+---
+
+ 🔗 Product Backlog
+
+[Trello Board](https://trello.com/b/Ts8UK2GG/2nd-sprint)  
+</details>
+
+<!-- PROJE YÖNETİMİ İÇİNDEKİ ALT SEKME: DAILY SCRUM -->
+<details>
+<summary><h3>📅 Daily Scrum Toplantıları</h3></summary>
+<br>
+  foto
+  
+</details> <!-- 📊 Proje Yönetimi sekmesinin kapanışı -->
+
+
+<br>
+
+<!-- 📈 SPRINT 2 ALT SEKME: SPRINT NOTLARI -->
+<details>
+<summary><h3>📈 Sprint Notları</h3></summary>
+<br>
+
+🎯 Hedeflenen ve Tamamlanan Sprint Puanı: 18
+
+---
+
+Puanlama Mantığı 
+
+<img width="100%" alt="puan mantığı" src="https://github.com/user-attachments/assets/4a32fa65-474e-42be-8b44-c2485819f807" />
+
+<br>
+
+<!-- 📋 SPRINT NOTLARI İÇİNDEKİ ALT SEKME 1: DEĞERLENDİRME -->
+<details>
+<summary><h3>📋 Sprint Değerlendirmesi</h3></summary>
+<br>
+
+Projemizin ikinci sprint süreci; yapay zeka entegrasyonlarının tamamlanması, yeni developer üyelerimizin adaptasyonu ve kullanıcı akışının en kritik fonksiyonlarının devreye alınması adımlarıyla başarıyla tamamlanmıştır. Sprint boyunca gerçekleştirilen faaliyetler şu şekildedir:
+
+* **Yapay Zeka ve Model Entegrasyonu:** Gemini 2.5 Flash modeli seçilerek resmi C# SDK bağlantısı kurulmuş; adayın CV'sine ve mülakat geçmişine göre dinamik soru üreten, STAR tekniğine uygun 10 yıllık bir kıdemli İK uzmanı yapay zeka mimarisi sisteme kazandırılmıştır.
+* **Gelişmiş Raporlama ve Mentörlük:** Rakiplerden ayrışmak adına mülakat sonu raporlarına "Soru-Cevap Mentörlük Analizi" eklenerek adaya ideal cevap simülasyonları ve pratik geliştirme tüyoları sunan özel bir yapı kurulmuştur.
+* **Güvenlik ve Yerel Kurulum Altyapısı:** API Key güvenliği için .NET User Secrets entegrasyonu tamamlanarak kod güvenliği GitHub standartlarına taşınmış ve ekibin projeyi yerelde sorunsuz çalıştırabilmesi için README.md dökümantasyonu güncellenmiştir.
+* **Sesli Mülakat ve Kontrol Teknolojileri:** Tarayıcı yerleşik HTML5 Web Speech API mimarisi kullanılarak ek sunucu maliyeti olmadan sesli mülakat (TTS ve STT) özellikleri, ses çakışma önleyiciler ve LocalStorage korumalı 5 dakikalık akıllı geri sayım sayacı entegre edilmiştir.
+* **Dışa Aktarma ve UX İyileştirmeleri:** Üçüncü parti kütüphanelerin pikselleşme sorunlarını çözmek adına tarayıcının kendi yazdırma motoru entegre edilerek yüksek çözünürlüklü vektörel PDF ve ham metin (.txt) indirme özellikleri eklenmiş; parser mikroservis kesintilerine karşı hata toleransı ve Firestore tabanlı oturum silme yetenekleri geliştirilmiştir.
+
+**Eklenen Diğer Teknik Özellikler ve İyileştirmeler:** Mülakat akışını mükemmelleştirmek adına süre bittiğinde adayın yerine otomatik yanıt yazıp formu gönderen akıllı sistem, mikrofon aktifken adaya kayıtta olduğunu gösteren yanıp sönen animasyon efekti, CV yükleme esnasında çift gönderimi engelleyen spinner yapıları ve adayların birbirlerinin mülakatlarını silmesini engelleyen Firestore güvenlik/yetki kontrolleri sisteme entegre edilmiştir
+ 
+  **Özetle;** Sprint 2 süreci; ekibe yeni katılan developer üyelerimizle yakalanan güçlü sinerji sayesinde projenin en büyük vaadi olan "Yapay Zeka Destekli Mülakat" deneyimini ve tüm kullanıcı deneyimini uçtan uca işlevsel kılarak başarıyla kapatılmıştır.
+
+* **Sprint Değerlendirme Katılımcıları:** Aslıhan Yeşilyurt Şengül, Pelin Çelik, Betül Bilici, Abdulkadir Süslü, Burak Ege Kaya
+</details>
+
+<br>
+
+<!-- 🔄 SPRINT NOTLARI İÇİNDEKİ ALT SEKME 2: RETROSPECTIVE -->
+<details>
+<summary><h3>🔄 Sprint Retrospective</h3></summary>
+<br>
+
+İkinci sprintimizin tamamlanmasının ardından gerçekleştirdiğimiz toplantıda, takım süreçlerimizi değerlendirerek önümüzdeki süreçler için aldığımız kararlar ve değerlendirmelerimiz şu şekildedir:
+
+* **Ekip Sinerjisi ve Uyum:** Ekibe yeni katılan developer üyelerimizle birlikte yazılım süreçleri ciddi bir ivme kazanmıştır. Görev dağılımlarının netliği ve rollerin oturması, teknik engellerin hızla aşılmasını sağlamıştır.
+* **Test Aşamaları ve Kalite Güvence:** Geliştirilen yapay zeka entegrasyonlarının ve kullanıcı akışlarının uçtan uca hatasız çalışması için kapsamlı test senaryolarının hazırlanmasına ve test aşamalarına geçilmesine karar verildi.
+* **Canlıya Alma ve Dağıtım Seçenekleri:** Projenin kullanıcılarla buluşabilmesi amacıyla prod ortamı gereksinimlerinin analiz edilmesine ve en uygun canlıya alma seçeneklerinin kararlaştırılmasına karar verildi.
+* **Süre Kısıtlaması ve Akış Optimizasyonu:** Mülakat esnasındaki 5 dakikalık soru süre sınırının aday deneyimi üzerindeki etkileri değerlendirilerek, sonraki süreçte sorulardaki süre kısıtlamalarında esneklik ve düzenlemeler yapılmasına karar verildi.
+* **Erişilebilirlik ve Kapsayıcılık İyileştirmeleri:** Platformu daha erişilebilir bir yapıya kavuşturmak adına teknik iyileştirmelerin planlanmasına karar verildi.
+* **Görsel Tasarım ve Arayüz Düzenlemeleri:** Kullanıcı dostu bir deneyim sunmak amacıyla, sitenin genel görsel düzeninde, ve UI/UX detaylarında estetik düzenlemeler yapılmasına karar verildi.
+* **İletişim ve Takip:** Trello üzerindeki backlog yönetiminin bu sprintteki başarısı, sonraki geliştirme aşamalarında da aynı disiplinle sürdürülecektir. Daily Scrum senkronizasyonunun gücü korunacaktır.
+
+</details>
+
+</details> <!-- 📈 Sprint Notları sekmesinin kapanışı -->
+
+</details> <!-- 🚀 Sprint 2 Süreci ana sekmesinin kapanışı -->
