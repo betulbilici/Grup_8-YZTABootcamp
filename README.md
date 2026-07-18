@@ -255,11 +255,14 @@ Uygulama çalıştıktan sonra tarayıcınızdan erişim sağlayabilirsiniz.
 Uygulamamızı geliştirirken Gemini ücretsiz öğrenci versiyonundan yararlandığımıza dair:
 <img width="1600" height="470" alt="ucretsizkanit" src="https://github.com/user-attachments/assets/82deeae3-4bcf-40ef-b1b9-16efd9da636c" />
 
-</details>
+</details> <!-- 1. İlave Notlar sekmesini kapatır -->
+</details> <!-- 2. Arada açık kalan başka bir alt sekmeyi kapatır -->
+</details> <!-- 3. 🚨 SPRINT 1 ANA SEKMESİNİ KESİN OLARAK KAPATIR VE MÜHÜRLER! -->
 
----
-
-# 🚀 Sprint 2 Süreci
+<!-- ANA SEKME: SPRINT 2 (Artık nihayet tamamen bağımsız yeni bir sekme!) -->
+<details>
+  <summary><h2>🏃‍♂️ Sprint 2 </h2></summary>
+  <br>
 
 <!-- 🖼️ SPRINT 2 ALT SEKME: SİTE EKRAN GÖRÜNTÜLERİ -->
 <details>
