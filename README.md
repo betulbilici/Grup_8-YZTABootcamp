@@ -257,12 +257,12 @@ Uygulamamızı geliştirirken Gemini ücretsiz öğrenci versiyonundan yararland
 
 </details>
 
-</details>
+</details> <!-- 🚨 SPRINT 1 BURADA KESİN OLARAK KİLİTLENDİ! -->
 
-<!-- 🚀 ANA SEKME: SPRINT 2 (Tamamen Bağımsız ve Kapsayıcı Sekme) -->
+<!-- 🚀 ANA SEKME: SPRINT 2 (Tamamen Bağımsız ve Kapsayıcı Yeni Sekme) -->
 <details>
-<summary><h2>🚀 Sprint 2 Süreci</h2></summary>
-<br>
+  <summary><h2>🚀 Sprint 2 Süreci</h2></summary>
+  <br>
 
 <!-- 🖼️ SPRINT 2 ALT SEKME: SİTE EKRAN GÖRÜNTÜLERİ -->
 <details>
