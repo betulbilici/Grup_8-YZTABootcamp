@@ -271,55 +271,55 @@ Uygulamamızı geliştirirken Gemini ücretsiz öğrenci versiyonundan yararland
 
   Ekibimizin bu sprintte hayata geçirdiği yapay zeka entegrasyonlu arayüz geliştirmeleri ve kullanıcı akışına ait güncel ekran görüntüleri aşağıda listelenmiştir:
 
-  #### 1. Kayıt Olma Paneli (Yeni Hesap Oluşturma)
+  #### Kayıt Olma Paneli 
  <img width="1600" height="760" alt="yeni hesap oluşturma(1)" src="https://github.com/user-attachments/assets/843ce64e-e6e1-42b4-83c9-2c7d0a07f5f2" />
 
   
   ---
 
-  #### 2. Yapay Zeka Mülakat Portalı (Boş Geçmiş)
+  #### Yapay Zeka Mülakat Portalı 
 <img width="1600" height="762" alt="null(2)" src="https://github.com/user-attachments/assets/c547d646-9027-459b-9065-21ccd542f879" />
 
   
   ---
   
-  #### 3. Profil Ayarları ve CV Yükleme Alanı
+  #### Profil Ayarları ve CV Yükleme Alanı
   <img width="1600" height="760" alt="dosya yükleme ekranı(3) " src="https://github.com/user-attachments/assets/60034646-06cb-455b-aab4-9f6a83c784d2" />
 
   
   ---
   
-  #### 4. Yapay Zeka CV Analiz Süreci
+  #### Yapay Zeka CV Analiz Süreci
 <img width="1600" height="762" alt="boş mülakat geçmişi(4)" src="https://github.com/user-attachments/assets/96909acc-a4b2-460e-b48b-176c4ab94427" />
 
   
   ---
 
-  #### 5. Teknik Mülakatın Başlaması (Soru 1 / 5)
+  #### Canlı Mülakat ve Anlık Yapay Zeka Soruları
   <img width="1600" height="760" alt="soru 1(5)" src="https://github.com/user-attachments/assets/1fda43f5-5a8f-4f97-a4c3-44c8fe603664" />
 
   
   ---
   
-  #### 6. Canlı Mülakat ve Anlık Yapay Zeka Soruları
+  #### 
 <img width="1600" height="762" alt="cevap 1(6)" src="https://github.com/user-attachments/assets/f15143a1-9416-4254-8a44-17b13f20b4ab" />
 
   
   ---
 
-  #### 7. Mülakat Değerlendirme Süreci (Soru 5 / 5 - Son Soru)
+  #### 
 <img width="1600" height="760" alt="son soru(7)" src="https://github.com/user-attachments/assets/1fabc076-e4af-4b09-ba58-3955b8659ec7" />
 
   
   ---
   
-  #### 8. Güncellenmiş Mülakat Geçmişi Paneli (Dolu Geçmiş)
+  #### Mülakat Geçmişi Paneli 
 <img width="1600" height="765" alt="dolu mülakat geçmişi(13)" src="https://github.com/user-attachments/assets/712d3885-461b-4bee-824d-741dd2743cf6" />
 
   
   ---
   
-  #### 9. Detaylı İK Değerlendirme Raporu ve Çıktı Alma Ekranları (Tüm Sayfalar)
+  #### İK Değerlendirme Raporu ve Çıktı Alma Ekranları 
 <img width="1600" height="765" alt="değerlendirme raporu 1(8)" src="https://github.com/user-attachments/assets/995e119a-d16d-4061-9790-2d67673b27fd" />
 <img width="1600" height="762" alt="değerlendirme raporu 2(9)" src="https://github.com/user-attachments/assets/a31e5854-092a-4cd9-a26c-66433e4fa03c" />
 <img width="1600" height="760" alt="değerlendirme raporu 3(10)" src="https://github.com/user-attachments/assets/3bff32d8-dea9-4d37-8ff5-26aa300e3b70" />
