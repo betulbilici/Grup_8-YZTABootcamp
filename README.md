@@ -255,18 +255,19 @@ Uygulama çalıştıktan sonra tarayıcınızdan erişim sağlayabilirsiniz.
 Uygulamamızı geliştirirken Gemini ücretsiz öğrenci versiyonundan yararlandığımıza dair:
 <img width="1600" height="470" alt="ucretsizkanit" src="https://github.com/user-attachments/assets/82deeae3-4bcf-40ef-b1b9-16efd9da636c" />
 
-  </details> <!-- Sprint 1'in içindeki son alt sekmeyi kapatır -->
-</details> <!-- 🚨 SPRINT 1 ANA SEKMESİNİ TAMAMEN KAPATIR, HİYERARŞİYİ SIFIRLAR! -->
+</details>
 
-<!-- 🚀 ANA SEKME: SPRINT 2 (Artık tam istediğin gibi Sprint 1'den tamamen bağımsız) -->
+</details>
+
+<!-- 🚀 ANA SEKME: SPRINT 2 (Tamamen Bağımsız ve Kapsayıcı Sekme) -->
 <details>
 <summary><h2>🚀 Sprint 2 Süreci</h2></summary>
 <br>
 
-  <!-- 🖼️ SPRINT 2 ALT SEKME: SİTE EKRAN GÖRÜNTÜLERİ -->
-  <details>
-  <summary><h3>🖼️ Site Ekran Görüntüleri</h3></summary>
-  <br>
+<!-- 🖼️ SPRINT 2 ALT SEKME: SİTE EKRAN GÖRÜNTÜLERİ -->
+<details>
+<summary><h3>🖼️ Site Ekran Görüntüleri</h3></summary>
+<br>
 
   Ekibimizin bu sprintte hayata geçirdiği yapay zeka entegrasyonlu arayüz geliştirmeleri ve kullanıcı akışına ait güncel ekran görüntüleri aşağıda listelenmiştir:
 
