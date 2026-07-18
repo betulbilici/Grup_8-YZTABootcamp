@@ -209,9 +209,10 @@ Projemizin ilk sprint sürecini; fikir geliştirme, pazar araştırması, rol da
 
 <!-- 🛠️ YEREL KURULUM VE ÇALIŞTIRMA REHBERİ AÇILIR SEKME -->
 <details>
-<summary><h2>🛠️ Yerel Kurulum ve Çalıştırma Rehberi (Local Setup)</h2></summary>
+<summary><h2>🛠️İlave Notlar</h2></summary>
 <br>
-
+Yerel Kurulum ve Çalıştırma Rehberi 
+  
 Bu proje Google Firestore, Gemini AI ve Python tabanlı bir PDF Parser (Docling) mikroservisi ile çalışmaktadır. Takım üyelerinin projeyi kendi yerel bilgisayarlarında çalıştırabilmesi için aşağıdaki adımları uygulaması gerekir:
 
 ### 1. Gemini API Anahtarı Tanımlama (Güvenlik Önlemi)
@@ -251,3 +252,5 @@ dotnet run
 ```
 Uygulama çalıştıktan sonra tarayıcınızdan erişim sağlayabilirsiniz.
 
+Uygulamamızı geliştirirken Gemini ücretsiz öğrenci versiyonundan yararlandığımıza dair:
+<img width="1600" height="470" alt="ucretsizkanit" src="https://github.com/user-attachments/assets/82deeae3-4bcf-40ef-b1b9-16efd9da636c" />
