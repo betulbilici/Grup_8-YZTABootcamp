@@ -205,61 +205,10 @@ Projemizin ilk sprint sürecini; fikir geliştirme, pazar araştırması, rol da
 
 </details>
 
-<br>
-
-<!-- 🛠️ YEREL KURULUM VE ÇALIŞTIRMA REHBERİ AÇILIR SEKME -->
-<details>
-<summary><h2>🛠️İlave Notlar</h2></summary>
-<br>
-Yerel Kurulum ve Çalıştırma Rehberi 
-  
-Bu proje Google Firestore, Gemini AI ve Python tabanlı bir PDF Parser (Docling) mikroservisi ile çalışmaktadır. Takım üyelerinin projeyi kendi yerel bilgisayarlarında çalıştırabilmesi için aşağıdaki adımları uygulaması gerekir:
-
-### 1. Gemini API Anahtarı Tanımlama (Güvenlik Önlemi)
-API anahtarının GitHub'a sızmasını önlemek amacıyla `appsettings.json` dosyasında anahtar gizlenmiştir. Projeyi çalıştırmak için kendi terminalinizde (`CvInterviewPlatform.Web` klasörünün içindeyken) şu komutları sırasıyla çalıştırın:
-
-```bash
-# Projede User Secrets özelliğini etkinleştirin
-dotnet user-secrets init
-
-# Kendi Gemini API Anahtarınızı yerel profilinize kaydedin
-dotnet user-secrets set "Gemini:ApiKey" "KENDI_GEMINI_API_ANAHTARINIZ"
-```
-
-*Alternatif olarak işletim sisteminizde `GEMINI_API_KEY` adıyla bir Çevre Değişkeni (Environment Variable) tanımlayabilirsiniz.*
-
-### 2. Firebase Yetkilendirme Anahtarı
-Projenin veritabanına erişebilmesi için `firebase-key.json` dosyasına ihtiyacı vardır. Güvenlik sebebiyle bu dosya `.gitignore` listesindedir ve GitHub'a yüklenmez. 
-* Takım liderinizden `firebase-key.json` dosyasını temin edin ve `CvInterviewPlatform.Web` klasörünün içerisine yerleştirin.
-
-### 3. PDF Parser Mikroservisini Başlatma (Python)
-CV'leri okumak için kullanılan parser servisini başlatmak için:
-1. `CvParserService` klasörüne gidin.
-2. Gerekli kütüphaneleri yükleyin:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Servisi başlatın:
-   ```bash
-   python main.py
-   ```
-   *Mikroservis varsayılan olarak `http://127.0.0.1:8000` portunda çalışacaktır.*
-
-### 4. .NET Web Uygulamasını Çalıştırma
-Ana projeyi başlatmak için `CvInterviewPlatform.Web` klasöründeyken şu komutu çalıştırabilirsiniz:
-```bash
-dotnet run
-```
-Uygulama çalıştıktan sonra tarayıcınızdan erişim sağlayabilirsiniz.
-
-Uygulamamızı geliştirirken Gemini ücretsiz öğrenci versiyonundan yararlandığımıza dair:
-<img width="1600" height="470" alt="ucretsizkanit" src="https://github.com/user-attachments/assets/82deeae3-4bcf-40ef-b1b9-16efd9da636c" />
-
-</details> <!-- 1. İlave Notlar sekmesini kapatır -->
 </details> <!-- 2. Arada açık kalan başka bir alt sekmeyi kapatır -->
 </details> <!-- 3. 🚨 SPRINT 1 ANA SEKMESİNİ KESİN OLARAK KAPATIR VE MÜHÜRLER! -->
 
-<!-- ANA SEKME: SPRINT 2 (Artık nihayet tamamen bağımsız yeni bir sekme!) -->
+<!-- ANA SEKME: SPRINT 2-->
 <details>
   <summary><h2>🏃‍♂️ Sprint 2 </h2></summary>
   <br>
@@ -351,8 +300,14 @@ Uygulamamızı geliştirirken Gemini ücretsiz öğrenci versiyonundan yararland
 <details>
 <summary><h3>📅 Daily Scrum Toplantıları</h3></summary>
 <br>
-  foto
-  
+  <img width="828" height="359" alt="3" src="https://github.com/user-attachments/assets/febb0d62-565c-4ca3-acd0-a594dd81e04f" />
+  <img width="832" height="740" alt="4" src="https://github.com/user-attachments/assets/075b2b1f-3e63-485b-95f4-50501a5e2330" />
+  <img width="659" height="622" alt="5" src="https://github.com/user-attachments/assets/acdb3888-fb29-4e9d-8687-26abf36e82ed" />
+  <img width="1206" height="639" alt="1" src="https://github.com/user-attachments/assets/2e3565e3-82e8-4c04-970e-d78e3344df68" />
+  <img width="771" height="602" alt="2" src="https://github.com/user-attachments/assets/c747880d-039a-4e7f-b0a0-f6fe42517755" />
+
+
+
 </details> <!-- 📊 Proje Yönetimi sekmesinin kapanışı -->
 
 
@@ -413,5 +368,56 @@ Projemizin ikinci sprint süreci; yapay zeka entegrasyonlarının tamamlanması,
 </details>
 
 </details> <!-- 📈 Sprint Notları sekmesinin kapanışı -->
+<!-- 🛠️ YEREL KURULUM VE ÇALIŞTIRMA REHBERİ AÇILIR SEKME -->
+<details>
+<summary><h2>🛠️İlave Notlar</h2></summary>
+<br>
+  
+Yerel Kurulum ve Çalıştırma Rehberi
+  
+Bu proje Google Firestore, Gemini AI ve Python tabanlı bir PDF Parser (Docling) mikroservisi ile çalışmaktadır. Takım üyelerinin projeyi kendi yerel bilgisayarlarında çalıştırabilmesi için aşağıdaki adımları uygulaması gerekir:
 
+### 1. Gemini API Anahtarı Tanımlama (Güvenlik Önlemi)
+API anahtarının GitHub'a sızmasını önlemek amacıyla `appsettings.json` dosyasında anahtar gizlenmiştir. Projeyi çalıştırmak için kendi terminalinizde (`CvInterviewPlatform.Web` klasörünün içindeyken) şu komutları sırasıyla çalıştırın:
+
+```bash
+# Projede User Secrets özelliğini etkinleştirin
+dotnet user-secrets init
+
+# Kendi Gemini API Anahtarınızı yerel profilinize kaydedin
+dotnet user-secrets set "Gemini:ApiKey" "KENDI_GEMINI_API_ANAHTARINIZ"
+```
+
+*Alternatif olarak işletim sisteminizde `GEMINI_API_KEY` adıyla bir Çevre Değişkeni (Environment Variable) tanımlayabilirsiniz.*
+
+### 2. Firebase Yetkilendirme Anahtarı
+Projenin veritabanına erişebilmesi için `firebase-key.json` dosyasına ihtiyacı vardır. Güvenlik sebebiyle bu dosya `.gitignore` listesindedir ve GitHub'a yüklenmez. 
+* Takım liderinizden `firebase-key.json` dosyasını temin edin ve `CvInterviewPlatform.Web` klasörünün içerisine yerleştirin.
+
+### 3. PDF Parser Mikroservisini Başlatma (Python)
+CV'leri okumak için kullanılan parser servisini başlatmak için:
+1. `CvParserService` klasörüne gidin.
+2. Gerekli kütüphaneleri yükleyin:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Servisi başlatın:
+   ```bash
+   python main.py
+   ```
+   *Mikroservis varsayılan olarak `http://127.0.0.1:8000` portunda çalışacaktır.*
+
+### 4. .NET Web Uygulamasını Çalıştırma
+Ana projeyi başlatmak için `CvInterviewPlatform.Web` klasöründeyken şu komutu çalıştırabilirsiniz:
+```bash
+dotnet run
+```
+Uygulama çalıştıktan sonra tarayıcınızdan erişim sağlayabilirsiniz.
+
+Uygulamamızı geliştirirken Gemini ücretsiz öğrenci versiyonundan yararlandığımıza dair:
+<img width="1600" height="470" alt="ucretsizkanit" src="https://github.com/user-attachments/assets/82deeae3-4bcf-40ef-b1b9-16efd9da636c" />
+
+</details> <!-- 1. İlave Notlar sekmesini kapatır -->
+</details> <!-- 2. Arada açık kalan başka bir alt sekmeyi kapatır -->
 </details> <!-- 🚀 Sprint 2 Süreci ana sekmesinin kapanışı -->
+
