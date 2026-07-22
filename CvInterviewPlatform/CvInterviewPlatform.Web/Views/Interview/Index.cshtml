@@ -3,16 +3,10 @@
     ViewData["Title"] = "Mülakat Portalı";
 }
 
-<!-- Bootstrap Icons CDN linkini sayfa bazlı garantiye alıyoruz -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-<div class="container py-4">
-    <div class="row mb-4">
-        <div class="col-12 text-center text-md-start">
-            <h1 class="display-5 fw-bold text-primary">Yapay Zeka Mülakat Portalı</h1>
-            <p class="lead text-muted">Uzman yapay zekamız ile mülakat deneyimi yaşayın, kendinizi geliştirin.</p>
-        </div>
-    </div>
+<div class="mb-4">
+    <h1 class="h2 fw-bold mb-1">Yeni Mülakat Simülasyonu</h1>
+    <p class="text-body-secondary mb-0">Hedef rolünüzü belirleyin ve gerçekçi bir mülakat deneyimine hazırlanın.</p>
+</div>
 
     @if (TempData["Success"] != null)
     {
@@ -34,15 +28,74 @@
         <div class="col-lg-4 col-md-5">
             <div class="card border-0 shadow-sm rounded-3">
                 <div class="card-body p-4">
-                    <h3 class="card-title fw-bold mb-3 text-dark"><i class="bi bi-plus-circle-fill text-primary me-2"></i>Yeni Mülakat</h3>
+                    <h3 class="card-title fw-bold mb-3 text-body"><i class="bi bi-plus-circle-fill text-primary me-2"></i>Yeni Mülakat</h3>
                     <p class="text-muted small">Mülakat yapmak istediğiniz pozisyonu girerek 5 soruluk İK sürecini hemen başlatabilirsiniz.</p>
                     
-                    <form asp-controller="Interview" asp-action="StartInterview" method="post">
+                    <form asp-controller="Interview" asp-action="StartInterview" method="post" id="startInterviewForm">
                         <div class="mb-3">
-                            <label for="jobTitle" class="form-label fw-semibold text-dark">Hedef Pozisyon / Rol</label>
+                            <label for="jobTitle" class="form-label fw-semibold text-body">Hedef Pozisyon / Rol</label>
                             <input type="text" class="form-control form-control-lg border-2" id="jobTitle" name="jobTitle" placeholder="Örn: .NET Core Developer, Marketing Lead" required />
                         </div>
-                        <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold shadow-sm">
+
+                        <div class="mb-3">
+                            <span class="form-label fw-semibold text-body d-block">Mülakat Modu</span>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <label class="mode-card card border-2 rounded-3 p-3 h-100 mb-0" for="modePreparation">
+                                        <input class="visually-hidden" type="radio" name="mode" id="modePreparation" value="Preparation" checked />
+                                        <span class="mode-card-icon"><i class="bi bi-mortarboard-fill"></i></span>
+                                        <span class="fw-bold text-body d-block">Hazırlık Modu</span>
+                                        <span class="small text-muted">Süre baskısı yok, ipucu alabilirsin, soruyu tekrar dinleyebilirsin.</span>
+                                    </label>
+                                </div>
+                                <div class="col-6">
+                                    <label class="mode-card card border-2 rounded-3 p-3 h-100 mb-0" for="modeRealistic">
+                                        <input class="visually-hidden" type="radio" name="mode" id="modeRealistic" value="Realistic" />
+                                        <span class="mode-card-icon"><i class="bi bi-lightning-fill"></i></span>
+                                        <span class="fw-bold text-body d-block">Gerçekçi Mod</span>
+                                        <span class="small text-muted">Soru başına 1 dakika, ipucu yok, gerçek mülakat temposu.</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <span class="form-label fw-semibold text-body d-block">Zorluk Seviyesi</span>
+                            <div class="row g-2">
+                                <div class="col-4">
+                                    <label class="mode-card card border-2 rounded-3 p-2 text-center h-100 mb-0" for="difficultyJunior">
+                                        <input class="visually-hidden" type="radio" name="difficulty" id="difficultyJunior" value="Junior" />
+                                        <span class="fw-bold text-body d-block small">Junior</span>
+                                        <span class="small text-muted">Temel kavramlar</span>
+                                    </label>
+                                </div>
+                                <div class="col-4">
+                                    <label class="mode-card card border-2 rounded-3 p-2 text-center h-100 mb-0" for="difficultyMid">
+                                        <input class="visually-hidden" type="radio" name="difficulty" id="difficultyMid" value="Mid" checked />
+                                        <span class="fw-bold text-body d-block small">Mid</span>
+                                        <span class="small text-muted">Uygulamalı senaryo</span>
+                                    </label>
+                                </div>
+                                <div class="col-4">
+                                    <label class="mode-card card border-2 rounded-3 p-2 text-center h-100 mb-0" for="difficultySenior">
+                                        <input class="visually-hidden" type="radio" name="difficulty" id="difficultySenior" value="Senior" />
+                                        <span class="fw-bold text-body d-block small">Senior</span>
+                                        <span class="small text-muted">Mimari kararlar</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3" id="timeLimitGroup">
+                            <label for="timeLimit" class="form-label fw-semibold text-body">Süre (Hazırlık Modu)</label>
+                            <select class="form-select" name="timeLimit" id="timeLimit">
+                                <option value="0">Süresiz</option>
+                                <option value="300" selected>5 dakika</option>
+                                <option value="600">10 dakika</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-gradient btn-lg w-100 fw-bold shadow-sm">
                             <i class="bi bi-play-fill me-1"></i> Mülakata Başla
                         </button>
                     </form>
@@ -54,7 +107,7 @@
         <div class="col-lg-8 col-md-7">
             <div class="card border-0 shadow-sm rounded-3">
                 <div class="card-body p-4">
-                    <h3 class="card-title fw-bold mb-3 text-dark"><i class="bi bi-clock-history text-secondary me-2"></i>Mülakat Geçmişiniz</h3>
+                    <h3 class="card-title fw-bold mb-3 text-body"><i class="bi bi-clock-history text-secondary me-2"></i>Mülakat Geçmişiniz</h3>
                     
                     @if (Model == null || !Model.Any())
                     {
@@ -67,9 +120,10 @@
                     {
                         <div class="table-responsive">
                             <table class="table table-hover align-middle">
-                                <thead class="table-light">
+                                <thead class="bg-body-secondary">
                                     <tr>
                                         <th>Pozisyon</th>
+                                        <th>Mod / Zorluk</th>
                                         <th>Tarih</th>
                                         <th>Soru Durumu</th>
                                         <th>Durum</th>
@@ -81,7 +135,17 @@
                                     {
                                         <tr>
                                             <td>
-                                                <span class="fw-bold text-dark">@session.JobTitle</span>
+                                                <span class="fw-bold text-body">@session.JobTitle</span>
+                                            </td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(session.Mode))
+                                                {
+                                                    <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle px-2 py-1 me-1">@(session.Mode == "Realistic" ? "Gerçekçi" : "Hazırlık")</span>
+                                                }
+                                                @if (!string.IsNullOrEmpty(session.DifficultyLevel))
+                                                {
+                                                    <span class="badge bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle px-2 py-1">@session.DifficultyLevel</span>
+                                                }
                                             </td>
                                             <td class="text-muted small">
                                                 @session.StartedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
@@ -89,11 +153,11 @@
                                             <td>
                                                 @if (session.IsCompleted)
                                                 {
-                                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">5 / 5 Tamamlandı</span>
+                                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">@session.TotalQuestions / @session.TotalQuestions Tamamlandı</span>
                                                 }
                                                 else
                                                 {
-                                                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1">@session.CurrentQuestionNumber / 5</span>
+                                                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1">@session.CurrentQuestionNumber / @session.TotalQuestions</span>
                                                 }
                                             </td>
                                             <td>
@@ -138,4 +202,23 @@
             </div>
         </div>
     </div>
-</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var modeInputs = document.querySelectorAll('input[name="mode"]');
+            var timeLimitGroup = document.getElementById("timeLimitGroup");
+
+            function updateTimeLimitVisibility() {
+                var realisticSelected = document.getElementById("modeRealistic").checked;
+                timeLimitGroup.classList.toggle("d-none", realisticSelected);
+            }
+
+            modeInputs.forEach(function (input) {
+                input.addEventListener("change", updateTimeLimitVisibility);
+            });
+
+            updateTimeLimitVisibility();
+        });
+    </script>
+}

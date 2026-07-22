@@ -1,72 +1,73 @@
 ﻿@{
     ViewData["Title"] = "Kayıt Ol";
+    Layout = "_AuthLayout";
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white text-center py-3">
-                    <h4 class="mb-0">Yeni Hesap Oluştur</h4>
+<div class="auth-shell">
+    <div class="auth-hero d-none d-md-flex">
+        <a class="sidebar-brand fs-4 mb-4" asp-controller="Home" asp-action="Index">CvInterviewPlatform</a>
+        <h1 class="display-5 fw-bold mb-3">Geleceğin<br /><span style="background:var(--app-gradient);-webkit-background-clip:text;background-clip:text;color:transparent;">Mülakat Deneyimi</span></h1>
+        <p class="text-white-50">Yapay zeka destekli profesyonel hazırlık platformu ile yeteneklerinizi en iyi şekilde sergileyin.</p>
+    </div>
+    <div class="auth-form-panel">
+        <div class="auth-form-card">
+            <h2 class="fw-bold mb-1">Hesap Oluştur</h2>
+            <p class="text-body-secondary mb-4">Hemen katılın ve profesyonel hazırlığa başlayın.</p>
+
+            @* Eğer Backend tarafından bir hata mesajı gelirse burada kırmızı kutuda göstereceğiz *@
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> @ViewBag.Error
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-                <div class="card-body p-4">
+            }
 
-                    @* Eğer Backend tarafından bir hata mesajı gelirse burada kırmızı kutuda göstereceğiz *@
-                    @if (ViewBag.Error != null)
-                    {
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <i class="bi bi-exclamation-triangle-fill me-2"></i> @ViewBag.Error
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    }
+            <form asp-action="Register" asp-controller="Account" method="post">
 
-                    <form asp-action="Register" asp-controller="Account" method="post">
-
-                        <div class="mb-3">
-                            <label class="form-label font-weight-bold">Kullanıcı Adı</label>
-                            <input type="text" name="username" class="form-control" placeholder="Örn: kadirssl" required />
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Adınız</label>
-                                <input type="text" name="firstName" class="form-control" placeholder="Abdulkadir" required />
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Soyadınız</label>
-                                <input type="text" name="lastName" class="form-control" placeholder="Süslü" required />
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Gmail Adresi</label>
-                            <input type="email" name="email" class="form-control" placeholder="ornek@gmail.com" required />
-                            <small class="form-text text-muted">Sadece @@gmail.com uzantılı adresler kabul edilir.</small>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Telefon Numarası</label>
-                            <input type="tel" name="phoneNumber" class="form-control" placeholder="05xxxxxxxxx" required />
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Şifre</label>
-                            <input type="password" name="password" class="form-control" placeholder="******" required />
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="form-label">Şifre Tekrar</label>
-                            <input type="password" name="confirmPassword" class="form-control" placeholder="******" required />
-                        </div>
-
-                        <button type="submit" class="btn btn-primary w-100 py-2 font-weight-bold">Kayıt Olmayı Tamamla</button>
-                    </form>
-
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Kullanıcı Adı</label>
+                    <input type="text" name="username" class="form-control" placeholder="Örn: kadirssl" required />
                 </div>
-                <div class="card-footer text-center bg-light py-3">
-                    <span>Zaten hesabınız var mı? <a asp-action="SignIn" class="text-decoration-none fw-bold">Giriş Yapın</a></span>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Adınız</label>
+                        <input type="text" name="firstName" class="form-control" placeholder="Abdulkadir" required />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Soyadınız</label>
+                        <input type="text" name="lastName" class="form-control" placeholder="Süslü" required />
+                    </div>
                 </div>
-            </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Gmail Adresi</label>
+                    <input type="email" name="email" class="form-control" placeholder="ornek@gmail.com" required />
+                    <small class="form-text text-body-secondary">Sadece @@gmail.com uzantılı adresler kabul edilir.</small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Telefon Numarası</label>
+                    <input type="tel" name="phoneNumber" class="form-control" placeholder="05xxxxxxxxx" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Şifre</label>
+                    <input type="password" name="password" class="form-control" placeholder="******" required />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Şifre Tekrar</label>
+                    <input type="password" name="confirmPassword" class="form-control" placeholder="******" required />
+                </div>
+
+                <button type="submit" class="btn btn-gradient btn-lg w-100 fw-bold">Kayıt Olmayı Tamamla</button>
+            </form>
+
+            <p class="text-center text-body-secondary mt-4 mb-0">
+                Zaten hesabınız var mı? <a asp-action="SignIn" class="text-decoration-none fw-bold">Giriş Yapın</a>
+            </p>
         </div>
     </div>
 </div>

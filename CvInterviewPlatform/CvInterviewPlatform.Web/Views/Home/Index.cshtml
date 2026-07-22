@@ -1,107 +1,148 @@
 @model CvInterviewPlatform.Web.Models.User
 @{
-    ViewData["Title"] = "Ana Panel";
+    ViewData["Title"] = "Ana Sayfa";
 }
 
-<div class="container mt-4">
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+    </div>
+}
+@if (TempData["Warning"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["Warning"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+    </div>
+}
+
+<div class="gradient-banner d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+    <div>
+        <h1 class="fw-bold mb-1">Hoş Geldiniz, @Model.FirstName!</h1>
+        <p class="mb-0 opacity-75">Yapay zeka destekli mülakat hazırlığınızın durumunu buradan takip edebilir, yeni bir oturum başlatarak kendinizi geliştirmeye devam edebilirsiniz.</p>
+    </div>
+    <a asp-controller="Interview" asp-action="Index" class="btn btn-light fw-bold mt-3 mt-md-0 flex-shrink-0">
+        Yeni Mülakata Başla <i class="bi bi-arrow-right ms-1"></i>
+    </a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="stat-tile h-100">
+            <div class="stat-value">@ViewBag.CompletedCount</div>
+            <div class="stat-label">Tamamlanan Mülakat</div>
         </div>
-    }
-    @if (TempData["Warning"] != null)
-    {
-        <div class="alert alert-warning alert-dismissible fade show" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["Warning"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-tile stat-tile-warning h-100">
+            <div class="stat-value">@ViewBag.InProgressCount</div>
+            <div class="stat-label">Devam Eden Mülakat</div>
         </div>
-    }
-    <div class="row">
-        @* Sol Taraf: Profil Kartı *@
-        <div class="col-md-4 mb-4">
-            <div class="card shadow-sm text-center p-4">
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-tile stat-tile-accent2 h-100">
+            <div class="stat-value fs-5">@(ViewBag.LastJobTitle ?? "-")</div>
+            <div class="stat-label">Son Hedeflenen Pozisyon</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-tile stat-tile-success h-100">
+            <div class="stat-value fs-5">@@@Model.Username</div>
+            <div class="stat-label">Kullanıcı Adınız</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm p-4 h-100">
+            <h5 class="fw-bold mb-3"><i class="bi bi-folder-symlink-fill me-1 text-primary"></i> Belgelerim ve Dosya Yükleme</h5>
+            <p class="text-body-secondary small">Profil fotoğrafınızı veya güncel CV belgenizi buradan yükleyebilirsiniz.</p>
+
+            <form id="uploadForm" asp-action="UploadDocuments" asp-controller="Home" method="post" enctype="multipart/form-data" class="mt-2">
+                <div class="dropzone mb-3">
+                    <i class="bi bi-cloud-arrow-up-fill dropzone-icon"></i>
+                    <p class="fw-bold mb-1">CV'nizi buraya sürükleyin</p>
+                    <p class="small text-body-secondary mb-3">veya bilgisayarınızdan seçin (PDF)</p>
+                    <input type="file" id="cvFileInput" name="cvFile" class="form-control" accept=".pdf" />
+                </div>
                 <div class="mb-3">
-                    @if (!string.IsNullOrEmpty(Model.ProfilePictureUrl))
-                    {
-                        <img src="@Model.ProfilePictureUrl" class="rounded-circle img-thumbnail shadow-sm" style="width: 150px; height: 150px; object-fit: cover;" alt="Profil Fotoğrafı" />
-                    }
-                    else
-                    {
-                        <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" class="rounded-circle img-thumbnail shadow-sm" style="width: 150px; height: 150px;" alt="Varsayılan Avatar" />
-                    }
+                    <label class="form-label fw-bold small">Profil Fotoğrafı Güncelle</label>
+                    <input type="file" id="profilePictureInput" name="profilePicture" class="form-control" accept="image/*" />
                 </div>
-                <h4 class="fw-bold mb-1">@Model.FirstName @Model.LastName</h4>
-                <p class="text-muted small">@@@Model.Username</p>
-                <hr />
-                <div class="text-start mb-3">
-                    <p class="mb-1 text-muted small"><strong>E-posta:</strong></p>
-                    <p class="fw-semibold">@Model.Email</p>
-                    <p class="mb-1 text-muted small"><strong>Telefon:</strong></p>
-                    <p class="fw-semibold">@Model.PhoneNumber</p>
+                <button type="submit" id="saveBtn" class="btn btn-gradient fw-bold"><i class="bi bi-check2-circle me-1"></i> Seçilen Dosyaları Kaydet</button>
+            </form>
 
-                    <div class="d-grid gap-2 mt-3">
-                        <a asp-action="Settings" asp-controller="Home" class="btn btn-outline-dark btn-sm fw-bold">
-                            <i class="bi bi-gear-fill me-1"></i> Profil Ayarlarını Düzenle
-                        </a>
-                    </div>
-
+            <!-- Yükleniyor Spinner'ı -->
+            <div id="uploadLoader" class="d-none text-center py-4">
+                <div class="spinner-border text-primary" role="status" style="width: 2.5rem; height: 2.5rem;">
+                    <span class="visually-hidden">Yükleniyor...</span>
                 </div>
+                <h5 class="mt-3 fw-bold" id="loaderMessage">Dosyalarınız İşleniyor...</h5>
+                <p class="text-body-secondary small mb-0" id="loaderSubMessage">Lütfen bekleyin, sayfayı kapatmayın veya yenilemeyin.</p>
             </div>
+
+            <hr class="my-4" />
+
+            @if (!string.IsNullOrEmpty(Model.CvUrl))
+            {
+                <div class="alert alert-success d-flex align-items-center justify-content-between mb-0" role="alert">
+                    <div>
+                        <i class="bi bi-file-earmark-pdf-fill fs-4 me-2"></i>
+                        <span class="fw-semibold">CV belgeniz sistemde yüklü durumda!</span>
+                    </div>
+                    <a href="@Model.CvUrl" target="_blank" class="btn btn-outline-success btn-sm fw-bold">
+                        <i class="bi bi-eye-fill"></i> Görüntüle / İndir
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning mb-0" role="alert">
+                    <i class="bi bi-exclamation-circle-fill me-2"></i> Henüz bir CV belgesi yüklemediniz.
+                </div>
+            }
         </div>
+    </div>
 
-        @* Sağ Taraf: Dosya Yönetimi ve Süreçler *@
-        <div class="col-md-8">
-            <div class="card shadow-sm p-4 mb-4">
-                <h4 class="fw-bold text-primary mb-3"><i class="bi bi-folder-symlink-fill"></i> Belgelerim ve Dosya Yükleme</h4>
-                <p class="text-muted small">Profil fotoğrafınızı veya güncel CV (PDF) belgenizi buradan yükleyebilirsiniz. Dosyalar yerel sunucumuzda güvenle saklanır.</p>
-
-                <form id="uploadForm" asp-action="UploadDocuments" asp-controller="Home" method="post" enctype="multipart/form-data" class="mt-3">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Profil Fotoğrafı Güncelle</label>
-                            <input type="file" id="profilePictureInput" name="profilePicture" class="form-control" accept="image/*" />
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">CV Yükle (Sadece PDF)</label>
-                            <input type="file" id="cvFileInput" name="cvFile" class="form-control" accept=".pdf" />
-                        </div>
-                    </div>
-                    <button type="submit" id="saveBtn" class="btn btn-primary fw-bold mt-2"><i class="bi bi-cloud-arrow-up-fill"></i> Seçilen Dosyaları Kaydet</button>
-                </form>
-
-                <!-- Yükleniyor Spinner'ı -->
-                <div id="uploadLoader" class="d-none text-center py-4">
-                    <div class="spinner-border text-primary" role="status" style="width: 2.5rem; height: 2.5rem;">
-                        <span class="visually-hidden">Yükleniyor...</span>
-                    </div>
-                    <h5 class="mt-3 text-primary fw-bold" id="loaderMessage">Dosyalarınız İşleniyor...</h5>
-                    <p class="text-muted small mb-0" id="loaderSubMessage">Lütfen bekleyin, sayfayı kapatmayın veya yenilemeyin.</p>
-                </div>
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0"><i class="bi bi-clock-history me-1 text-primary"></i> Son Mülakatlar</h5>
+                <a asp-controller="Interview" asp-action="Index" class="small text-decoration-none fw-bold">Tümünü Gör</a>
             </div>
 
-            <div class="card shadow-sm p-4">
-                <h4 class="fw-bold text-success mb-3"><i class="bi bi-file-earmark-check-fill"></i> Mevcut CV Durumu</h4>
-                @if (!string.IsNullOrEmpty(Model.CvUrl))
-                {
-                    <div class="alert alert-success d-flex align-items-center justify-content-between mb-0" role="alert">
-                        <div>
-                            <i class="bi bi-file-earmark-pdf-fill fs-4 me-2"></i>
-                            <span class="fw-semibold">CV belgeniz sistemde yüklü durumda!</span>
-                        </div>
-                        <a href="@Model.CvUrl" target="_blank" class="btn btn-outline-success btn-sm fw-bold">
-                            <i class="bi bi-eye-fill"></i> Görüntüle / İndir
+            @{
+                var recentSessions = ViewBag.RecentSessions as List<CvInterviewPlatform.Web.Models.InterviewSession>;
+            }
+            @if (recentSessions == null || !recentSessions.Any())
+            {
+                <p class="text-body-secondary small mb-0">Henüz bir mülakat geçmişiniz yok. Sağdaki bağlantıdan ilk mülakatınızı başlatabilirsiniz.</p>
+            }
+            else
+            {
+                <div class="vstack gap-3">
+                    @foreach (var session in recentSessions)
+                    {
+                        <a asp-controller="Interview" asp-action="Session" asp-route-id="@session.SessionId" class="d-flex align-items-center justify-content-between text-decoration-none p-2 rounded-3" style="background-color: var(--app-bg);">
+                            <div>
+                                <div class="fw-bold text-body">@session.JobTitle</div>
+                                <div class="small text-body-secondary">@session.StartedAt.ToLocalTime().ToString("dd.MM.yyyy")</div>
+                            </div>
+                            @if (session.IsCompleted)
+                            {
+                                <span class="badge bg-success-subtle text-success border border-success-subtle">Tamamlandı</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">Devam Ediyor</span>
+                            }
                         </a>
-                    </div>
-                }
-                else
-                {
-                    <div class="alert alert-warning mb-0" role="alert">
-                        <i class="bi bi-exclamation-circle-fill me-2"></i> Henüz bir CV belgesi yüklemediniz. Lütfen yukarıdaki panelden PDF formatında bir CV yükleyin.
-                    </div>
-                }
-            </div>
+                    }
+                </div>
+            }
         </div>
     </div>
 </div>

@@ -1,49 +1,50 @@
 ﻿@{
     ViewData["Title"] = "Giriş Yap";
+    Layout = "_AuthLayout";
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-5">
-            <div class="card shadow-sm">
-                <div class="card-header bg-success text-white text-center py-3">
-                    <h4 class="mb-0">Sisteme Giriş Yap</h4>
+<div class="auth-shell">
+    <div class="auth-hero d-none d-md-flex">
+        <a class="sidebar-brand fs-4 mb-4" asp-controller="Home" asp-action="Index">CvInterviewPlatform</a>
+        <h1 class="display-5 fw-bold mb-3">Kariyerinizi<br /><span style="background:var(--app-gradient);-webkit-background-clip:text;background-clip:text;color:transparent;">Yapay Zeka</span> ile Şekillendirin.</h1>
+        <p class="text-white-50">CV'nizi yükleyin, mülakatlara hazırlanın ve hayalinizdeki işe giden yolda yapay zeka destekli analizlerle öne çıkın.</p>
+    </div>
+    <div class="auth-form-panel">
+        <div class="auth-form-card">
+            <h2 class="fw-bold mb-1">Hoş Geldiniz</h2>
+            <p class="text-body-secondary mb-4">Hesabınıza giriş yapın</p>
+
+            @* Giriş hatalarını (Hatalı şifre/kullanıcı) burada yakalıyoruz *@
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> @ViewBag.Error
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-                <div class="card-body p-4">
+            }
 
-                    @* Giriş hatalarını (Hatalı şifre/kullanıcı) burada yakalıyoruz *@
-                    @if (ViewBag.Error != null)
-                    {
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <i class="bi bi-exclamation-triangle-fill me-2"></i> @ViewBag.Error
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    }
+            <form asp-action="SignIn" asp-controller="Account" method="post">
 
-                    <form asp-action="SignIn" asp-controller="Account" method="post">
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Kullanıcı Adı veya Gmail</label>
-                            <input type="text" name="loginInput" class="form-control" placeholder="Kullanıcı adı veya @@gmail.com" required />
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Şifre</label>
-                            <input type="password" name="password" class="form-control" placeholder="******" required />
-                        </div>
-
-                        <div class="text-end mb-4">
-                            <a asp-action="ForgotPassword" class="text-decoration-none small text-danger fw-bold">Şifremi Unuttum?</a>
-                        </div>
-
-                        <button type="submit" class="btn btn-success w-100 py-2 fw-bold">Giriş Yap</button>
-                    </form>
-
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Kullanıcı Adı veya Gmail</label>
+                    <input type="text" name="loginInput" class="form-control form-control-lg" placeholder="Kullanıcı adı veya @@gmail.com" required />
                 </div>
-                <div class="card-footer text-center bg-light py-3">
-                    <span>Henüz hesabınız yok mu? <a asp-action="Register" class="text-decoration-none fw-bold">Yeni Hesap Açın</a></span>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Şifre</label>
+                    <input type="password" name="password" class="form-control form-control-lg" placeholder="******" required />
                 </div>
-            </div>
+
+                <div class="text-end mb-4">
+                    <a asp-action="ForgotPassword" class="text-decoration-none small fw-bold">Şifremi Unuttum?</a>
+                </div>
+
+                <button type="submit" class="btn btn-gradient btn-lg w-100 fw-bold">Giriş Yap <i class="bi bi-arrow-right ms-1"></i></button>
+            </form>
+
+            <p class="text-center text-body-secondary mt-4 mb-0">
+                Henüz hesabınız yok mu? <a asp-action="Register" class="text-decoration-none fw-bold">Yeni Hesap Açın</a>
+            </p>
         </div>
     </div>
 </div>

@@ -1,84 +1,96 @@
-﻿@model CvInterviewPlatform.Web.Models.User
+@model CvInterviewPlatform.Web.Models.User
 @{
-    ViewData["Title"] = "Profil Ayarları";
+    ViewData["Title"] = "Hesap Ayarları";
 }
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-sm">
-                <div class="card-header bg-dark text-white d-flex align-items-center justify-content-between py-3">
-                    <h5 class="mb-0"><i class="bi bi-gear-fill me-2"></i> Hesap ve Profil Ayarları</h5>
-                    <a asp-action="Index" class="btn btn-outline-light btn-sm"><i class="bi bi-arrow-left"></i> Panele Dön</a>
-                </div>
-                <div class="card-body p-4">
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 fw-bold mb-0">Hesap Ayarları</h1>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i> Panele Dön</a>
+</div>
 
-                    @if (ViewBag.Error != null)
-                    {
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <i class="bi bi-exclamation-triangle-fill me-2"></i> @ViewBag.Error
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    }
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> @ViewBag.Error
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 
-                    @if (ViewBag.Success != null)
-                    {
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <i class="bi bi-check-circle-fill me-2"></i> @ViewBag.Success
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    }
+@if (ViewBag.Success != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> @ViewBag.Success
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 
-                    <form asp-action="UpdateSettings" method="post">
+<div class="card border-0 shadow-sm p-4 mb-4" style="border-top: 4px solid var(--app-accent) !important;">
+    <h5 class="fw-bold mb-3">Kişisel Bilgiler</h5>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-bold text-muted">Kullanıcı Adı (Değiştirilemez)</label>
-                            <input type="text" class="form-control bg-light" value="@@@Model.Username" disabled />
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Adınız</label>
-                                <input type="text" name="firstName" class="form-control" value="@Model.FirstName" required />
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Soyadınız</label>
-                                <input type="text" name="lastName" class="form-control" value="@Model.LastName" required />
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Gmail Adresi</label>
-                            <input type="email" name="email" class="form-control" value="@Model.Email" required />
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Telefon Numarası</label>
-                            <input type="tel" name="phoneNumber" class="form-control" value="@Model.PhoneNumber" required />
-                        </div>
-
-                        <div class="card border-warning my-4">
-                            <div class="card-header bg-light text-warning-dark fw-bold">
-                                <i class="bi bi-lock-fill"></i> Güvenlik & Şifre Değiştirme
-                            </div>
-                            <div class="card-body">
-                                <p class="text-muted small mb-3">Şifrenizi değiştirmek istemiyorsanız bu alanı boş bırakabilirsiniz.</p>
-                                <div class="mb-3">
-                                    <label class="form-label">Mevcut Şifre</label>
-                                    <input type="password" name="currentPassword" class="form-control" placeholder="Mevcut şifreniz" />
-                                </div>
-                                <div class="mb-0">
-                                    <label class="form-label">Yeni Şifre</label>
-                                    <input type="password" name="newPassword" class="form-control" placeholder="Yeni şifreniz" />
-                                </div>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn btn-dark w-100 py-2 fw-bold"><i class="bi bi-save-fill me-1"></i> Değişiklikleri Kaydet</button>
-                    </form>
-
-                </div>
+    <form asp-action="UpdateSettings" method="post">
+        <div class="d-flex align-items-center mb-4">
+            <span class="avatar-status me-3">
+                @if (!string.IsNullOrEmpty(Model.ProfilePictureUrl))
+                {
+                    <img src="@Model.ProfilePictureUrl" alt="Profil Fotoğrafı" />
+                }
+                else
+                {
+                    <span class="avatar-fallback" style="width:56px;height:56px;font-size:1.25rem;">@Model.FirstName.Substring(0, 1).ToUpper()</span>
+                }
+            </span>
+            <div>
+                <div class="small text-body-secondary">Profil fotoğrafınızı Ana Sayfa'daki "Belgelerim" panelinden güncelleyebilirsiniz.</div>
             </div>
         </div>
-    </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold small text-body-secondary">Kullanıcı Adı (Değiştirilemez)</label>
+            <div class="input-group">
+                <span class="input-group-text bg-body-secondary"><i class="bi bi-lock-fill"></i></span>
+                <input type="text" class="form-control bg-body-secondary" value="@Model.Username" disabled />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Adınız</label>
+                <input type="text" name="firstName" class="form-control" value="@Model.FirstName" required />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Soyadınız</label>
+                <input type="text" name="lastName" class="form-control" value="@Model.LastName" required />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Gmail Adresi</label>
+            <input type="email" name="email" class="form-control" value="@Model.Email" required />
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label fw-bold">Telefon Numarası</label>
+            <input type="tel" name="phoneNumber" class="form-control" value="@Model.PhoneNumber" required />
+        </div>
+
+        <button type="submit" class="btn btn-gradient fw-bold"><i class="bi bi-save-fill me-1"></i> Bilgileri Kaydet</button>
+
+        <hr class="my-4" />
+
+        <h5 class="fw-bold mb-3"><i class="bi bi-shield-lock-fill me-1" style="color: var(--app-warning);"></i> Güvenlik</h5>
+        <p class="text-body-secondary small mb-3">Şifrenizi değiştirmek istemiyorsanız bu alanı boş bırakabilirsiniz.</p>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Mevcut Şifre</label>
+                <input type="password" name="currentPassword" class="form-control" placeholder="Mevcut şifreniz" />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Yeni Şifre</label>
+                <input type="password" name="newPassword" class="form-control" placeholder="Yeni şifreniz" />
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-outline-secondary fw-bold"><i class="bi bi-key-fill me-1"></i> Şifreyi Güncelle</button>
+    </form>
 </div>
