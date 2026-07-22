@@ -25,17 +25,7 @@
     <link rel="stylesheet" href="~/CvInterviewPlatform.Web.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <div class="app-shell">
-        @await Html.PartialAsync("_Sidebar")
-        <div class="app-content">
-            <main role="main">
-                @RenderBody()
-            </main>
-            <footer class="text-muted small mt-4 pt-3 border-top">
-                &copy; 2026 - CvInterviewPlatform.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-            </footer>
-        </div>
-    </div>
+    @RenderBody()
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
