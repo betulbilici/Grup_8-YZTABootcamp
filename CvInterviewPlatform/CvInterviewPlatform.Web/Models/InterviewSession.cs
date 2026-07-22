@@ -4,6 +4,13 @@ using System.Collections.Generic;
 
 namespace CvInterviewPlatform.Web.Models
 {
+    // Firestore'da string olarak saklanır (Mode property'si); bu enum sadece kod tarafında parse/switch için kullanılır.
+    public enum InterviewMode
+    {
+        Preparation,
+        Realistic
+    }
+
     [FirestoreData]
     public class InterviewStep
     {
@@ -43,5 +50,17 @@ namespace CvInterviewPlatform.Web.Models
 
         [FirestoreProperty("finalEvaluation")]
         public string? FinalEvaluation { get; set; }
+
+        [FirestoreProperty("mode")]
+        public string Mode { get; set; } = "Preparation";
+
+        [FirestoreProperty("timeLimitSeconds")]
+        public int TimeLimitSeconds { get; set; } = 300;
+
+        [FirestoreProperty("difficultyLevel")]
+        public string DifficultyLevel { get; set; } = "Mid";
+
+        [FirestoreProperty("totalQuestions")]
+        public int TotalQuestions { get; set; } = 5;
     }
 }

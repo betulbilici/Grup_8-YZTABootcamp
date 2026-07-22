@@ -54,7 +54,7 @@ namespace CvInterviewPlatform.Web.Controllers
 
         // Yeni mülakat başlatma (POST)
         [HttpPost]
-        public async Task<IActionResult> StartInterview(string jobTitle)
+        public async Task<IActionResult> StartInterview(string jobTitle, string mode, string difficulty, int timeLimit)
         {
             string username = HttpContext.Session.GetString("Username") ?? "";
             if (string.IsNullOrEmpty(username))
@@ -66,6 +66,19 @@ namespace CvInterviewPlatform.Web.Controllers
             {
                 TempData["Error"] = "Lütfen mülakat yapılacak pozisyon adını giriniz.";
                 return RedirectToAction("Index");
+            }
+
+            // Kullanıcıdan gelen değerleri beyaz liste ile doğruluyoruz, doğrudan Firestore'a yazmıyoruz
+            string validatedMode = mode == "Realistic" ? "Realistic" : "Preparation";
+            string validatedDifficulty = (difficulty == "Junior" || difficulty == "Senior") ? difficulty : "Mid";
+            int validatedTimeLimit;
+            if (validatedMode == "Realistic")
+            {
+                validatedTimeLimit = 60;
+            }
+            else
+            {
+                validatedTimeLimit = (timeLimit == 0 || timeLimit == 300 || timeLimit == 600) ? timeLimit : 300;
             }
 
             try
@@ -84,9 +97,6 @@ namespace CvInterviewPlatform.Web.Controllers
                 DocumentReference newSessionRef = _db.Collection("Sessions").Document();
                 string sessionId = newSessionRef.Id;
 
-                // 1. Soru üretimi (CV içeriği dahil edildi)
-                string firstQuestion = await _geminiService.GenerateQuestionAsync(jobTitle, cvContent, new List<InterviewStep>(), 1);
-
                 InterviewSession newSession = new InterviewSession
                 {
                     SessionId = sessionId,
@@ -95,16 +105,21 @@ namespace CvInterviewPlatform.Web.Controllers
                     StartedAt = DateTime.UtcNow,
                     CurrentQuestionNumber = 1,
                     IsCompleted = false,
-                    History = new List<InterviewStep>
-                    {
-                        new InterviewStep
-                        {
-                            Question = firstQuestion,
-                            Answer = string.Empty,
-                            AskedAt = DateTime.UtcNow
-                        }
-                    }
+                    Mode = validatedMode,
+                    DifficultyLevel = validatedDifficulty,
+                    TimeLimitSeconds = validatedTimeLimit,
+                    TotalQuestions = 5,
+                    History = new List<InterviewStep>()
                 };
+
+                // 1. Soru üretimi (CV içeriği dahil edildi)
+                string firstQuestion = await _geminiService.GenerateQuestionAsync(newSession, cvContent, 1);
+                newSession.History.Add(new InterviewStep
+                {
+                    Question = firstQuestion,
+                    Answer = string.Empty,
+                    AskedAt = DateTime.UtcNow
+                });
 
                 await newSessionRef.SetAsync(newSession);
 
@@ -213,11 +228,11 @@ namespace CvInterviewPlatform.Web.Controllers
                     session.History[currentIndex].Answer = answer ?? "";
                 }
 
-                if (session.CurrentQuestionNumber < 5)
+                if (session.CurrentQuestionNumber < session.TotalQuestions)
                 {
                     // Sıradaki soruyu oluşturup ekliyoruz (CV içeriği dahil edildi)
                     int nextQuestionNumber = session.CurrentQuestionNumber + 1;
-                    string nextQuestion = await _geminiService.GenerateQuestionAsync(session.JobTitle, cvContent, session.History, nextQuestionNumber);
+                    string nextQuestion = await _geminiService.GenerateQuestionAsync(session, cvContent, nextQuestionNumber);
 
                     session.History.Add(new InterviewStep
                     {
@@ -230,8 +245,8 @@ namespace CvInterviewPlatform.Web.Controllers
                 }
                 else
                 {
-                    // 5 soru tamamlandıysa değerlendirme oluşturup mülakatı sonlandırıyoruz (CV içeriği dahil edildi)
-                    string evaluation = await _geminiService.GenerateEvaluationAsync(session.JobTitle, cvContent, session.History);
+                    // Tüm sorular tamamlandıysa değerlendirme oluşturup mülakatı sonlandırıyoruz (CV içeriği dahil edildi)
+                    string evaluation = await _geminiService.GenerateEvaluationAsync(session, cvContent);
                     session.FinalEvaluation = evaluation;
                     session.IsCompleted = true;
                 }
@@ -245,6 +260,61 @@ namespace CvInterviewPlatform.Web.Controllers
             {
                 TempData["Error"] = $"Cevap gönderilirken bir hata oluştu: {ex.Message}";
                 return RedirectToAction("Session", new { id = id });
+            }
+        }
+
+        // Aktif sorunun ipucunu getirme (sadece Hazırlık modunda) (POST)
+        [HttpPost]
+        public async Task<IActionResult> GetHint(string id)
+        {
+            string username = HttpContext.Session.GetString("Username") ?? "";
+            if (string.IsNullOrEmpty(username))
+            {
+                return RedirectToAction("SignIn", "Account");
+            }
+
+            if (string.IsNullOrEmpty(id))
+            {
+                return RedirectToAction("Index");
+            }
+
+            try
+            {
+                DocumentReference docRef = _db.Collection("Sessions").Document(id);
+                DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
+
+                if (!snapshot.Exists)
+                {
+                    return NotFound();
+                }
+
+                InterviewSession session = snapshot.ConvertTo<InterviewSession>();
+
+                if (session.Username != username)
+                {
+                    return Forbid();
+                }
+
+                if (session.Mode != "Preparation")
+                {
+                    return BadRequest();
+                }
+
+                int currentIndex = session.CurrentQuestionNumber - 1;
+                if (currentIndex < 0 || currentIndex >= session.History.Count)
+                {
+                    return BadRequest();
+                }
+
+                string question = session.History[currentIndex].Question;
+                string hint = await _geminiService.GenerateHintAsync(question, session.JobTitle, session.DifficultyLevel);
+
+                return Json(new { hint });
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"GetHint hata: {ex.Message}");
+                return StatusCode(500);
             }
         }
 

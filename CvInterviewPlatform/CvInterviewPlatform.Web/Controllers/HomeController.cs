@@ -3,6 +3,7 @@ using Google.Cloud.Firestore;
 using CvInterviewPlatform.Web.Models;
 using CvInterviewPlatform.Web.Services;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
@@ -46,6 +47,21 @@ namespace CvInterviewPlatform.Web.Controllers
             }
 
             User user = snapshot.ConvertTo<User>();
+
+            // Ana Sayfa'daki özet istatistikler ve "Son Mülakatlar" listesi için geçmişi çekiyoruz
+            CollectionReference sessionsRef = _db.Collection("Sessions");
+            Query query = sessionsRef.WhereEqualTo("username", username);
+            QuerySnapshot sessionsSnapshot = await query.GetSnapshotAsync();
+
+            List<InterviewSession> sessions = sessionsSnapshot.Documents
+                .Select(d => d.ConvertTo<InterviewSession>())
+                .OrderByDescending(s => s.StartedAt)
+                .ToList();
+
+            ViewBag.CompletedCount = sessions.Count(s => s.IsCompleted);
+            ViewBag.InProgressCount = sessions.Count(s => !s.IsCompleted);
+            ViewBag.LastJobTitle = sessions.FirstOrDefault()?.JobTitle;
+            ViewBag.RecentSessions = sessions.Take(3).ToList();
 
             // Verileri arayüze (View) model olarak gönderiyoruz
             return View(user);

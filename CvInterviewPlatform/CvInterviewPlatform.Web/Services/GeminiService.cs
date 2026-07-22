@@ -45,16 +45,43 @@ namespace CvInterviewPlatform.Web.Services
             };
         }
 
-        public async Task<string> GenerateQuestionAsync(string jobTitle, string cvContent, List<InterviewStep> history, int questionNumber)
+        private string GetDifficultyInstruction(string level)
+        {
+            switch (level)
+            {
+                case "Junior":
+                    return "Zorluk seviyesi: Junior. Sorular temel kavram bilgisine, öğrenme isteğine, staj ve okul projelerine odaklansın; \"nasıl öğrendin\" tarzı sorular sor.";
+                case "Senior":
+                    return "Zorluk seviyesi: Senior. Sorular mimari kararlara, teknik liderliğe, ödünleşim (trade-off) analizine odaklansın; \"neden bu yaklaşımı seçtin ve alternatifi neydi\" tarzı sorular sor.";
+                case "Mid":
+                default:
+                    return "Zorluk seviyesi: Mid. Sorular uygulamalı senaryolara, takım içi problem çözmeye, hata ayıklama deneyimine odaklansın; \"şöyle bir durumda ne yapardın\" tarzı sorular sor.";
+            }
+        }
+
+        private string GetModeInstruction(string mode)
+        {
+            if (mode == "Realistic")
+            {
+                return "Mülakat modu: Gerçekçi. Ton doğrudan ve kısa olsun, gereksiz nezaket cümlesi kurma, gerçek bir mülakatın temposunu yansıt.";
+            }
+
+            return "Mülakat modu: Hazırlık. Ton destekleyici olsun, sorudan önce adayı rahatlatan kısa bir bağlam cümlesi kur.";
+        }
+
+        public async Task<string> GenerateQuestionAsync(InterviewSession session, string cvContent, int questionNumber)
         {
             var systemInstruction = GetSystemInstruction();
-            
-            string prompt = $"Adayın başvurduğu pozisyon: {jobTitle}\n";
+            var history = session.History;
+
+            string prompt = $"Adayın başvurduğu pozisyon: {session.JobTitle}\n";
+            prompt += $"{GetDifficultyInstruction(session.DifficultyLevel)}\n";
+            prompt += $"{GetModeInstruction(session.Mode)}\n";
             if (!string.IsNullOrEmpty(cvContent))
             {
                 prompt += $"Adayın Özgeçmiş (CV) Bilgileri:\n{cvContent}\n\n";
             }
-            prompt += $"Şu anki soru numarası: {questionNumber} / 5\n\n";
+            prompt += $"Şu anki soru numarası: {questionNumber} / {session.TotalQuestions}\n\n";
 
             if (history.Count == 0 || questionNumber == 1)
             {
@@ -95,20 +122,53 @@ namespace CvInterviewPlatform.Web.Services
             }
             catch (Exception ex)
             {
-                return $"Bir hata oluştu, ancak mülakata devam edelim. {jobTitle} alanındaki deneyimlerinizden ve bu pozisyonu neden istediğinizden bahseder misiniz? (Hata: {ex.Message})";
+                Console.Error.WriteLine($"GenerateQuestionAsync hata: {ex.Message}");
+                return $"Bir hata oluştu, ancak mülakata devam edelim. {session.JobTitle} alanındaki deneyimlerinizden ve bu pozisyonu neden istediğinizden bahseder misiniz?";
             }
         }
 
-        public async Task<string> GenerateEvaluationAsync(string jobTitle, string cvContent, List<InterviewStep> history)
+        public async Task<string> GenerateHintAsync(string question, string jobTitle, string difficulty)
         {
             var systemInstruction = GetSystemInstruction();
 
-            string prompt = $"Adayın başvurduğu pozisyon: {jobTitle}\n";
+            string prompt = $"Adayın başvurduğu pozisyon: {jobTitle}\n" +
+                             $"{GetDifficultyInstruction(difficulty)}\n" +
+                             $"Adaya sorulan soru: {question}\n\n" +
+                             "Adaya bu soruyu cevaplaması için bir ipucu ver. ÖNEMLİ: Cevabı yazma, sadece adayın hangi konulara/noktalara değinmesi gerektiğini 2-3 madde halinde kısaca söyle. Sadece maddeleri döndür, başka açıklama ekleme.";
+
+            try
+            {
+                var response = await _client.Models.GenerateContentAsync(
+                    model: ModelName,
+                    contents: prompt,
+                    config: new GenerateContentConfig
+                    {
+                        SystemInstruction = systemInstruction,
+                        Temperature = 0.7f
+                    }
+                );
+
+                string? hintText = response.Candidates?[0]?.Content?.Parts?[0]?.Text;
+                return hintText?.Trim() ?? "Şu an ipucu üretilemedi, kendi deneyimlerinizden somut bir örnekle başlayabilirsiniz.";
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"GenerateHintAsync hata: {ex.Message}");
+                return "Şu an ipucu üretilemedi, kendi deneyimlerinizden somut bir örnekle başlayabilirsiniz.";
+            }
+        }
+
+        public async Task<string> GenerateEvaluationAsync(InterviewSession session, string cvContent)
+        {
+            var systemInstruction = GetSystemInstruction();
+            var history = session.History;
+
+            string prompt = $"Adayın başvurduğu pozisyon: {session.JobTitle}\n";
             if (!string.IsNullOrEmpty(cvContent))
             {
                 prompt += $"Adayın Özgeçmiş (CV) Bilgileri:\n{cvContent}\n\n";
             }
-            prompt += "Mülakat tamamlandı. Aşağıda 5 soruluk mülakatın tam geçmişi bulunmaktadır:\n\n";
+            prompt += $"Mülakat tamamlandı. Aşağıda {session.TotalQuestions} soruluk mülakatın tam geçmişi bulunmaktadır:\n\n";
 
             for (int i = 0; i < history.Count; i++)
             {
@@ -131,6 +191,7 @@ namespace CvInterviewPlatform.Web.Services
                       "   * *Adayın Verdiği Yanıt*: [Adayın cevabının kısa özeti ve analizi]\n" +
                       "   * *İdeal Cevap Örneği (STAR Metoduyla)*: [Bu soruya verilmesi gereken örnek, profesyonel, teknik ve yetkinlik bazlı ideal cevap]\n" +
                       "   * *Geliştirme Önerisi*: [Adayın bu yanıtı bir dahaki sefere daha iyi sunabilmesi için 2 somut tavsiye (örn: 'şundan bahsetmeliydin', 'şu teknolojiyi vurgulamalısın')]\n\n" +
+                      $"Bu aday {session.DifficultyLevel} seviye pozisyon için değerlendiriliyor. Puanlamayı bu seviyenin beklentilerine göre kalibre et; junior bir adayı senior standardıyla değerlendirme.\n\n" +
                       "Lütfen raporu profesyonel ve kurumsal bir dille, Markdown formatında oluştur.";
 
             try
@@ -150,7 +211,8 @@ namespace CvInterviewPlatform.Web.Services
             }
             catch (Exception ex)
             {
-                return $"Değerlendirme oluşturulurken bir hata oluştu: {ex.Message}";
+                Console.Error.WriteLine($"GenerateEvaluationAsync hata: {ex.Message}");
+                return "Değerlendirme oluşturulurken bir hata oluştu, lütfen daha sonra tekrar deneyin.";
             }
         }
     }
