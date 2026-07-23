@@ -5,9 +5,10 @@
 
 <div class="auth-shell">
     <div class="auth-hero d-none d-md-flex">
-        <a class="sidebar-brand fs-4 mb-4" asp-controller="Home" asp-action="Index">CvInterviewPlatform</a>
+        <span class="hero-glow" aria-hidden="true"></span>
+        <a class="sidebar-brand fs-4 mb-4" asp-controller="Home" asp-action="Index">CV Match AI</a>
         <h1 class="display-5 fw-bold mb-3">Geleceğin<br /><span style="background:var(--app-gradient);-webkit-background-clip:text;background-clip:text;color:transparent;">Mülakat Deneyimi</span></h1>
-        <p class="text-white-50">Yapay zeka destekli profesyonel hazırlık platformu ile yeteneklerinizi en iyi şekilde sergileyin.</p>
+        <p class="auth-hero-subtext">Yapay zeka destekli profesyonel hazırlık platformu ile yeteneklerinizi en iyi şekilde sergileyin.</p>
     </div>
     <div class="auth-form-panel">
         <div class="auth-form-card">
@@ -64,6 +65,12 @@
 
                 <button type="submit" class="btn btn-gradient btn-lg w-100 fw-bold">Kayıt Olmayı Tamamla</button>
             </form>
+
+            <div class="auth-divider my-4"><span>veya</span></div>
+
+            <a asp-controller="Account" asp-action="GoogleLogin" class="btn btn-outline-secondary btn-lg w-100 fw-bold">
+                <i class="bi bi-google me-2"></i> Google ile Kayıt Ol
+            </a>
 
             <p class="text-center text-body-secondary mt-4 mb-0">
                 Zaten hesabınız var mı? <a asp-action="SignIn" class="text-decoration-none fw-bold">Giriş Yapın</a>

@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="Google.Cloud.Firestore" Version="4.3.0" />
     <PackageReference Include="Google.GenAI" Version="1.12.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.9" />
   </ItemGroup>
 
   <ItemGroup>

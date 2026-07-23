@@ -4,6 +4,10 @@ using CvInterviewPlatform.Web.Models;
 using CvInterviewPlatform.Web.Helpers;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using System.Security.Claims;
 
 namespace CvInterviewPlatform.Web.Controllers
 {
@@ -201,10 +205,93 @@ namespace CvInterviewPlatform.Web.Controllers
         }
 
         // Kullanıcı çıkış yaptığında oturumu temizleyen metot
-        public IActionResult SignOut()
+        public async Task<IActionResult> SignOut()
         {
             HttpContext.Session.Clear();
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("SignIn");
+        }
+
+        // "Google ile Giriş Yap" butonuna basılınca Google'ın OAuth ekranına yönlendirir
+        [HttpGet]
+        public IActionResult GoogleLogin()
+        {
+            var redirectUrl = Url.Action("GoogleResponse", "Account");
+            var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
+            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+        }
+
+        // Google'dan onaylı kimlikle geri döndüğümüzde çalışan metot
+        [HttpGet]
+        public async Task<IActionResult> GoogleResponse()
+        {
+            AuthenticateResult authResult = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            if (!authResult.Succeeded || authResult.Principal == null)
+            {
+                ViewBag.Error = "Google ile giriş başarısız oldu. Lütfen tekrar deneyin.";
+                return View("SignIn");
+            }
+
+            string? email = authResult.Principal.FindFirstValue(ClaimTypes.Email);
+            string? firstName = authResult.Principal.FindFirstValue(ClaimTypes.GivenName);
+            string? lastName = authResult.Principal.FindFirstValue(ClaimTypes.Surname);
+
+            if (string.IsNullOrEmpty(email))
+            {
+                ViewBag.Error = "Google hesabınızdan e-posta bilgisi alınamadı.";
+                return View("SignIn");
+            }
+
+            CollectionReference usersRef = _db.Collection("Users");
+            Query emailQuery = usersRef.WhereEqualTo("email", email);
+            QuerySnapshot emailSnapshot = await emailQuery.GetSnapshotAsync();
+
+            User user;
+            if (emailSnapshot.Count > 0)
+            {
+                // Bu e-posta ile daha önce (şifreli veya Google ile) kayıt olunmuş — mevcut hesaba giriş yap
+                user = emailSnapshot.Documents[0].ConvertTo<User>();
+            }
+            else
+            {
+                // İlk kez Google ile giriş yapıyor — e-posta önekinden benzersiz bir kullanıcı adı türetiyoruz
+                string baseUsername = Regex.Replace(email.Split('@')[0], @"[^a-zA-Z0-9]", "").ToLower();
+                if (string.IsNullOrEmpty(baseUsername))
+                {
+                    baseUsername = "kullanici";
+                }
+
+                string username = baseUsername;
+                int suffix = 1;
+                while ((await usersRef.Document(username).GetSnapshotAsync()).Exists)
+                {
+                    username = $"{baseUsername}{suffix}";
+                    suffix++;
+                }
+
+                user = new User
+                {
+                    Username = username,
+                    FirstName = string.IsNullOrEmpty(firstName) ? "Kullanıcı" : firstName,
+                    LastName = lastName ?? "",
+                    Email = email,
+                    PhoneNumber = "",
+                    // Google ile giriş yapan kullanıcılar şifreyle giriş yapamasın diye
+                    // tahmin edilemeyen rastgele bir şifre hash'i atıyoruz.
+                    PasswordHash = PasswordHasher.HashPassword(Guid.NewGuid().ToString())
+                };
+
+                await usersRef.Document(username).SetAsync(user);
+            }
+
+            HttpContext.Session.SetString("Username", user.Username);
+            HttpContext.Session.SetString("FirstName", user.FirstName);
+
+            // Google el sıkışması için kullanılan geçici çerezi temizliyoruz — uygulama
+            // artık kendi Session mekanizmasını kullanıyor.
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            return RedirectToAction("Index", "Home");
         }
     }
 }

@@ -1,5 +1,8 @@
 using CvInterviewPlatform.Web;
 using CvInterviewPlatform.Web.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.StaticFiles;
 
 var builder = WebApplication.CreateBuilder(args);
 // Firestore Servisini .NET sistemine tekil (Singleton) olarak kaydediyoruz
@@ -16,6 +19,24 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true; // KVKK/GDPR erez onaylarna taklmamas iin zorunlu iaretliyoruz
 });
 
+// Google ile giriş: OAuth el sıkışması sırasında kimliği geçici tutacak çerez
+// tabanlı bir "sign-in scheme" + Google external provider'ı kaydediyoruz.
+// Not: Uygulamanın geri kalanı hâlâ kendi Session mekanizmasını kullanıyor —
+// bu cookie şeması sadece Google'dan dönen kullanıcı bilgisini AccountController'a
+// taşımak için bir köprü, yetkilendirme kontrollerinde kullanılmıyor.
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+})
+    .AddCookie()
+    .AddGoogle(googleOptions =>
+    {
+        googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? "";
+        googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? "";
+        googleOptions.CallbackPath = "/signin-google";
+    });
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -31,9 +52,26 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// wwwroot altındaki statik dosyalar (css/js/font/lib) için uzun ömürlü cache.
+// asp-append-version="true" zaten içerik hash'i tabanlı ?v= sorgu string'i ürettiği
+// için dosya değişince URL de değişir — bu yüzden immutable/uzun max-age güvenli.
+// Bu olmadan tarayıcı her tam sayfa navigasyonunda tüm CSS/font'u yeniden doğrulamak
+// zorunda kalıyor, bu da "geç yükleniyor" hissi veren görünür bir flaşa yol açıyordu.
+// UseRouting()'den ÖNCE konumlandırılıyor ki bir endpoint eşleşmesi olmadan
+// doğrudan bu middleware dosyayı sunup pipeline'ı kısa devre yapsın.
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        ctx.Context.Response.Headers.CacheControl = "public,max-age=604800,immutable";
+    }
+});
+
 app.UseRouting();
 // Session mekanizmasn boru hattna (pipeline) dahil ediyoruz
 app.UseSession();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
