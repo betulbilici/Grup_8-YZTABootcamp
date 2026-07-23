@@ -1,0 +1,53 @@
+@model CvInterviewPlatform.Web.Models.User
+@{
+    ViewData["Title"] = "CV Analizim";
+}
+
+<!-- MarkedJS (Markdown render etmek için) CDN'i -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h2 fw-bold text-body mb-1">CV Analizim</h1>
+        <p class="text-body-secondary mb-0">Yapay zekanın özgeçmişinizden çıkardığı detaylı değerlendirme.</p>
+    </div>
+    @if (!string.IsNullOrEmpty(Model.CvUrl))
+    {
+        <a href="@Model.CvUrl" target="_blank" class="btn btn-outline-secondary btn-sm fw-bold">
+            <i class="bi bi-file-earmark-text me-1"></i> CV Dosyanı Görüntüle
+        </a>
+    }
+</div>
+
+@if (string.IsNullOrEmpty(Model.CvContent))
+{
+    <div class="card border-0 shadow-sm p-4 p-lg-5 text-center">
+        <i class="bi bi-clipboard2-x text-muted display-4 mb-3"></i>
+        <h5 class="fw-bold text-body mb-2">Henüz bir CV yüklemediniz</h5>
+        <p class="text-body-secondary mb-4">Yapay zeka analizini görebilmeniz için önce Ana Sayfa'dan özgeçmişinizi yükleyin.</p>
+        <div>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-gradient fw-bold">
+                <i class="bi bi-cloud-arrow-up-fill me-1"></i> CV'mi Yükle
+            </a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5">
+        <div id="markdown-cv-analysis" class="text-body markdown-content"></div>
+        <div id="raw-cv-analysis" class="d-none">@Model.CvAnalysis</div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var rawDiv = document.getElementById("raw-cv-analysis");
+            var targetDiv = document.getElementById("markdown-cv-analysis");
+            if (rawDiv && targetDiv) {
+                targetDiv.innerHTML = marked.parse(rawDiv.textContent);
+            }
+        });
+    </script>
+}

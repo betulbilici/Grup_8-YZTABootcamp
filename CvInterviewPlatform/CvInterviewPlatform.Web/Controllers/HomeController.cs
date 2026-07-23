@@ -13,16 +13,23 @@ namespace CvInterviewPlatform.Web.Controllers
 {
     public class HomeController : Controller
     {
+        private static readonly string[] CvAllowedExtensions = { ".pdf", ".docx", ".txt", ".md", ".png", ".jpg", ".jpeg" };
+        private static readonly string[] ProfilePictureAllowedExtensions = { ".png", ".jpg", ".jpeg", ".webp" };
+        private const long CvMaxSizeBytes = 10 * 1024 * 1024;
+        private const long ProfilePictureMaxSizeBytes = 5 * 1024 * 1024;
+
         private readonly FirestoreDb _db;
         private readonly IWebHostEnvironment _env;
         private readonly CvParserService _cvParserService;
+        private readonly GeminiService _geminiService;
 
         // Firestore servisini ve sunucu klasör yapısına erişmek için IWebHostEnvironment'ı enjekte ediyoruz
-        public HomeController(FirestoreService firestoreService, IWebHostEnvironment env, CvParserService cvParserService)
+        public HomeController(FirestoreService firestoreService, IWebHostEnvironment env, CvParserService cvParserService, GeminiService geminiService)
         {
             _db = firestoreService.Db;
             _env = env;
             _cvParserService = cvParserService;
+            _geminiService = geminiService;
         }
 
         // Ana Ekran (Dashboard)
@@ -67,84 +74,154 @@ namespace CvInterviewPlatform.Web.Controllers
             return View(user);
         }
 
-        // Profil Resmi ve CV Yükleme Tetikleyicisi
+        // CV Yükleme Tetikleyicisi (Ana Sayfa)
         [HttpPost]
-        public async Task<IActionResult> UploadDocuments(IFormFile profilePicture, IFormFile cvFile)
+        public async Task<IActionResult> UploadCv(IFormFile cvFile)
+        {
+            string username = HttpContext.Session.GetString("Username");
+            if (string.IsNullOrEmpty(username)) return RedirectToAction("SignIn", "Account");
+
+            if (cvFile == null || cvFile.Length == 0)
+            {
+                TempData["Error"] = "Lütfen yüklemek için bir CV dosyası seçin.";
+                return RedirectToAction("Index");
+            }
+
+            // Uzantıyı kullanıcının gönderdiği ham dosya adından alıp doğrudan diske
+            // yazmıyoruz — sadece whitelist ile eşleşiyorsa devam ediyoruz, diske
+            // yazılan dosya adı da bu normalize edilmiş uzantıyı kullanıyor.
+            string ext = Path.GetExtension(cvFile.FileName).ToLowerInvariant();
+            if (!CvAllowedExtensions.Contains(ext))
+            {
+                TempData["Error"] = $"Desteklenmeyen dosya formatı. İzin verilen formatlar: {string.Join(", ", CvAllowedExtensions)}";
+                return RedirectToAction("Index");
+            }
+
+            if (cvFile.Length > CvMaxSizeBytes)
+            {
+                TempData["Error"] = "CV dosyası 10 MB sınırını aşıyor.";
+                return RedirectToAction("Index");
+            }
+
+            DocumentReference docRef = _db.Collection("Users").Document(username);
+            Dictionary<string, object> updates = new Dictionary<string, object>();
+
+            // wwwroot/uploads/cvs klasörünü hedefliyoruz
+            string cvFolder = Path.Combine(_env.WebRootPath, "uploads", "cvs");
+            Directory.CreateDirectory(cvFolder);
+
+            string uniqueCvName = username + "_cv" + ext;
+            string filePath = Path.Combine(cvFolder, uniqueCvName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await cvFile.CopyToAsync(stream);
+            }
+
+            updates["cvUrl"] = "/uploads/cvs/" + uniqueCvName;
+
+            // CV metin içeriğini ayıklamak ve Firestore'a kaydetmek için parser servisini çağırıyoruz
+            try
+            {
+                string parsedContent = await _cvParserService.ParseDocumentAsync(filePath);
+                if (!string.IsNullOrEmpty(parsedContent))
+                {
+                    updates["cvContent"] = parsedContent;
+
+                    // Yeni CV'ye göre analiz de güncellensin — eski analiz varsa üzerine yazılır
+                    updates["cvAnalysis"] = await _geminiService.GenerateCvAnalysisAsync(parsedContent);
+
+                    TempData["Success"] = "CV belgeniz başarıyla yüklendi ve yapay zeka analizi hazırlandı.";
+                }
+                else
+                {
+                    TempData["Warning"] = "CV dosyanız yüklendi ancak içeriği metne dönüştürülemedi. Yapay zeka mülakat sırasında özgeçmişinizi okuyamayabilir.";
+                }
+            }
+            catch (System.Exception ex)
+            {
+                TempData["Warning"] = "CV dosyanız yüklendi ancak yapay zeka analiz servisi (FastAPI) şu an kapalı olduğu için metin okunamadı.";
+            }
+
+            await docRef.UpdateAsync(updates);
+            return RedirectToAction("Index");
+        }
+
+        // Profil Fotoğrafı Yükleme Tetikleyicisi (Ayarlar sayfası)
+        [HttpPost]
+        public async Task<IActionResult> UploadProfilePicture(IFormFile profilePicture)
+        {
+            string username = HttpContext.Session.GetString("Username");
+            if (string.IsNullOrEmpty(username)) return RedirectToAction("SignIn", "Account");
+
+            if (profilePicture == null || profilePicture.Length == 0)
+            {
+                TempData["Error"] = "Lütfen yüklemek için bir fotoğraf seçin.";
+                return RedirectToAction("Settings");
+            }
+
+            string ext = Path.GetExtension(profilePicture.FileName).ToLowerInvariant();
+            if (!ProfilePictureAllowedExtensions.Contains(ext))
+            {
+                TempData["Error"] = $"Desteklenmeyen dosya formatı. İzin verilen formatlar: {string.Join(", ", ProfilePictureAllowedExtensions)}";
+                return RedirectToAction("Settings");
+            }
+
+            if (profilePicture.Length > ProfilePictureMaxSizeBytes)
+            {
+                TempData["Error"] = "Fotoğraf 5 MB sınırını aşıyor.";
+                return RedirectToAction("Settings");
+            }
+
+            DocumentReference docRef = _db.Collection("Users").Document(username);
+
+            // wwwroot/uploads/profiles klasörünü hedefliyoruz
+            string profileFolder = Path.Combine(_env.WebRootPath, "uploads", "profiles");
+            Directory.CreateDirectory(profileFolder);
+
+            string uniqueProfileName = username + "_profile" + ext;
+            string filePath = Path.Combine(profileFolder, uniqueProfileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await profilePicture.CopyToAsync(stream);
+            }
+
+            string profilePictureUrl = "/uploads/profiles/" + uniqueProfileName;
+            await docRef.UpdateAsync("profilePictureUrl", profilePictureUrl);
+
+            // Sidebar/topbar'daki avatar Session'dan okunuyor — anında güncellensin diye
+            // burada da yazıyoruz, yoksa yeniden giriş yapana kadar eski (harf) avatar görünür.
+            HttpContext.Session.SetString("ProfilePictureUrl", profilePictureUrl);
+
+            TempData["Success"] = "Profil fotoğrafınız başarıyla güncellendi.";
+            return RedirectToAction("Settings");
+        }
+
+        // Yapay Zeka Destekli CV Analizi Sayfası (GET)
+        [HttpGet]
+        public async Task<IActionResult> CvAnalysis()
         {
             string username = HttpContext.Session.GetString("Username");
             if (string.IsNullOrEmpty(username)) return RedirectToAction("SignIn", "Account");
 
             DocumentReference docRef = _db.Collection("Users").Document(username);
-            Dictionary<string, object> updates = new Dictionary<string, object>();
+            DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
 
-            // 1. Profil Resmi Yükleme İşlemi
-            if (profilePicture != null && profilePicture.Length > 0)
+            if (!snapshot.Exists) return RedirectToAction("SignOut", "Account");
+
+            User user = snapshot.ConvertTo<User>();
+
+            // Geriye dönük uyumluluk: CV'si zaten yüklü ama daha önce analiz üretilmemiş
+            // kullanıcılar için (bu özellikten önce yüklenmiş CV'ler), sayfa ilk açıldığında
+            // analiz burada üretilip Firestore'a yazılıyor — CV'yi yeniden yüklemelerine gerek kalmıyor.
+            if (!string.IsNullOrEmpty(user.CvContent) && string.IsNullOrEmpty(user.CvAnalysis))
             {
-                // wwwroot/uploads/profiles klasörünü hedefliyoruz
-                string profileFolder = Path.Combine(_env.WebRootPath, "uploads", "profiles");
-                Directory.CreateDirectory(profileFolder); // Klasör yoksa otomatik oluşturur
-
-                string uniqueProfileName = username + "_profile" + Path.GetExtension(profilePicture.FileName);
-                string filePath = Path.Combine(profileFolder, uniqueProfileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await profilePicture.CopyToAsync(stream);
-                }
-
-                updates["profilePictureUrl"] = "/uploads/profiles/" + uniqueProfileName;
+                user.CvAnalysis = await _geminiService.GenerateCvAnalysisAsync(user.CvContent);
+                await docRef.UpdateAsync("cvAnalysis", user.CvAnalysis);
             }
 
-            // 2. CV (PDF) Yükleme İşlemi
-            if (cvFile != null && cvFile.Length > 0)
-            {
-                // wwwroot/uploads/cvs klasörünü hedefliyoruz
-                string cvFolder = Path.Combine(_env.WebRootPath, "uploads", "cvs");
-                Directory.CreateDirectory(cvFolder);
-
-                string uniqueCvName = username + "_cv" + Path.GetExtension(cvFile.FileName);
-                string filePath = Path.Combine(cvFolder, uniqueCvName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await cvFile.CopyToAsync(stream);
-                }
-
-                updates["cvUrl"] = "/uploads/cvs/" + uniqueCvName;
-
-                // CV metin içeriğini ayıklamak ve Firestore'a kaydetmek için parser servisini çağırıyoruz
-                try
-                {
-                    string parsedContent = await _cvParserService.ParsePdfAsync(filePath);
-                    if (!string.IsNullOrEmpty(parsedContent))
-                    {
-                        updates["cvContent"] = parsedContent;
-                        TempData["Success"] = "CV belgeniz başarıyla yüklendi ve yapay zeka analizi için hazırlandı.";
-                    }
-                    else
-                    {
-                        TempData["Warning"] = "CV dosyanız yüklendi ancak içeriği metne dönüştürülemedi. Yapay zeka mülakat sırasında özgeçmişinizi okuyamayabilir.";
-                    }
-                }
-                catch (System.Exception ex)
-                {
-                    TempData["Warning"] = "CV dosyanız yüklendi ancak yapay zeka analiz servisi (FastAPI) şu an kapalı olduğu için metin okunamadı.";
-                }
-            }
-
-            // Eğer herhangi bir dosya yüklendiyse Firestore dokümanını tek seferde güncelliyoruz
-            if (updates.Count > 0)
-            {
-                await docRef.UpdateAsync(updates);
-                
-                // Sadece profil resmi güncellendiyse başarı mesajı ekleyelim
-                if (TempData["Success"] == null && TempData["Warning"] == null)
-                {
-                    TempData["Success"] = "Profil fotoğrafınız başarıyla güncellendi.";
-                }
-            }
-
-            return RedirectToAction("Index");
+            return View(user);
         }
 
         // Ayarlar Sayfasını Açan Metot (GET)

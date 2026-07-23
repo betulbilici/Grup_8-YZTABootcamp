@@ -8,24 +8,24 @@
     <a asp-action="Index" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i> Panele Dön</a>
 </div>
 
-@if (ViewBag.Error != null)
+@if (ViewBag.Error != null || TempData["Error"] != null)
 {
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i> @ViewBag.Error
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> @(ViewBag.Error ?? TempData["Error"])
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
 
-@if (ViewBag.Success != null)
+@if (ViewBag.Success != null || TempData["Success"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="bi bi-check-circle-fill me-2"></i> @ViewBag.Success
+        <i class="bi bi-check-circle-fill me-2"></i> @(ViewBag.Success ?? TempData["Success"])
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
 
-<form asp-action="UpdateSettings" method="post">
-    <div class="d-flex align-items-center gap-3 mb-5">
+<div class="card border-0 shadow-sm p-4 p-lg-5 mb-4">
+    <form asp-action="UploadProfilePicture" method="post" enctype="multipart/form-data" class="d-flex align-items-center gap-3 flex-wrap">
         <span class="avatar-status">
             @if (!string.IsNullOrEmpty(Model.ProfilePictureUrl))
             {
@@ -36,13 +36,19 @@
                 <span class="avatar-fallback" style="width:64px;height:64px;font-size:1.4rem;">@Model.FirstName.Substring(0, 1).ToUpper()</span>
             }
         </span>
-        <div>
+        <div class="flex-grow-1">
             <h4 class="fw-bold mb-0 text-body">@Model.FirstName @Model.LastName</h4>
             <div class="text-body-secondary small">@Model.Email</div>
-            <div class="text-body-secondary small">Profil fotoğrafı Ana Sayfa'daki "Belgelerim" panelinden güncellenir.</div>
         </div>
-    </div>
+        <div class="d-flex align-items-center gap-2">
+            <label for="profilePictureInput" class="visually-hidden">Profil fotoğrafı seç</label>
+            <input type="file" id="profilePictureInput" name="profilePicture" class="form-control form-control-sm" accept=".png,.jpg,.jpeg,.webp" style="max-width: 220px;" />
+            <button type="submit" class="btn btn-outline-secondary btn-sm fw-bold text-nowrap"><i class="bi bi-arrow-repeat me-1"></i>Fotoğrafı Güncelle</button>
+        </div>
+    </form>
+</div>
 
+<form asp-action="UpdateSettings" method="post">
     <div class="card border-0 shadow-sm p-4 p-lg-5 mb-4">
         <div class="row g-4">
             <div class="col-md-4">

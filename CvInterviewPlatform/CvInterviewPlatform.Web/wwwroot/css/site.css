@@ -473,6 +473,40 @@ html {
   text-align: start;
 }
 
+/* Modern buton hissi: hafif kalkma + gölge. Bootstrap'ın kendi buton hover'ı
+   (renk dolumu) zaten çalışıyor ama "flat/durgun" hissediliyordu — burada
+   uygulamanın diğer yerlerindeki (stat-card, mode-card) kalkma efektiyle
+   tutarlı bir mikro-etkileşim ekleniyor. */
+.btn:not(.btn-link):not(.dropdown-item) {
+  transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out, background-color 0.15s ease-in-out, color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+.btn:not(.btn-link):not(.dropdown-item):not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.09);
+}
+
+.btn:not(.btn-link):not(.dropdown-item):not(:disabled):active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* Native "Dosya Seç" butonu Bootstrap'ta sabit border-radius:0 ile geliyor —
+   uygulamanın genel yuvarlatılmış köşe diline uymuyor, "dümdüz dikdörtgen"
+   görünümün asıl kaynağı buydu. */
+.form-control::file-selector-button,
+.form-control::-webkit-file-upload-button {
+  border-radius: 0.4rem;
+  margin-right: 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.form-control::file-selector-button:hover,
+.form-control::-webkit-file-upload-button:hover {
+  background-color: var(--app-border);
+}
+
 /* Gradient temelli birincil buton (btn-primary yerine kullanılabilir) */
 .btn-gradient {
   background: var(--app-gradient);
@@ -1070,46 +1104,47 @@ html {
 }
 
 /* ============================================================
-   Değerlendirme raporu markdown içeriği (Views/Interview/Session.cshtml
-   #markdown-evaluation) — marked.js ile üretilen ham HTML'e nefes
-   alanı ve tipografi hiyerarşisi kazandırır.
+   marked.js ile render edilen markdown içeriğine ortak tipografi
+   (Views/Interview/Session.cshtml değerlendirme raporu,
+   Views/Home/CvAnalysis.cshtml CV analizi) — nefes alanı ve
+   başlık/liste hiyerarşisi kazandırır.
    ============================================================ */
-#markdown-evaluation {
+.markdown-content {
   line-height: 1.75;
 }
 
-#markdown-evaluation h1,
-#markdown-evaluation h2,
-#markdown-evaluation h3 {
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3 {
   margin-top: 2rem;
   margin-bottom: 0.85rem;
 }
 
-#markdown-evaluation h1:first-child,
-#markdown-evaluation h2:first-child,
-#markdown-evaluation h3:first-child {
+.markdown-content h1:first-child,
+.markdown-content h2:first-child,
+.markdown-content h3:first-child {
   margin-top: 0;
 }
 
-#markdown-evaluation p {
+.markdown-content p {
   margin-bottom: 1.1rem;
 }
 
-#markdown-evaluation ul,
-#markdown-evaluation ol {
+.markdown-content ul,
+.markdown-content ol {
   margin-bottom: 1.1rem;
   padding-left: 1.4rem;
 }
 
-#markdown-evaluation li {
+.markdown-content li {
   margin-bottom: 0.4rem;
 }
 
-#markdown-evaluation strong {
+.markdown-content strong {
   color: var(--app-text);
 }
 
-#markdown-evaluation hr {
+.markdown-content hr {
   margin: 1.75rem 0;
   border-color: var(--app-border);
 }

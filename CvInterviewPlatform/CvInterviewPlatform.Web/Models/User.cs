@@ -34,5 +34,10 @@ namespace CvInterviewPlatform.Web.Models
 
         [FirestoreProperty("cvContent")]
         public string? CvContent { get; set; } = null;
+
+        // Yapay zeka ile üretilen CV analizi (bkz. GeminiService.GenerateCvAnalysisAsync).
+        // Eski kullanıcı dokümanlarında bu alan yok, varsayılan null geriye dönük uyumluluğu sağlıyor.
+        [FirestoreProperty("cvAnalysis")]
+        public string? CvAnalysis { get; set; } = null;
     }
 }

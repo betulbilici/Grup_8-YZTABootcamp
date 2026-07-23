@@ -85,7 +85,17 @@
                         <div class="dropdown">
                             <button type="button" class="topbar-user" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Kullanıcı menüsü">
                                 <span class="avatar-status">
-                                    <span class="avatar-fallback">@(Context.Session.GetString("FirstName")?.Substring(0, 1).ToUpper())</span>
+                                    @{
+                                        string topbarProfilePic = Context.Session.GetString("ProfilePictureUrl");
+                                    }
+                                    @if (!string.IsNullOrEmpty(topbarProfilePic))
+                                    {
+                                        <img src="@topbarProfilePic" alt="Profil Fotoğrafı" />
+                                    }
+                                    else
+                                    {
+                                        <span class="avatar-fallback">@(Context.Session.GetString("FirstName")?.Substring(0, 1).ToUpper())</span>
+                                    }
                                 </span>
                                 <span class="small fw-semibold d-none d-sm-inline">@Context.Session.GetString("FirstName")</span>
                                 <i class="bi bi-chevron-down small d-none d-sm-inline"></i>

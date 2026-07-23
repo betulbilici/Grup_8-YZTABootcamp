@@ -25,7 +25,7 @@ namespace CvInterviewPlatform.Web.Services
             _baseUrl = url.EndsWith("/") ? url : url + "/";
         }
 
-        public async Task<string> ParsePdfAsync(string filePath)
+        public async Task<string> ParseDocumentAsync(string filePath)
         {
             if (!File.Exists(filePath))
             {
@@ -40,9 +40,11 @@ namespace CvInterviewPlatform.Web.Services
                 using var form = new MultipartFormDataContent();
                 using var fileStream = File.OpenRead(filePath);
                 using var streamContent = new StreamContent(fileStream);
-                
-                // Dosyayı güvenli bir ASCII dosya adı kullanarak çok parçalı form verisine (multipart form data) ekliyoruz
-                form.Add(streamContent, "file", "cv_upload.pdf");
+
+                // Dosyayı güvenli bir ASCII dosya adı + gerçek uzantıyla çok parçalı form
+                // verisine (multipart form data) ekliyoruz — parser servisi formatı bu
+                // uzantıdan algılıyor, sabit ".pdf" DOCX/PNG gibi dosyaları PDF sanıyordu.
+                form.Add(streamContent, "file", "cv_upload" + Path.GetExtension(filePath));
 
                 // FastAPI ayrıştırıcı servisine (parser service) istek gönderiyoruz
                 var response = await _httpClient.PostAsync(_baseUrl + "parse", form);

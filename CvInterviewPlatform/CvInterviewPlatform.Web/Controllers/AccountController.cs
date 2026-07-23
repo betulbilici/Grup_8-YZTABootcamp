@@ -150,6 +150,7 @@ namespace CvInterviewPlatform.Web.Controllers
             // Böylece tarayıcı kapatılana kadar kullanıcı giriş yapmış olarak kalacak
             HttpContext.Session.SetString("Username", user.Username);
             HttpContext.Session.SetString("FirstName", user.FirstName);
+            HttpContext.Session.SetString("ProfilePictureUrl", user.ProfilePictureUrl ?? "");
 
             // Başarılı girişte projenin varsayılan ana sayfasına (Home/Index) yönlendiriyoruz
             return RedirectToAction("Index", "Home");
@@ -286,6 +287,7 @@ namespace CvInterviewPlatform.Web.Controllers
 
             HttpContext.Session.SetString("Username", user.Username);
             HttpContext.Session.SetString("FirstName", user.FirstName);
+            HttpContext.Session.SetString("ProfilePictureUrl", user.ProfilePictureUrl ?? "");
 
             // Google el sıkışması için kullanılan geçici çerezi temizliyoruz — uygulama
             // artık kendi Session mekanizmasını kullanıyor.

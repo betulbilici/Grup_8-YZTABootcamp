@@ -158,6 +158,41 @@ namespace CvInterviewPlatform.Web.Services
             }
         }
 
+        public async Task<string> GenerateCvAnalysisAsync(string cvContent)
+        {
+            var systemInstruction = GetSystemInstruction();
+
+            string prompt = $"Adayın Özgeçmiş (CV) Bilgileri:\n{cvContent}\n\n" +
+                             "Lütfen kıdemli bir İK uzmanı olarak bu özgeçmişi detaylıca analiz et. Analizde sırasıyla şu başlıklar yer alsın:\n" +
+                             "1. **Genel Özet**: Adayın kim olduğu, hangi alanda deneyimli olduğu ve kariyer seviyesi hakkında kısa bir özet.\n" +
+                             "2. **Öne Çıkan Beceriler ve Teknolojiler**: CV'de geçen somut beceri, araç ve teknolojilerin listesi.\n" +
+                             "3. **Güçlü Yönler**: Adayın CV'sinden öne çıkan olumlu özellikler ve başarılar.\n" +
+                             "4. **Geliştirilebilecek Noktalar**: CV'de netleştirilmesi, ölçülebilir hale getirilmesi veya eklenmesi önerilen noktalar.\n" +
+                             "5. **Uygun Olabileceği Pozisyon Türleri**: CV içeriğine göre adayın uygun olabileceği 2-3 örnek pozisyon/rol önerisi.\n\n" +
+                             "Lütfen analizi profesyonel bir dille, Markdown formatında oluştur. Sadece analizi döndür, başka açıklama ekleme.";
+
+            try
+            {
+                var response = await _client.Models.GenerateContentAsync(
+                    model: ModelName,
+                    contents: prompt,
+                    config: new GenerateContentConfig
+                    {
+                        SystemInstruction = systemInstruction,
+                        Temperature = 0.5f
+                    }
+                );
+
+                string? analysisText = response.Candidates?[0]?.Content?.Parts?[0]?.Text;
+                return analysisText?.Trim() ?? "CV analizi şu an oluşturulamadı, lütfen daha sonra tekrar deneyin.";
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"GenerateCvAnalysisAsync hata: {ex.Message}");
+                return "CV analizi oluşturulurken bir hata oluştu, lütfen daha sonra tekrar deneyin.";
+            }
+        }
+
         public async Task<string> GenerateEvaluationAsync(InterviewSession session, string cvContent)
         {
             var systemInstruction = GetSystemInstruction();

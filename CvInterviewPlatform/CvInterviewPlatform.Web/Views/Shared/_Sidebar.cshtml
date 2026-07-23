@@ -14,6 +14,9 @@
             <a class="nav-link @(currentController == "Home" && currentAction == "Index" ? "active" : "")" asp-controller="Home" asp-action="Index">
                 <i class="bi bi-grid-1x2-fill me-2"></i> Ana Sayfa
             </a>
+            <a class="nav-link @(currentController == "Home" && currentAction == "CvAnalysis" ? "active" : "")" asp-controller="Home" asp-action="CvAnalysis">
+                <i class="bi bi-clipboard2-data-fill me-2"></i> CV Analizim
+            </a>
             <a class="nav-link @(currentController == "Interview" ? "active" : "")" asp-controller="Interview" asp-action="Index">
                 <i class="bi bi-mic-fill me-2"></i> Mülakatlarım
             </a>
@@ -31,7 +34,17 @@
         <div class="sidebar-profile d-flex align-items-center justify-content-between">
             <a class="d-flex align-items-center text-decoration-none flex-grow-1" asp-controller="Home" asp-action="Settings">
                 <span class="avatar-status me-2">
-                    <span class="avatar-fallback">@(Context.Session.GetString("FirstName")?.Substring(0, 1).ToUpper())</span>
+                    @{
+                        string sidebarProfilePic = Context.Session.GetString("ProfilePictureUrl");
+                    }
+                    @if (!string.IsNullOrEmpty(sidebarProfilePic))
+                    {
+                        <img src="@sidebarProfilePic" alt="Profil Fotoğrafı" />
+                    }
+                    else
+                    {
+                        <span class="avatar-fallback">@(Context.Session.GetString("FirstName")?.Substring(0, 1).ToUpper())</span>
+                    }
                 </span>
                 <span class="small fw-semibold">@Context.Session.GetString("FirstName")</span>
             </a>
