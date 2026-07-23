@@ -53,6 +53,310 @@
   --app-sidebar-border: #2a2c33;
 }
 
+/* ============================================================
+   Erişilebilir renk paletleri (Faz 3) — data-bs-theme'den bağımsız,
+   [data-app-palette] attribute'u ile açılıp kapanır. Aynı elementte
+   (html) her iki attribute de bulunabilir; buradaki --app-* değerleri
+   kaynak sırası gereği theme bloklarının üzerine biner.
+   Not: Hex/kontrast değerleri elle hesaplandı, kesin ölçüm aracıyla
+   doğrulanmadı — spot-check önerilir.
+   ============================================================ */
+
+/* Yüksek kontrast — WCAG AAA (7:1+) hedefi, sabit siyah/beyaz, gri yok.
+   Sadece --app-* değil, Bootstrap'ın kendi --bs-* token'ları da override
+   ediliyor — aksi halde .text-muted/.text-body-secondary/.bg-body-secondary
+   gibi ham Bootstrap sınıfları kullanan onlarca yer (badge, alt yazı, kart
+   alt metni) altta yatan açık/koyu temanın rengini göstermeye devam edip
+   sönük/uyumsuz kalıyordu. */
+[data-app-palette="high-contrast"] {
+  --app-bg: #000000;
+  --app-surface: #000000;
+  --app-text: #ffffff;
+  --app-text-muted: #d9d9d9;
+  --app-border: #ffffff;
+  --app-accent: #ffd60a;
+  --app-accent-2: #ffd60a;
+  --app-gradient: #ffd60a;
+  --app-warning: #ff9f0a;
+  --app-danger: #ff453a;
+  --app-success: #32d74b;
+  --app-sidebar-bg: #000000;
+  --app-sidebar-text: #ffffff;
+  --app-sidebar-text-muted: #d9d9d9;
+  --app-sidebar-border: #ffffff;
+
+  --bs-body-bg: #000000;
+  --bs-body-bg-rgb: 0, 0, 0;
+  --bs-body-color: #ffffff;
+  --bs-body-color-rgb: 255, 255, 255;
+  --bs-emphasis-color: #ffffff;
+  --bs-emphasis-color-rgb: 255, 255, 255;
+  --bs-secondary-color: #d9d9d9;
+  --bs-secondary-color-rgb: 217, 217, 217;
+  --bs-secondary-bg: #0d0d0d;
+  --bs-secondary-bg-rgb: 13, 13, 13;
+  --bs-tertiary-bg: #0d0d0d;
+  --bs-tertiary-bg-rgb: 13, 13, 13;
+  --bs-tertiary-color: #d9d9d9;
+  --bs-tertiary-color-rgb: 217, 217, 217;
+  --bs-border-color: #ffffff;
+  --bs-border-color-translucent: rgba(255, 255, 255, 0.35);
+  --bs-link-color: #ffd60a;
+  --bs-link-color-rgb: 255, 214, 10;
+  --bs-link-hover-color: #ffe066;
+  --bs-link-hover-color-rgb: 255, 224, 102;
+
+  --bs-primary: #ffd60a;
+  --bs-primary-rgb: 255, 214, 10;
+  --bs-primary-bg-subtle: #2b2400;
+  --bs-primary-border-subtle: #ffd60a;
+  --bs-primary-text-emphasis: #ffd60a;
+
+  --bs-success: #32d74b;
+  --bs-success-rgb: 50, 215, 75;
+  --bs-success-bg-subtle: #002b0b;
+  --bs-success-border-subtle: #32d74b;
+  --bs-success-text-emphasis: #32d74b;
+
+  --bs-danger: #ff453a;
+  --bs-danger-rgb: 255, 69, 58;
+  --bs-danger-bg-subtle: #2b0300;
+  --bs-danger-border-subtle: #ff453a;
+  --bs-danger-text-emphasis: #ff453a;
+
+  --bs-warning: #ff9f0a;
+  --bs-warning-rgb: 255, 159, 10;
+  --bs-warning-bg-subtle: #2b1600;
+  --bs-warning-border-subtle: #ff9f0a;
+  --bs-warning-text-emphasis: #ff9f0a;
+}
+
+/* Bootstrap'ın buton varyantları (.btn-primary, .btn-outline-*) kök
+   --bs-primary/--bs-secondary/--bs-danger değişkenlerini DEĞİL, kendi
+   sınıfına gömülü sabit --bs-btn-* değerlerini kullanıyor (Sass derleme
+   zamanında hardcode edilmiş) — bu yüzden yukarıdaki genel token override'ı
+   bu butonlara hiç yansımıyordu, hâlâ Bootstrap'ın stok mavi/griyle
+   çakışıyordu. Fiilen kullanılan 4 varyantı burada ayrıca override ediyoruz. */
+[data-app-palette="high-contrast"] .btn-primary {
+  --bs-btn-color: #000000;
+  --bs-btn-bg: #ffd60a;
+  --bs-btn-border-color: #ffd60a;
+  --bs-btn-hover-color: #000000;
+  --bs-btn-hover-bg: #ffe066;
+  --bs-btn-hover-border-color: #ffe066;
+  --bs-btn-active-color: #000000;
+  --bs-btn-active-bg: #ffe066;
+  --bs-btn-active-border-color: #ffe066;
+  --bs-btn-disabled-color: #000000;
+  --bs-btn-disabled-bg: #ffd60a;
+  --bs-btn-disabled-border-color: #ffd60a;
+}
+
+[data-app-palette="high-contrast"] .btn-outline-primary {
+  --bs-btn-color: #ffd60a;
+  --bs-btn-border-color: #ffd60a;
+  --bs-btn-hover-color: #000000;
+  --bs-btn-hover-bg: #ffd60a;
+  --bs-btn-hover-border-color: #ffd60a;
+  --bs-btn-active-color: #000000;
+  --bs-btn-active-bg: #ffd60a;
+  --bs-btn-active-border-color: #ffd60a;
+  --bs-btn-disabled-color: #ffd60a;
+  --bs-btn-disabled-border-color: #ffd60a;
+}
+
+[data-app-palette="high-contrast"] .btn-outline-secondary {
+  --bs-btn-color: #ffffff;
+  --bs-btn-border-color: #ffffff;
+  --bs-btn-hover-color: #000000;
+  --bs-btn-hover-bg: #ffffff;
+  --bs-btn-hover-border-color: #ffffff;
+  --bs-btn-active-color: #000000;
+  --bs-btn-active-bg: #ffffff;
+  --bs-btn-active-border-color: #ffffff;
+  --bs-btn-disabled-color: #ffffff;
+  --bs-btn-disabled-border-color: #ffffff;
+}
+
+[data-app-palette="high-contrast"] .btn-outline-danger {
+  --bs-btn-color: #ff453a;
+  --bs-btn-border-color: #ff453a;
+  --bs-btn-hover-color: #000000;
+  --bs-btn-hover-bg: #ff453a;
+  --bs-btn-hover-border-color: #ff453a;
+  --bs-btn-active-color: #000000;
+  --bs-btn-active-bg: #ff453a;
+  --bs-btn-active-border-color: #ff453a;
+  --bs-btn-disabled-color: #ff453a;
+  --bs-btn-disabled-border-color: #ff453a;
+}
+
+/* Düşük parlaklık — fotofobi/albinizm için, saf beyaz/siyah yok, sıcak ton.
+   Yüksek kontrastta olduğu gibi Bootstrap'ın kendi token'ları da elden geçirilir. */
+[data-app-palette="low-light"] {
+  --app-bg: #2b2620;
+  --app-surface: #362f27;
+  --app-text: #d8cdbe;
+  --app-text-muted: #a89882;
+  --app-border: #4a4137;
+  --app-accent: #c9a15c;
+  --app-accent-2: #b97a56;
+  --app-gradient: linear-gradient(135deg, var(--app-accent) 0%, var(--app-accent-2) 100%);
+  --app-warning: #d4a15a;
+  --app-danger: #c97a6d;
+  --app-success: #8fae7a;
+  --app-sidebar-bg: #241f1a;
+  --app-sidebar-text: #d8cdbe;
+  --app-sidebar-text-muted: #a89882;
+  --app-sidebar-border: #4a4137;
+
+  --bs-body-bg: #2b2620;
+  --bs-body-bg-rgb: 43, 38, 32;
+  --bs-body-color: #d8cdbe;
+  --bs-body-color-rgb: 216, 205, 190;
+  --bs-emphasis-color: #efe7db;
+  --bs-emphasis-color-rgb: 239, 231, 219;
+  --bs-secondary-color: #a89882;
+  --bs-secondary-color-rgb: 168, 152, 130;
+  --bs-secondary-bg: #362f27;
+  --bs-secondary-bg-rgb: 54, 47, 39;
+  --bs-tertiary-bg: #362f27;
+  --bs-tertiary-bg-rgb: 54, 47, 39;
+  --bs-tertiary-color: #a89882;
+  --bs-tertiary-color-rgb: 168, 152, 130;
+  --bs-border-color: #4a4137;
+  --bs-border-color-translucent: rgba(216, 205, 190, 0.2);
+  --bs-link-color: #c9a15c;
+  --bs-link-color-rgb: 201, 161, 92;
+  --bs-link-hover-color: #dcb877;
+  --bs-link-hover-color-rgb: 220, 184, 119;
+
+  --bs-primary: #c9a15c;
+  --bs-primary-rgb: 201, 161, 92;
+  --bs-primary-bg-subtle: #332a18;
+  --bs-primary-border-subtle: #6b5730;
+  --bs-primary-text-emphasis: #d9b876;
+
+  --bs-success: #8fae7a;
+  --bs-success-rgb: 143, 174, 122;
+  --bs-success-bg-subtle: #1f2a1a;
+  --bs-success-border-subtle: #4a5c40;
+  --bs-success-text-emphasis: #a3c491;
+
+  --bs-danger: #c97a6d;
+  --bs-danger-rgb: 201, 122, 109;
+  --bs-danger-bg-subtle: #2e1d18;
+  --bs-danger-border-subtle: #5c3a30;
+  --bs-danger-text-emphasis: #d99a8f;
+
+  --bs-warning: #d4a15a;
+  --bs-warning-rgb: 212, 161, 90;
+  --bs-warning-bg-subtle: #362d1a;
+  --bs-warning-border-subtle: #6b5730;
+  --bs-warning-text-emphasis: #e0b678;
+}
+
+/* Aynı --bs-btn-* gerekçesiyle (yukarıdaki high-contrast notuna bakın),
+   düşük parlaklıkta da fiilen kullanılan 4 buton varyantı override ediliyor. */
+[data-app-palette="low-light"] .btn-primary {
+  --bs-btn-color: #241f1a;
+  --bs-btn-bg: #c9a15c;
+  --bs-btn-border-color: #c9a15c;
+  --bs-btn-hover-color: #241f1a;
+  --bs-btn-hover-bg: #d9b876;
+  --bs-btn-hover-border-color: #d9b876;
+  --bs-btn-active-color: #241f1a;
+  --bs-btn-active-bg: #d9b876;
+  --bs-btn-active-border-color: #d9b876;
+  --bs-btn-disabled-color: #241f1a;
+  --bs-btn-disabled-bg: #c9a15c;
+  --bs-btn-disabled-border-color: #c9a15c;
+}
+
+[data-app-palette="low-light"] .btn-outline-primary {
+  --bs-btn-color: #c9a15c;
+  --bs-btn-border-color: #c9a15c;
+  --bs-btn-hover-color: #241f1a;
+  --bs-btn-hover-bg: #c9a15c;
+  --bs-btn-hover-border-color: #c9a15c;
+  --bs-btn-active-color: #241f1a;
+  --bs-btn-active-bg: #c9a15c;
+  --bs-btn-active-border-color: #c9a15c;
+  --bs-btn-disabled-color: #c9a15c;
+  --bs-btn-disabled-border-color: #c9a15c;
+}
+
+[data-app-palette="low-light"] .btn-outline-secondary {
+  --bs-btn-color: #d8cdbe;
+  --bs-btn-border-color: #a89882;
+  --bs-btn-hover-color: #241f1a;
+  --bs-btn-hover-bg: #d8cdbe;
+  --bs-btn-hover-border-color: #d8cdbe;
+  --bs-btn-active-color: #241f1a;
+  --bs-btn-active-bg: #d8cdbe;
+  --bs-btn-active-border-color: #d8cdbe;
+  --bs-btn-disabled-color: #a89882;
+  --bs-btn-disabled-border-color: #a89882;
+}
+
+[data-app-palette="low-light"] .btn-outline-danger {
+  --bs-btn-color: #c97a6d;
+  --bs-btn-border-color: #c97a6d;
+  --bs-btn-hover-color: #241f1a;
+  --bs-btn-hover-bg: #c97a6d;
+  --bs-btn-hover-border-color: #c97a6d;
+  --bs-btn-active-color: #241f1a;
+  --bs-btn-active-bg: #c97a6d;
+  --bs-btn-active-border-color: #c97a6d;
+  --bs-btn-disabled-color: #c97a6d;
+  --bs-btn-disabled-border-color: #c97a6d;
+}
+
+/* .avatar-fallback ve aktif sidebar linki her zaman beyaz metin (#fff)
+   varsayıyordu — gradient artık parlak sarı/altın olduğu için beyaz metin
+   neredeyse okunmuyordu. Bu iki palette koyu metne çeviriyoruz. */
+[data-app-palette="high-contrast"] .avatar-fallback,
+[data-app-palette="high-contrast"] .app-sidebar .nav-link.active,
+[data-app-palette="high-contrast"] .btn-gradient {
+  color: #000000;
+}
+
+[data-app-palette="low-light"] .avatar-fallback,
+[data-app-palette="low-light"] .app-sidebar .nav-link.active,
+[data-app-palette="low-light"] .btn-gradient {
+  color: #241f1a;
+}
+
+/* Renk körlüğü güvenli — Okabe-Ito paleti; sadece anlam taşıyan renkleri
+   (accent + Bootstrap'ın success/warning/danger token'ları) değiştiriyor,
+   zemin/metin aktif açık/koyu temadan geliyor. */
+[data-app-palette="colorblind-safe"] {
+  --app-accent: #0072b2;
+  --app-accent-2: #009e73;
+  --app-gradient: linear-gradient(135deg, var(--app-accent) 0%, var(--app-accent-2) 100%);
+  --app-warning: #e6ac00;
+  --app-danger: #d55e00;
+  --app-success: #009e73;
+
+  --bs-success: #009e73;
+  --bs-success-rgb: 0, 158, 115;
+  --bs-success-bg-subtle: #d6f5ec;
+  --bs-success-border-subtle: #7fd6bd;
+  --bs-success-text-emphasis: #00543d;
+
+  --bs-danger: #d55e00;
+  --bs-danger-rgb: 213, 94, 0;
+  --bs-danger-bg-subtle: #fbe4d1;
+  --bs-danger-border-subtle: #edb98a;
+  --bs-danger-text-emphasis: #7a3500;
+
+  --bs-warning: #e6ac00;
+  --bs-warning-rgb: 230, 172, 0;
+  --bs-warning-bg-subtle: #fdf1cc;
+  --bs-warning-border-subtle: #e2c063;
+  --bs-warning-text-emphasis: #5c4600;
+}
+
 /* Sayfa arka planı krem/koyu yüzeyi kullansın (Bootstrap'ın kendi --bs-body-bg'sini geçersiz kılıyoruz) */
 body {
   background-color: var(--app-bg);
@@ -122,8 +426,37 @@ html {
   }
 }
 
+/* Erişilebilirlik paneli — Yazı Boyutu (Faz 3). WCAG 1.4.4 sadece metnin
+   %200'e kadar bozulmadan büyümesini istiyor; rem tabanlı tüm boyutlar
+   (padding, font-size, gap) bu kökten ölçekleniyor. */
+html[data-app-fontsize="large"] {
+  font-size: 17.5px;
+}
+
+html[data-app-fontsize="xlarge"] {
+  font-size: 21px;
+}
+
+@media (min-width: 768px) {
+  html[data-app-fontsize="large"] {
+    font-size: 20px;
+  }
+
+  html[data-app-fontsize="xlarge"] {
+    font-size: 24px;
+  }
+}
+
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
   box-shadow: 0 0 0 0.1rem var(--app-surface), 0 0 0 0.25rem var(--app-accent);
+}
+
+/* Sidebar nav linkleri ve topbar kullanıcı rozeti .btn sınıfı taşımıyor,
+   bu yüzden yukarıdaki genel odak kuralının kapsamı dışında kalıyorlardı. */
+.app-sidebar .nav-link:focus-visible,
+.topbar-user:focus-visible {
+  outline: 2px solid var(--app-accent);
+  outline-offset: 2px;
 }
 
 html {

@@ -34,6 +34,19 @@
         50% { opacity: 0.4; }
         100% { opacity: 1; }
     }
+
+    /* Faz 3 — animasyonlar kapatılabilir olmalı; kayıt/uyarı bilgisi zaten
+       renk + metinle de taşındığı için hareket durunca bilgi kaybı olmuyor. */
+    @@media (prefers-reduced-motion: reduce) {
+        #sttBtn.recording, .timer-warning {
+            animation: none;
+        }
+    }
+
+    html[data-app-motion="off"] #sttBtn.recording,
+    html[data-app-motion="off"] .timer-warning {
+        animation: none;
+    }
 </style>
 
 <!-- MarkedJS (Markdown render etmek için) CDN'i -->
@@ -73,10 +86,12 @@
                     <div class="d-flex align-items-center gap-3">
                         @if (Model.TimeLimitSeconds > 0)
                         {
-                            <div class="d-flex align-items-center text-secondary fw-bold border border-secondary-subtle px-2 py-1 rounded" id="timerContainer" style="font-size: 0.9rem;">
-                                <i class="bi bi-hourglass-split me-1"></i>
+                            <div class="d-flex align-items-center text-secondary fw-bold border border-secondary-subtle px-2 py-1 rounded" id="timerContainer" role="timer" style="font-size: 0.9rem;">
+                                <i class="bi bi-hourglass-split me-1" id="timerIcon"></i>
                                 <span id="countdownTimer">--:--</span>
+                                <span id="timerWarningLabel" class="ms-1 d-none">Son 1 dakika</span>
                             </div>
+                            <span id="timerAnnouncement" class="visually-hidden" aria-live="polite"></span>
                         }
                         <span class="section-label mb-0">Soru @Model.CurrentQuestionNumber / @Model.TotalQuestions</span>
                     </div>
@@ -91,11 +106,11 @@
                     <div class="card-body p-4 p-md-5">
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <span class="section-label mb-0">İK Uzmanı (Kıdemli Yapay Zeka)</span>
-                            <button type="button" id="ttsBtn" class="btn btn-outline-primary btn-sm rounded-circle" style="width: 36px; height: 36px; flex-shrink: 0;" title="Sesli Oku / Sustur">
+                            <button type="button" id="ttsBtn" class="btn btn-outline-primary btn-sm rounded-circle" style="width: 36px; height: 36px; flex-shrink: 0;" title="Sesli Oku / Sustur" aria-pressed="false" aria-label="Soruyu sesli oku">
                                 <i class="bi bi-volume-up-fill"></i>
                             </button>
                         </div>
-                        <p class="fs-3 text-body fw-bold mb-4" id="questionText">
+                        <p class="fs-3 text-body fw-bold mb-4" id="questionText" aria-live="polite">
                             @Model.History[Model.CurrentQuestionNumber - 1].Question
                         </p>
 
@@ -118,7 +133,7 @@
                                           required></textarea>
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
-                                <button type="button" id="sttBtn" class="btn btn-link text-decoration-none fw-bold p-0 text-body-secondary">
+                                <button type="button" id="sttBtn" class="btn btn-link text-decoration-none fw-bold p-0 text-body-secondary" aria-pressed="false" aria-label="Sesli yanıt ver">
                                     <i class="bi bi-mic-fill me-1"></i> Sesli Yanıtla
                                 </button>
                                 <button type="submit" id="submitBtn" class="btn btn-gradient rounded-pill px-4 fw-bold">
@@ -126,6 +141,7 @@
                                 </button>
                             </div>
                         </form>
+                        <span id="recordingAnnouncement" class="visually-hidden" aria-live="assertive"></span>
 
                         <!-- Yükleniyor Göstergesi -->
                         <div id="loadingIndicator" class="d-none text-center py-4">

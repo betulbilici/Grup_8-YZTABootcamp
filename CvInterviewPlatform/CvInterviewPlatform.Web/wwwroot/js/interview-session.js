@@ -41,20 +41,36 @@ document.addEventListener("DOMContentLoaded", function () {
         const warningThreshold = Math.ceil(timeLimitSeconds * 0.2);
         const timerText = document.getElementById("countdownTimer");
         const timerContainer = document.getElementById("timerContainer");
+        const timerIcon = document.getElementById("timerIcon");
+        const timerWarningLabel = document.getElementById("timerWarningLabel");
+        const timerAnnouncement = document.getElementById("timerAnnouncement");
+        let warningAnnounced = false;
+        const warningLabelText = warningThreshold >= 60
+            ? `Son ${Math.round(warningThreshold / 60)} dakika`
+            : `Son ${warningThreshold} saniye`;
 
         function updateTimerDisplay() {
             const minutes = Math.floor(remainingTime / 60);
             const seconds = remainingTime % 60;
             timerText.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
-            // Kalan süre toplam sürenin %20'sinin altına düşünce uyarı rengi (Kırmızı ve Yanıp sönme)
+            // Kalan süre toplam sürenin %20'sinin altına düşünce uyarı (renk + ikon + metin).
+            // Rengin tek başına bilgi taşımaması için (WCAG 1.4.1) ikon ve metin de ekleniyor;
+            // ekran okuyucuya ise sadece eşik geçildiği AN bir kez duyuruluyor, her saniye değil.
             if (remainingTime <= warningThreshold) {
                 timerContainer.classList.remove("text-secondary", "border-secondary-subtle");
                 timerContainer.classList.add("timer-warning", "border-danger");
-                const icon = timerContainer.querySelector("i");
-                if (icon) {
-                    icon.classList.remove("text-primary");
-                    icon.classList.add("text-danger");
+                if (timerIcon) {
+                    timerIcon.classList.remove("bi-hourglass-split", "text-primary");
+                    timerIcon.classList.add("bi-exclamation-triangle-fill", "text-danger");
+                }
+                if (timerWarningLabel) {
+                    timerWarningLabel.textContent = warningLabelText;
+                    timerWarningLabel.classList.remove("d-none");
+                }
+                if (timerAnnouncement && !warningAnnounced) {
+                    warningAnnounced = true;
+                    timerAnnouncement.textContent = warningLabelText + " kaldı.";
                 }
             }
         }
@@ -130,14 +146,17 @@ document.addEventListener("DOMContentLoaded", function () {
         isSpeaking = speaking;
         const ttsBtn = document.getElementById("ttsBtn");
         if (ttsBtn) {
+            ttsBtn.setAttribute("aria-pressed", speaking ? "true" : "false");
             if (speaking) {
                 ttsBtn.innerHTML = '<i class="bi bi-volume-mute-fill fs-5"></i>';
                 ttsBtn.classList.remove("btn-outline-primary");
                 ttsBtn.classList.add("btn-primary");
+                ttsBtn.setAttribute("aria-label", "Okumayı durdur");
             } else {
                 ttsBtn.innerHTML = '<i class="bi bi-volume-up-fill fs-5"></i>';
                 ttsBtn.classList.remove("btn-primary");
                 ttsBtn.classList.add("btn-outline-primary");
+                ttsBtn.setAttribute("aria-label", "Soruyu sesli oku");
             }
         }
     }
@@ -227,14 +246,21 @@ document.addEventListener("DOMContentLoaded", function () {
     function setSttState(recording) {
         isRecording = recording;
         const sttBtn = document.getElementById("sttBtn");
+        const recordingAnnouncement = document.getElementById("recordingAnnouncement");
         if (sttBtn) {
+            sttBtn.setAttribute("aria-pressed", recording ? "true" : "false");
             if (recording) {
                 sttBtn.classList.add("recording");
                 sttBtn.innerHTML = '<i class="bi bi-mic-mute-fill me-1"></i> Kaydı Durdur';
+                sttBtn.setAttribute("aria-label", "Kaydı durdur");
             } else {
                 sttBtn.classList.remove("recording");
                 sttBtn.innerHTML = '<i class="bi bi-mic-fill me-1"></i> Sesli Yanıtla';
+                sttBtn.setAttribute("aria-label", "Sesli yanıt ver");
             }
+        }
+        if (recordingAnnouncement) {
+            recordingAnnouncement.textContent = recording ? "Kayıt başladı." : "Kayıt durdu.";
         }
     }
 

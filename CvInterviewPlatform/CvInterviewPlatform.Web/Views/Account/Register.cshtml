@@ -27,40 +27,40 @@
             <form asp-action="Register" asp-controller="Account" method="post">
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold">Kullanıcı Adı</label>
-                    <input type="text" name="username" class="form-control" placeholder="Örn: kadirssl" required />
+                    <label for="username" class="form-label fw-bold">Kullanıcı Adı</label>
+                    <input type="text" id="username" name="username" class="form-control" placeholder="Örn: kadirssl" required aria-required="true" />
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Adınız</label>
-                        <input type="text" name="firstName" class="form-control" placeholder="Abdulkadir" required />
+                        <label for="firstName" class="form-label">Adınız</label>
+                        <input type="text" id="firstName" name="firstName" class="form-control" placeholder="Abdulkadir" required aria-required="true" />
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Soyadınız</label>
-                        <input type="text" name="lastName" class="form-control" placeholder="Süslü" required />
+                        <label for="lastName" class="form-label">Soyadınız</label>
+                        <input type="text" id="lastName" name="lastName" class="form-control" placeholder="Süslü" required aria-required="true" />
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Gmail Adresi</label>
-                    <input type="email" name="email" class="form-control" placeholder="ornek@gmail.com" required />
-                    <small class="form-text text-body-secondary">Sadece @@gmail.com uzantılı adresler kabul edilir.</small>
+                    <label for="email" class="form-label">Gmail Adresi</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="ornek@gmail.com" required aria-required="true" aria-describedby="emailHelp" />
+                    <small id="emailHelp" class="form-text text-body-secondary">Sadece @@gmail.com uzantılı adresler kabul edilir.</small>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Telefon Numarası</label>
-                    <input type="tel" name="phoneNumber" class="form-control" placeholder="05xxxxxxxxx" required />
+                    <label for="phoneNumber" class="form-label">Telefon Numarası</label>
+                    <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control" placeholder="05xxxxxxxxx" required aria-required="true" />
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Şifre</label>
-                    <input type="password" name="password" class="form-control" placeholder="******" required />
+                    <label for="password" class="form-label">Şifre</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="******" required aria-required="true" />
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label">Şifre Tekrar</label>
-                    <input type="password" name="confirmPassword" class="form-control" placeholder="******" required />
+                    <label for="confirmPassword" class="form-label">Şifre Tekrar</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="******" required aria-required="true" />
                 </div>
 
                 <button type="submit" class="btn btn-gradient btn-lg w-100 fw-bold">Kayıt Olmayı Tamamla</button>

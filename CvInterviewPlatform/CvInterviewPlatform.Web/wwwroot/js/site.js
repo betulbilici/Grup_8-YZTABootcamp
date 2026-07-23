@@ -58,3 +58,67 @@
         }
     });
 })();
+
+// --- Erişilebilirlik paneli (Renk Paleti / Yazı Boyutu / Animasyonlar) ---
+// Tema değiştiriciyle aynı desen: FOUC script'i sayfa render'ından önce zaten
+// attribute'u uyguluyor, burada sadece dropdown etkileşimi ve aktif-öğe
+// vurgusu ele alınıyor. Üçü de aynı mantığı taşıdığı için tek bir fabrika
+// fonksiyonuyla kuruluyor.
+(function () {
+    function setupAttributeSwitcher(config) {
+        function apply(value) {
+            if (value === config.defaultValue) {
+                document.documentElement.removeAttribute(config.attribute);
+            } else {
+                document.documentElement.setAttribute(config.attribute, value);
+            }
+            updateActive(value);
+        }
+
+        function updateActive(value) {
+            document.querySelectorAll("[" + config.dataAttr + "]").forEach(function (item) {
+                var isActive = item.getAttribute(config.dataAttr) === value;
+                item.classList.toggle("active", isActive);
+                if (isActive) {
+                    item.setAttribute("aria-current", "true");
+                } else {
+                    item.removeAttribute("aria-current");
+                }
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            var current = localStorage.getItem(config.storageKey) || config.defaultValue;
+            updateActive(current);
+
+            document.querySelectorAll("[" + config.dataAttr + "]").forEach(function (item) {
+                item.addEventListener("click", function () {
+                    var value = item.getAttribute(config.dataAttr);
+                    localStorage.setItem(config.storageKey, value);
+                    apply(value);
+                });
+            });
+        });
+    }
+
+    setupAttributeSwitcher({
+        storageKey: "appPalette",
+        attribute: "data-app-palette",
+        dataAttr: "data-palette-value",
+        defaultValue: "default"
+    });
+
+    setupAttributeSwitcher({
+        storageKey: "appFontSize",
+        attribute: "data-app-fontsize",
+        dataAttr: "data-fontsize-value",
+        defaultValue: "normal"
+    });
+
+    setupAttributeSwitcher({
+        storageKey: "appMotion",
+        attribute: "data-app-motion",
+        dataAttr: "data-motion-value",
+        defaultValue: "on"
+    });
+})();

@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - CvInterviewPlatform.Web</title>
     <script>
-        // FOUC (beyaz çakma) engeli: CSS'ten önce, senkron çalışıp data-bs-theme'i yazar.
+        // FOUC (beyaz çakma) engeli: CSS'ten önce, senkron çalışıp data-bs-theme'i
+        // ve erişilebilirlik tercihlerini (palet/yazı boyutu/animasyon) yazar.
+        // Auth sayfalarında bu tercihleri değiştirecek bir panel yok, ama daha önce
+        // ayarlanmış tercihler burada da korunsun diye okunuyor.
         (function () {
             try {
                 var pref = localStorage.getItem("themePreference") || "system";
@@ -16,6 +19,23 @@
             } catch (e) {
                 document.documentElement.setAttribute("data-bs-theme", "light");
             }
+
+            try {
+                var palette = localStorage.getItem("appPalette") || "default";
+                if (palette !== "default") {
+                    document.documentElement.setAttribute("data-app-palette", palette);
+                }
+
+                var fontSize = localStorage.getItem("appFontSize") || "normal";
+                if (fontSize !== "normal") {
+                    document.documentElement.setAttribute("data-app-fontsize", fontSize);
+                }
+
+                var motion = localStorage.getItem("appMotion") || "on";
+                if (motion === "off") {
+                    document.documentElement.setAttribute("data-app-motion", "off");
+                }
+            } catch (e) { }
         })();
     </script>
     <script type="importmap"></script>

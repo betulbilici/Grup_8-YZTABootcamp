@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - CvInterviewPlatform.Web</title>
     <script>
-        // FOUC (beyaz çakma) engeli: CSS'ten önce, senkron çalışıp data-bs-theme'i yazar.
+        // FOUC (beyaz çakma) engeli: CSS'ten önce, senkron çalışıp data-bs-theme'i
+        // ve erişilebilirlik tercihlerini (palet/yazı boyutu/animasyon) yazar.
         (function () {
             try {
                 var pref = localStorage.getItem("themePreference") || "system";
@@ -16,6 +17,23 @@
             } catch (e) {
                 document.documentElement.setAttribute("data-bs-theme", "light");
             }
+
+            try {
+                var palette = localStorage.getItem("appPalette") || "default";
+                if (palette !== "default") {
+                    document.documentElement.setAttribute("data-app-palette", palette);
+                }
+
+                var fontSize = localStorage.getItem("appFontSize") || "normal";
+                if (fontSize !== "normal") {
+                    document.documentElement.setAttribute("data-app-fontsize", fontSize);
+                }
+
+                var motion = localStorage.getItem("appMotion") || "on";
+                if (motion === "off") {
+                    document.documentElement.setAttribute("data-app-motion", "off");
+                }
+            } catch (e) { }
         })();
     </script>
     <script type="importmap"></script>
@@ -39,6 +57,27 @@
                             <li><button type="button" class="dropdown-item" data-theme-value="light"><i class="bi bi-sun-fill me-2"></i>Açık</button></li>
                             <li><button type="button" class="dropdown-item" data-theme-value="dark"><i class="bi bi-moon-stars-fill me-2"></i>Koyu</button></li>
                             <li><button type="button" class="dropdown-item" data-theme-value="system"><i class="bi bi-circle-half me-2"></i>Sistem</button></li>
+                        </ul>
+                    </div>
+                    <div class="dropdown a11y-switcher">
+                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="a11yMenuBtn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Erişilebilirlik ayarları">
+                            <i class="bi bi-universal-access"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="a11yMenuBtn" style="min-width: 240px;">
+                            <li><h6 class="dropdown-header">Renk Paleti</h6></li>
+                            <li><button type="button" class="dropdown-item" data-palette-value="default"><i class="bi bi-circle-half me-2"></i>Varsayılan</button></li>
+                            <li><button type="button" class="dropdown-item" data-palette-value="high-contrast"><i class="bi bi-circle-fill me-2"></i>Yüksek Kontrast</button></li>
+                            <li><button type="button" class="dropdown-item" data-palette-value="low-light"><i class="bi bi-brightness-low-fill me-2"></i>Düşük Parlaklık</button></li>
+                            <li><button type="button" class="dropdown-item" data-palette-value="colorblind-safe"><i class="bi bi-eye-fill me-2"></i>Renk Körlüğü Güvenli</button></li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li><h6 class="dropdown-header">Yazı Boyutu</h6></li>
+                            <li><button type="button" class="dropdown-item" data-fontsize-value="normal">Normal</button></li>
+                            <li><button type="button" class="dropdown-item" data-fontsize-value="large">Büyük (%125)</button></li>
+                            <li><button type="button" class="dropdown-item" data-fontsize-value="xlarge">Çok Büyük (%150)</button></li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li><h6 class="dropdown-header">Animasyonlar</h6></li>
+                            <li><button type="button" class="dropdown-item" data-motion-value="on">Açık</button></li>
+                            <li><button type="button" class="dropdown-item" data-motion-value="off">Kapalı</button></li>
                         </ul>
                     </div>
                     @if (Context.Session.GetString("Username") != null)
