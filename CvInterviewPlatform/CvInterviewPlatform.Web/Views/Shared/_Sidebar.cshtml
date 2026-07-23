@@ -1,50 +1,40 @@
 @using Microsoft.AspNetCore.Http
 @{
     string currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    string currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
     bool isLoggedIn = Context.Session.GetString("Username") != null;
 }
 <aside class="app-sidebar">
-    <a class="sidebar-brand" asp-area="" asp-controller="Home" asp-action="Index">CvInterviewPlatform</a>
+    <a class="sidebar-brand" asp-area="" asp-controller="Home" asp-action="Index">CV Match AI</a>
     <span class="sidebar-tagline">Profesyonel Hazırlık</span>
 
     @if (isLoggedIn)
     {
         <nav class="nav flex-column mb-3">
-            <a class="nav-link @(currentController == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index">
+            <a class="nav-link @(currentController == "Home" && currentAction == "Index" ? "active" : "")" asp-controller="Home" asp-action="Index">
                 <i class="bi bi-grid-1x2-fill me-2"></i> Ana Sayfa
             </a>
             <a class="nav-link @(currentController == "Interview" ? "active" : "")" asp-controller="Interview" asp-action="Index">
                 <i class="bi bi-mic-fill me-2"></i> Mülakatlarım
             </a>
-            <a class="nav-link @(currentController == "Home" && ViewContext.RouteData.Values["action"]?.ToString() == "Settings" ? "active" : "")" asp-controller="Home" asp-action="Settings">
+            <a class="nav-link @(currentController == "Home" && currentAction == "Settings" ? "active" : "")" asp-controller="Home" asp-action="Settings">
                 <i class="bi bi-gear-fill me-2"></i> Ayarlar
             </a>
         </nav>
 
         <div class="sidebar-spacer"></div>
 
-        <div class="dropdown theme-switcher mb-3">
-            <button class="btn btn-outline-secondary btn-sm dropdown-toggle w-100" type="button" id="themeSwitcherBtn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Tema seç">
-                <i class="bi bi-circle-half me-1"></i> Tema
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="themeSwitcherBtn">
-                <li><button type="button" class="dropdown-item" data-theme-value="light"><i class="bi bi-sun-fill me-2"></i>Açık</button></li>
-                <li><button type="button" class="dropdown-item" data-theme-value="dark"><i class="bi bi-moon-stars-fill me-2"></i>Koyu</button></li>
-                <li><button type="button" class="dropdown-item" data-theme-value="system"><i class="bi bi-circle-half me-2"></i>Sistem</button></li>
-            </ul>
-        </div>
-
         <a class="btn btn-gradient fw-bold mb-2" asp-controller="Interview" asp-action="Index">
             <i class="bi bi-play-fill me-1"></i> Mülakata Başla
         </a>
 
-        <div class="d-flex align-items-center justify-content-between pt-2 border-top" style="border-color: var(--app-sidebar-border) !important;">
-            <div class="d-flex align-items-center">
+        <div class="sidebar-profile d-flex align-items-center justify-content-between">
+            <a class="d-flex align-items-center text-decoration-none flex-grow-1" asp-controller="Home" asp-action="Settings">
                 <span class="avatar-status me-2">
                     <span class="avatar-fallback">@(Context.Session.GetString("FirstName")?.Substring(0, 1).ToUpper())</span>
                 </span>
                 <span class="small fw-semibold">@Context.Session.GetString("FirstName")</span>
-            </div>
+            </a>
             <a class="btn btn-sm btn-outline-danger" asp-controller="Account" asp-action="SignOut" title="Çıkış Yap">
                 <i class="bi bi-box-arrow-right"></i>
             </a>
@@ -53,16 +43,6 @@
     else
     {
         <div class="sidebar-spacer"></div>
-        <div class="dropdown theme-switcher mb-3">
-            <button class="btn btn-outline-secondary btn-sm dropdown-toggle w-100" type="button" id="themeSwitcherBtn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Tema seç">
-                <i class="bi bi-circle-half me-1"></i> Tema
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="themeSwitcherBtn">
-                <li><button type="button" class="dropdown-item" data-theme-value="light"><i class="bi bi-sun-fill me-2"></i>Açık</button></li>
-                <li><button type="button" class="dropdown-item" data-theme-value="dark"><i class="bi bi-moon-stars-fill me-2"></i>Koyu</button></li>
-                <li><button type="button" class="dropdown-item" data-theme-value="system"><i class="bi bi-circle-half me-2"></i>Sistem</button></li>
-            </ul>
-        </div>
         <a class="nav-link fw-bold mb-1" asp-controller="Account" asp-action="SignIn">
             <i class="bi bi-box-arrow-in-right me-2"></i> Giriş Yap
         </a>

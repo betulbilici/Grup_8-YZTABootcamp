@@ -18,50 +18,69 @@
     </div>
 }
 
-<div class="gradient-banner d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
-    <div>
-        <h1 class="fw-bold mb-1">Hoş Geldiniz, @Model.FirstName!</h1>
-        <p class="mb-0 opacity-75">Yapay zeka destekli mülakat hazırlığınızın durumunu buradan takip edebilir, yeni bir oturum başlatarak kendinizi geliştirmeye devam edebilirsiniz.</p>
-    </div>
-    <a asp-controller="Interview" asp-action="Index" class="btn btn-light fw-bold mt-3 mt-md-0 flex-shrink-0">
-        Yeni Mülakata Başla <i class="bi bi-arrow-right ms-1"></i>
-    </a>
-</div>
+@{
+    var recentSessions = ViewBag.RecentSessions as List<CvInterviewPlatform.Web.Models.InterviewSession>;
 
-<div class="row g-3 mb-4">
-    <div class="col-6 col-lg-3">
-        <div class="stat-tile h-100">
-            <div class="stat-value">@ViewBag.CompletedCount</div>
-            <div class="stat-label">Tamamlanan Mülakat</div>
-        </div>
-    </div>
-    <div class="col-6 col-lg-3">
-        <div class="stat-tile stat-tile-warning h-100">
-            <div class="stat-value">@ViewBag.InProgressCount</div>
-            <div class="stat-label">Devam Eden Mülakat</div>
-        </div>
-    </div>
-    <div class="col-6 col-lg-3">
-        <div class="stat-tile stat-tile-accent2 h-100">
-            <div class="stat-value fs-5">@(ViewBag.LastJobTitle ?? "-")</div>
-            <div class="stat-label">Son Hedeflenen Pozisyon</div>
-        </div>
-    </div>
-    <div class="col-6 col-lg-3">
-        <div class="stat-tile stat-tile-success h-100">
-            <div class="stat-value fs-5">@@@Model.Username</div>
-            <div class="stat-label">Kullanıcı Adınız</div>
-        </div>
-    </div>
-</div>
+    string RelativeTime(System.DateTime utc)
+    {
+        var span = System.DateTime.UtcNow - utc;
+        if (span.TotalHours < 1) return "az önce";
+        if (span.TotalHours < 24) return $"{(int)span.TotalHours} saat önce";
+        if (span.TotalDays < 7) return $"{(int)span.TotalDays} gün önce";
+        return $"{(int)(span.TotalDays / 7)} hafta önce";
+    }
+}
 
 <div class="row g-4">
     <div class="col-lg-7">
-        <div class="card border-0 shadow-sm p-4 h-100">
-            <h5 class="fw-bold mb-3"><i class="bi bi-folder-symlink-fill me-1 text-primary"></i> Belgelerim ve Dosya Yükleme</h5>
-            <p class="text-body-secondary small">Profil fotoğrafınızı veya güncel CV belgenizi buradan yükleyebilirsiniz.</p>
+        <div class="hero-card p-lg-5 mb-4">
+            <i class="bi bi-mic-fill hero-card-decor"></i>
+            <h1 class="fw-bold mb-2 text-body">Mülakata hazır mısınız, @Model.FirstName?</h1>
+            <p class="text-body-secondary mb-4" style="max-width: 30rem;">
+                Yapay zeka destekli mülakat hazırlığınızın durumunu buradan takip edin, yeni bir
+                oturum başlatarak kendinizi geliştirmeye devam edin.
+            </p>
+            <a asp-controller="Interview" asp-action="Index" class="btn btn-gradient btn-lg fw-bold">
+                Mülakata Başla <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
 
-            <form id="uploadForm" asp-action="UploadDocuments" asp-controller="Home" method="post" enctype="multipart/form-data" class="mt-2">
+        <div class="card border-0 shadow-sm p-4 p-lg-5 mb-4">
+            <div class="section-label mb-3">Performans Özeti</div>
+            <div class="d-flex align-items-baseline gap-3 flex-wrap">
+                <span class="fw-bold text-body" style="font-size: 2.5rem; line-height: 1;">@ViewBag.CompletedCount</span>
+                <span class="text-body-secondary">Tamamlanan Mülakat</span>
+            </div>
+            <div class="mt-3">
+                <span class="text-body-secondary small"><span class="status-dot"></span>@ViewBag.InProgressCount Devam Ediyor</span>
+                @if (ViewBag.LastJobTitle != null)
+                {
+                    <span class="text-body-secondary small ms-4"><span class="status-dot status-dot-muted"></span>Son hedef: @ViewBag.LastJobTitle</span>
+                }
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm p-4 p-lg-5">
+            @if (!string.IsNullOrEmpty(Model.CvUrl))
+            {
+                <div class="list-row px-0" style="cursor: default;">
+                    <span class="list-row-icon"><i class="bi bi-file-earmark-pdf-fill"></i></span>
+                    <div class="flex-grow-1">
+                        <div class="list-row-title">Özgeçmiş ve Profil</div>
+                        <div class="list-row-subtitle">@System.IO.Path.GetFileName(Model.CvUrl)</div>
+                    </div>
+                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold" id="toggleUploadBtn">
+                        <i class="bi bi-arrow-repeat me-1"></i>CV Güncelle
+                    </button>
+                </div>
+            }
+            else
+            {
+                <h5 class="fw-bold mb-2 text-body">Özgeçmiş ve Profil</h5>
+                <p class="text-body-secondary small mb-3">Yapay zekanın sizi tanıyabilmesi için CV'nizi yükleyin.</p>
+            }
+
+            <form id="uploadForm" asp-action="UploadDocuments" asp-controller="Home" method="post" enctype="multipart/form-data" class="mt-3 @(!string.IsNullOrEmpty(Model.CvUrl) ? "d-none" : "")">
                 <div class="dropzone mb-3">
                     <i class="bi bi-cloud-arrow-up-fill dropzone-icon"></i>
                     <p class="fw-bold mb-1">CV'nizi buraya sürükleyin</p>
@@ -84,23 +103,9 @@
                 <p class="text-body-secondary small mb-0" id="loaderSubMessage">Lütfen bekleyin, sayfayı kapatmayın veya yenilemeyin.</p>
             </div>
 
-            <hr class="my-4" />
-
-            @if (!string.IsNullOrEmpty(Model.CvUrl))
+            @if (string.IsNullOrEmpty(Model.CvUrl))
             {
-                <div class="alert alert-success d-flex align-items-center justify-content-between mb-0" role="alert">
-                    <div>
-                        <i class="bi bi-file-earmark-pdf-fill fs-4 me-2"></i>
-                        <span class="fw-semibold">CV belgeniz sistemde yüklü durumda!</span>
-                    </div>
-                    <a href="@Model.CvUrl" target="_blank" class="btn btn-outline-success btn-sm fw-bold">
-                        <i class="bi bi-eye-fill"></i> Görüntüle / İndir
-                    </a>
-                </div>
-            }
-            else
-            {
-                <div class="alert alert-warning mb-0" role="alert">
+                <div class="alert alert-warning mt-3 mb-0 small" role="alert">
                     <i class="bi bi-exclamation-circle-fill me-2"></i> Henüz bir CV belgesi yüklemediniz.
                 </div>
             }
@@ -108,37 +113,31 @@
     </div>
 
     <div class="col-lg-5">
-        <div class="card border-0 shadow-sm p-4 h-100">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold mb-0"><i class="bi bi-clock-history me-1 text-primary"></i> Son Mülakatlar</h5>
+        <div class="card border-0 shadow-sm p-4 p-lg-5 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <span class="section-label">Son Mülakatlar</span>
                 <a asp-controller="Interview" asp-action="Index" class="small text-decoration-none fw-bold">Tümünü Gör</a>
             </div>
 
-            @{
-                var recentSessions = ViewBag.RecentSessions as List<CvInterviewPlatform.Web.Models.InterviewSession>;
-            }
             @if (recentSessions == null || !recentSessions.Any())
             {
-                <p class="text-body-secondary small mb-0">Henüz bir mülakat geçmişiniz yok. Sağdaki bağlantıdan ilk mülakatınızı başlatabilirsiniz.</p>
+                <p class="text-body-secondary small mb-0">Henüz bir mülakat geçmişiniz yok. Soldaki bağlantıdan ilk mülakatınızı başlatabilirsiniz.</p>
             }
             else
             {
-                <div class="vstack gap-3">
+                <div>
                     @foreach (var session in recentSessions)
                     {
-                        <a asp-controller="Interview" asp-action="Session" asp-route-id="@session.SessionId" class="d-flex align-items-center justify-content-between text-decoration-none p-2 rounded-3" style="background-color: var(--app-bg);">
-                            <div>
-                                <div class="fw-bold text-body">@session.JobTitle</div>
-                                <div class="small text-body-secondary">@session.StartedAt.ToLocalTime().ToString("dd.MM.yyyy")</div>
+                        <a asp-controller="Interview" asp-action="Session" asp-route-id="@session.SessionId" class="list-row">
+                            <span class="list-row-icon list-row-icon-ring"><i class="bi bi-mic-fill"></i></span>
+                            <div class="flex-grow-1">
+                                <div class="list-row-title">@session.JobTitle</div>
+                                <div class="list-row-subtitle">@(session.Mode == "Realistic" ? "Gerçekçi" : "Hazırlık") &middot; @session.DifficultyLevel</div>
+                                <span class="badge @(session.IsCompleted ? "bg-success-subtle text-success" : "bg-warning-subtle text-warning-emphasis") border-0 mt-1" style="font-size: 0.68rem;">
+                                    @(session.IsCompleted ? "Tamamlandı" : "Devam Ediyor")
+                                </span>
                             </div>
-                            @if (session.IsCompleted)
-                            {
-                                <span class="badge bg-success-subtle text-success border border-success-subtle">Tamamlandı</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">Devam Ediyor</span>
-                            }
+                            <span class="list-row-meta">@RelativeTime(session.StartedAt)</span>
                         </a>
                     }
                 </div>
@@ -156,6 +155,13 @@
             var loader = document.getElementById("uploadLoader");
             var loaderMessage = document.getElementById("loaderMessage");
             var loaderSubMessage = document.getElementById("loaderSubMessage");
+
+            var toggleUploadBtn = document.getElementById("toggleUploadBtn");
+            if (toggleUploadBtn && form) {
+                toggleUploadBtn.addEventListener("click", function() {
+                    form.classList.toggle("d-none");
+                });
+            }
 
             if (form) {
                 form.addEventListener("submit", function(event) {

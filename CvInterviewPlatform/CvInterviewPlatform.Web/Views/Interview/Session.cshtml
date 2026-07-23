@@ -1,6 +1,7 @@
 @model CvInterviewPlatform.Web.Models.InterviewSession
 @{
     ViewData["Title"] = $"{Model.JobTitle} Mülakatı";
+    int progressPercent = Model.IsCompleted ? 100 : (int)Math.Round((Model.CurrentQuestionNumber - 1) * 100.0 / Model.TotalQuestions);
 }
 
 <style>
@@ -63,87 +64,64 @@
         <!-- 1. MÜLAKAT DEVAM EDİYORSA -->
         <div class="row g-4">
             <div class="col-lg-8">
-                <!-- İlerleme Durumu -->
-                <div class="card border-0 shadow-sm rounded-3 mb-4">
-                    <div class="card-body p-4">
-                        @{
-                            int progressPercent = (int)Math.Round((Model.CurrentQuestionNumber - 1) * 100.0 / Model.TotalQuestions);
-                        }
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <div class="d-flex align-items-center">
-                                <span class="fw-bold text-primary me-3">Soru @Model.CurrentQuestionNumber / @Model.TotalQuestions</span>
-                                @if (Model.TimeLimitSeconds > 0)
-                                {
-                                    <div class="d-flex align-items-center text-secondary fw-bold border border-secondary-subtle px-2 py-1 rounded bg-body-secondary" id="timerContainer" style="font-size: 0.95rem;">
-                                        <i class="bi bi-hourglass-split me-1 text-primary"></i>
-                                        <span id="countdownTimer">--:--</span>
-                                    </div>
-                                }
-                            </div>
-                            <span class="text-muted small">%@progressPercent Tamamlandı</span>
-                        </div>
-                        <div class="progress" style="height: 10px;">
-                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
-                                 role="progressbar"
-                                 style="width: @progressPercent%;"
-                                 aria-valuenow="@progressPercent"
-                                 aria-valuemin="0"
-                                 aria-valuemax="100">
-                            </div>
-                        </div>
+                <!-- Üst durum çubuğu: etiketler solda, soru sayısı/sayaç sağda -->
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-body-secondary text-body-secondary border-0 text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.04em;">@(Model.Mode == "Realistic" ? "Gerçekçi" : "Hazırlık")</span>
+                        <span class="badge bg-body-secondary text-body-secondary border-0 text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.04em;">@Model.DifficultyLevel</span>
                     </div>
+                    <div class="d-flex align-items-center gap-3">
+                        @if (Model.TimeLimitSeconds > 0)
+                        {
+                            <div class="d-flex align-items-center text-secondary fw-bold border border-secondary-subtle px-2 py-1 rounded" id="timerContainer" style="font-size: 0.9rem;">
+                                <i class="bi bi-hourglass-split me-1"></i>
+                                <span id="countdownTimer">--:--</span>
+                            </div>
+                        }
+                        <span class="section-label mb-0">Soru @Model.CurrentQuestionNumber / @Model.TotalQuestions</span>
+                    </div>
+                </div>
+                <div class="progress mb-4" style="height: 4px; background-color: var(--app-border);">
+                    <div class="progress-bar" role="progressbar" style="width: @progressPercent%; background: var(--app-gradient);"
+                         aria-valuenow="@progressPercent" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
 
                 <!-- Aktif Soru Alanı -->
-                <div class="card border-0 shadow-sm rounded-3 mb-4">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-start mb-3">
-                            <div class="bg-primary-subtle text-primary rounded-circle p-3 me-3">
-                                <i class="bi bi-chat-left-dots-fill fs-4"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div>
-                                        <h5 class="fw-semibold text-secondary mb-1">İK Uzmanı (Kıdemli Yapay Zeka)</h5>
-                                        <p class="fs-5 text-body fw-bold mb-0" id="questionText">
-                                            @Model.History[Model.CurrentQuestionNumber - 1].Question
-                                        </p>
-                                    </div>
-                                    <button type="button" id="ttsBtn" class="btn btn-outline-primary btn-sm rounded-circle ms-2" style="width: 38px; height: 38px; flex-shrink: 0;" title="Sesli Oku / Sustur">
-                                        <i class="bi bi-volume-up-fill fs-5"></i>
-                                    </button>
-                                </div>
-                                @if (Model.Mode != "Realistic")
-                                {
-                                    <div class="mt-2">
-                                        <button type="button" id="hintBtn" class="btn btn-outline-warning btn-sm fw-bold">
-                                            <i class="bi bi-lightbulb-fill me-1"></i> İpucu Al
-                                        </button>
-                                        <div id="hintBox" class="alert alert-warning small mt-2 d-none" role="status"></div>
-                                    </div>
-                                }
-                            </div>
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <span class="section-label mb-0">İK Uzmanı (Kıdemli Yapay Zeka)</span>
+                            <button type="button" id="ttsBtn" class="btn btn-outline-primary btn-sm rounded-circle" style="width: 36px; height: 36px; flex-shrink: 0;" title="Sesli Oku / Sustur">
+                                <i class="bi bi-volume-up-fill"></i>
+                            </button>
                         </div>
+                        <p class="fs-3 text-body fw-bold mb-4" id="questionText">
+                            @Model.History[Model.CurrentQuestionNumber - 1].Question
+                        </p>
 
-                        <hr class="my-4">
+                        @if (Model.Mode != "Realistic")
+                        {
+                            <div class="mb-4">
+                                <button type="button" id="hintBtn" class="btn btn-link text-decoration-none fw-bold p-0 text-body-secondary">
+                                    <i class="bi bi-lightbulb-fill me-1"></i> İpucu Al
+                                </button>
+                                <div id="hintBox" class="alert alert-warning small mt-2 d-none" role="status"></div>
+                            </div>
+                        }
 
                         <!-- Cevap Gönderme Formu -->
                         <form id="answerForm" asp-controller="Interview" asp-action="SubmitAnswer" method="post">
                             <input type="hidden" name="id" value="@Model.SessionId" />
                             <div class="mb-3">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <label for="answer" class="form-label fw-bold text-body mb-0">Cevabınız</label>
-                                    <button type="button" id="sttBtn" class="btn btn-outline-secondary btn-sm fw-bold">
-                                        <i class="bi bi-mic-fill me-1"></i> Sesli Yanıtla
-                                    </button>
-                                </div>
-                                <textarea class="form-control border-2" id="answer" name="answer" rows="6" 
-                                          placeholder="Cevabınızı buraya detaylıca yazınız veya 'Sesli Yanıtla' butonuna basarak konuşun..." 
+                                <textarea class="form-control rounded-3" id="answer" name="answer" rows="5"
+                                          placeholder="Cevabınızı buraya yazınız veya 'Sesli Yanıtla' ile konuşun..."
                                           required></textarea>
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="text-muted small"><i class="bi bi-info-circle me-1"></i>Karakter sınırlaması yoktur.</span>
-                                <button type="submit" id="submitBtn" class="btn btn-success btn-lg px-4 fw-bold shadow-sm">
+                                <button type="button" id="sttBtn" class="btn btn-link text-decoration-none fw-bold p-0 text-body-secondary">
+                                    <i class="bi bi-mic-fill me-1"></i> Sesli Yanıtla
+                                </button>
+                                <button type="submit" id="submitBtn" class="btn btn-gradient rounded-pill px-4 fw-bold">
                                     Cevabı Gönder <i class="bi bi-send-fill ms-1"></i>
                                 </button>
                             </div>
@@ -163,10 +141,10 @@
 
             <!-- Sağ Panel: Mülakat Geçmişi Akışı -->
             <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-3">
+                <div class="card border-0 shadow-sm rounded-4">
                     <div class="card-body p-4">
-                        <h5 class="fw-bold mb-3 text-body"><i class="bi bi-list-task me-2 text-primary"></i>Şimdiye Kadarki Akış</h5>
-                        
+                        <span class="section-label d-block mb-3">Şimdiye Kadarki Akış</span>
+
                         @if (Model.CurrentQuestionNumber == 1)
                         {
                             <p class="text-muted small mb-0">Henüz mülakatın başındasınız. Cevap verdikçe geçmiş buraya yansıyacaktır.</p>
@@ -177,11 +155,11 @@
                                 @for (int i = 0; i < Model.CurrentQuestionNumber - 1; i++)
                                 {
                                     var step = Model.History[i];
-                                    <div class="bg-body-secondary p-3 rounded-3 border-start border-primary border-4">
-                                        <p class="small fw-bold text-primary mb-1">Soru @(i + 1)</p>
-                                        <p class="small text-body mb-2">@step.Question</p>
-                                        <p class="small fw-bold text-success mb-1">Cevabınız</p>
-                                        <p class="small text-muted mb-0 text-truncate">@step.Answer</p>
+                                    <div class="bg-body-secondary p-3 rounded-3">
+                                        <p class="small fw-bold text-body mb-1">Soru @(i + 1)</p>
+                                        <p class="small text-body-secondary mb-2">@step.Question</p>
+                                        <p class="small fw-bold text-body mb-1">Cevabınız</p>
+                                        <p class="small text-body-secondary mb-0 text-truncate">@step.Answer</p>
                                     </div>
                                 }
                             </div>
@@ -195,64 +173,53 @@
     {
         <!-- 2. MÜLAKAT TAMAMLANDIYSA (DEĞERLENDİRME EKRANI) -->
         <div class="row g-4">
-            <!-- Sol Sütun: Yapay Zeka İK Değerlendirmesi -->
+            <!-- Sol Sütun: Yapay Zeka İK Değerlendirmesi — raporun kendisi ekranın odak noktası -->
             <div class="col-lg-7">
-                <div class="card border-0 shadow rounded-3" id="evaluationCard">
-                    <div class="card-header bg-primary text-white p-4 border-0 rounded-top-3">
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-award-fill fs-2 me-3"></i>
-                            <div>
-                                <h3 class="fw-bold mb-0">İK Değerlendirme Raporu</h3>
-                                
-                            </div>
-                        </div>
+                <div class="mb-3" data-html2canvas-ignore="true">
+                    <span class="section-label">Değerlendirme Raporu</span>
+                </div>
+                <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5" id="evaluationCard">
+                    <!-- Markdown render edilen alan -->
+                    <div id="markdown-evaluation" class="text-body"></div>
+
+                    <!-- Raporu İndirme Butonları -->
+                    <hr class="my-4" data-html2canvas-ignore="true">
+                    <div class="d-flex gap-2 justify-content-end" data-html2canvas-ignore="true">
+                        <button type="button" id="downloadTxtBtn" class="btn btn-outline-secondary btn-sm fw-bold">
+                            <i class="bi bi-file-earmark-text-fill me-1"></i> Metin Olarak İndir (.txt)
+                        </button>
+                        <button type="button" id="downloadPdfBtn" class="btn btn-outline-secondary btn-sm fw-bold">
+                            <i class="bi bi-file-pdf-fill me-1"></i> Raporu PDF Olarak İndir
+                        </button>
                     </div>
-                    <div class="card-body p-4">
-                        <!-- Markdown render edilen alan -->
-                        <div id="markdown-evaluation" class="text-body"></div>
-                        
-                        <!-- Raporu İndirme Butonları -->
-                        <hr class="my-4" data-html2canvas-ignore="true">
-                        <div class="d-flex gap-2 justify-content-end" data-html2canvas-ignore="true">
-                            <button type="button" id="downloadTxtBtn" class="btn btn-outline-secondary fw-bold">
-                                <i class="bi bi-file-earmark-text-fill me-1"></i> Metin Olarak İndir (.txt)
-                            </button>
-                            <button type="button" id="downloadPdfBtn" class="btn btn-primary fw-bold">
-                                <i class="bi bi-file-pdf-fill me-1"></i> Raporu PDF Olarak İndir
-                            </button>
-                        </div>
-                        
-                        <!-- Gizli ham markdown metni -->
-                        <div id="raw-evaluation" class="d-none">@Model.FinalEvaluation</div>
-                    </div>
+
+                    <!-- Gizli ham markdown metni -->
+                    <div id="raw-evaluation" class="d-none">@Model.FinalEvaluation</div>
                 </div>
             </div>
 
             <!-- Sağ Sütun: Detaylı Mülakat Görüşme Geçmişi (Transcript) -->
             <div class="col-lg-5">
-                <div class="card border-0 shadow-sm rounded-3">
-                    <div class="card-body p-4">
-                        <h4 class="fw-bold mb-4 text-body"><i class="bi bi-chat-square-text-fill text-success me-2"></i>Mülakat Görüşme Akışı</h4>
-                        
-                        <div class="vstack gap-4">
-                            @for (int i = 0; i < Model.History.Count; i++)
-                            {
-                                var step = Model.History[i];
-                                <div class="transcript-step pb-3 border-bottom">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <span class="badge bg-primary me-2">Soru @(i + 1)</span>
-                                        <span class="text-muted small">@step.AskedAt.ToLocalTime().ToString("HH:mm")</span>
-                                    </div>
-                                    <div class="bg-primary-subtle text-primary-emphasis p-3 rounded-3 mb-2 small">
-                                        <strong>İK Uzmanı:</strong> @step.Question
-                                    </div>
-                                    <div class="bg-success-subtle text-success-emphasis p-3 rounded-3 small">
-                                        <strong>Cevabınız:</strong> @step.Answer
-                                    </div>
-                                </div>
-                            }
+                <div class="mb-3">
+                    <span class="section-label">Mülakat Görüşme Akışı</span>
+                </div>
+                <div class="vstack gap-3">
+                    @for (int i = 0; i < Model.History.Count; i++)
+                    {
+                        var step = Model.History[i];
+                        <div class="card border-0 shadow-sm rounded-4 p-3 p-lg-4">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <span class="fw-bold small text-body">Soru @(i + 1)</span>
+                                <span class="text-body-secondary small">@step.AskedAt.ToLocalTime().ToString("HH:mm")</span>
+                            </div>
+                            <div class="bg-primary-subtle text-primary-emphasis p-3 rounded-3 mb-3 small">
+                                <strong>İK Uzmanı:</strong> @step.Question
+                            </div>
+                            <div class="bg-success-subtle text-success-emphasis p-3 rounded-3 small">
+                                <strong>Cevabınız:</strong> @step.Answer
+                            </div>
                         </div>
-                    </div>
+                    }
                 </div>
             </div>
         </div>

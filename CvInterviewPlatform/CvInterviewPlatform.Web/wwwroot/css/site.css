@@ -13,6 +13,7 @@
    veya color-mix()'e verilemiyor).
    ============================================================ */
 [data-bs-theme="light"] {
+  color-scheme: light;
   --app-bg: #faf6ee;
   --app-surface: #fffdf8;
   --app-text: #2a2620;
@@ -24,13 +25,17 @@
   --app-warning: #d97706;
   --app-danger: #dc3545;
   --app-success: #198754;
-  --app-sidebar-bg: #14151a;
-  --app-sidebar-text: #e9ecef;
-  --app-sidebar-text-muted: #9aa0a6;
-  --app-sidebar-border: #23252b;
+  /* Sidebar artık tema ile birlikte değişiyor (önceki karar: her iki temada
+     sabit koyu — kullanıcı isteğiyle geri alındı, açık temada sidebar da
+     açık yüzey kullanıyor). */
+  --app-sidebar-bg: #fffdf8;
+  --app-sidebar-text: #2a2620;
+  --app-sidebar-text-muted: #7a7367;
+  --app-sidebar-border: #e8e0d2;
 }
 
 [data-bs-theme="dark"] {
+  color-scheme: dark;
   --app-bg: #1a1d20;
   --app-surface: #24282c;
   --app-text: #e9ecef;
@@ -64,14 +69,47 @@ body, .card, .form-control, .form-select, .dropdown-menu, .alert, .app-sidebar {
   border-color: var(--app-border);
 }
 
-/* Küçük tipografi iyileştirmeleri — font ailesi değişmiyor, sadece okunabilirlik ince ayarı */
+/* Küçük tipografi iyileştirmeleri + font ailesini açıkça sabitliyoruz — tema
+   (açık/koyu) hiçbir zaman fontu değiştirmemeli, bu yüzden Bootstrap'ın
+   zımni varsayılanına bırakmak yerine burada net olarak tanımlıyoruz. */
 body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
 h1, h2, h3, h4, h5, h6 {
   letter-spacing: -0.015em;
+  margin-bottom: 0.6rem;
+}
+
+/* Genel nefes alma: metin satırları ve paragraflar birbirine yapışmasın */
+body {
+  line-height: 1.6;
+}
+
+p {
+  margin-bottom: 0.9rem;
+}
+
+p:last-child {
+  margin-bottom: 0;
+}
+
+/* Kart içi varsayılan boşluk — "her şey bir cart içinde" hissi için
+   bileşenlere gitmeden önce tüm .card öğelerine ortak bir nefes alanı */
+.card {
+  border-radius: 1rem;
+}
+
+.card-body {
+  padding: 1.75rem;
+}
+
+@media (min-width: 992px) {
+  .card-body {
+    padding: 2rem;
+  }
 }
 
 html {
@@ -132,6 +170,13 @@ html {
   flex-direction: column;
   padding: 1.5rem 1rem;
   border-right: 1px solid var(--app-sidebar-border);
+  /* İçerik viewport'tan uzun olsa bile sidebar (ve alttaki profil bloğu)
+     her zaman ekranda kalsın diye viewport'a sabitleniyor; sayfayla
+     birlikte uzayıp "Burak Ege" bloğunun görünmez hale gelmesini önler. */
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
 }
 
 .app-sidebar .sidebar-brand {
@@ -153,15 +198,15 @@ html {
 .app-sidebar .nav-link {
   color: var(--app-sidebar-text-muted);
   border-radius: 0.5rem;
-  padding: 0.6rem 0.75rem;
-  margin-bottom: 0.15rem;
+  padding: 0.7rem 0.9rem;
+  margin-bottom: 0.3rem;
   font-weight: 500;
   display: flex;
   align-items: center;
 }
 
 .app-sidebar .nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.06);
+  background-color: color-mix(in srgb, var(--app-sidebar-text) 8%, transparent);
   color: var(--app-sidebar-text);
 }
 
@@ -174,10 +219,102 @@ html {
   flex: 1 1 auto;
 }
 
+/* Sidebar alt profil bloğu (isim + çıkış) — Ayarlar'a kısayol */
+.sidebar-profile {
+  border-top: 1px solid var(--app-sidebar-border);
+  padding: 0.75rem 0.4rem 0.15rem;
+  margin-top: 0.25rem;
+}
+
+.sidebar-profile a.d-flex {
+  color: var(--app-sidebar-text);
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.5rem;
+  margin: -0.4rem -0.5rem;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.sidebar-profile a.d-flex:hover {
+  background-color: color-mix(in srgb, var(--app-sidebar-text) 8%, transparent);
+}
+
 .app-content {
   flex: 1 1 auto;
   min-width: 0;
-  padding: 1.5rem;
+  padding: 0 1.5rem 2rem;
+}
+
+.app-content > main {
+  padding-top: 1.5rem;
+}
+
+@media (min-width: 992px) {
+  .app-content {
+    padding: 0 2rem 2.5rem;
+  }
+}
+
+/* ============================================================
+   Üst bar: sidebar'ın taşımadığı ikincil öğeler (sayfa başlığı, tema,
+   kullanıcı bilgisi) burada; dashboard içeriği böylece sade kalır.
+   ============================================================ */
+.app-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: var(--app-bg);
+}
+
+.app-topbar .topbar-title {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.app-topbar .topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.app-topbar .topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.9rem 0.35rem 0.35rem;
+  border-radius: 2rem;
+  background-color: var(--app-surface);
+  border: 1px solid var(--app-border);
+  color: var(--app-text);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.app-topbar .topbar-user:hover,
+.app-topbar .topbar-user[aria-expanded="true"] {
+  border-color: var(--app-accent);
+}
+
+/* Alt bilgi şeridi (Views/Shared/_Layout.cshtml) */
+.app-footer a {
+  color: var(--app-accent);
+}
+
+.app-topbar .topbar-user .avatar-status img,
+.app-topbar .topbar-user .avatar-status .avatar-fallback {
+  width: 30px;
+  height: 30px;
+  font-size: 0.75rem;
+}
+
+.app-topbar .topbar-user .avatar-status::after {
+  border-color: var(--app-surface);
 }
 
 @media (max-width: 767.98px) {
@@ -193,6 +330,9 @@ html {
     align-items: center;
     border-right: none;
     border-bottom: 1px solid var(--app-sidebar-border);
+    position: static;
+    height: auto;
+    overflow-y: visible;
   }
 
   .app-sidebar .sidebar-spacer {
@@ -266,13 +406,18 @@ html {
   overflow: hidden;
 }
 
+.auth-hero .auth-hero-subtext {
+  color: var(--app-sidebar-text-muted);
+}
+
 .auth-hero::before, .auth-hero::after {
   content: "";
   position: absolute;
   border-radius: 50%;
   background: var(--app-gradient);
   opacity: 0.35;
-  filter: blur(10px);
+  filter: blur(40px);
+  animation: heroBlobFloat 14s ease-in-out infinite;
 }
 
 .auth-hero::before {
@@ -288,6 +433,41 @@ html {
   bottom: -60px;
   left: -60px;
   opacity: 0.25;
+  animation-duration: 18s;
+  animation-direction: reverse;
+}
+
+/* Metnin hemen arkasında yumuşak, hafif hareketli üçüncü bir ışık lekesi */
+.auth-hero .hero-glow {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  background: var(--app-gradient);
+  opacity: 0.18;
+  filter: blur(60px);
+  transform: translate(-50%, -50%);
+  animation: heroGlowPulse 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes heroBlobFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-20px, 25px) scale(1.08); }
+}
+
+@keyframes heroGlowPulse {
+  0%, 100% { opacity: 0.14; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 0.24; transform: translate(-50%, -50%) scale(1.12); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-hero::before, .auth-hero::after, .auth-hero .hero-glow {
+    animation: none;
+  }
 }
 
 .auth-hero > * {
@@ -309,6 +489,23 @@ html {
   max-width: 420px;
 }
 
+/* "veya" ayırıcısı (Google ile giriş/kayıt butonundan önce) */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--app-text-muted);
+  font-size: 0.8rem;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1 1 auto;
+  height: 1px;
+  background-color: var(--app-border);
+}
+
 @media (max-width: 767.98px) {
   .auth-shell {
     flex-direction: column;
@@ -320,29 +517,53 @@ html {
 }
 
 /* ============================================================
-   Stat kutusu (Views/Home/Index.cshtml)
+   Stat kartı (Views/Home/Index.cshtml) — ikon rozeti + değer,
+   sahte trend/yüzde verisi YOK, yalnızca gerçek türetilebilir sayılar.
    ============================================================ */
-.stat-tile {
-  border-left: 4px solid var(--app-accent);
-  border-radius: 0.75rem;
-  padding: 1rem 1.25rem;
+.stat-card {
+  border-radius: 1rem;
+  padding: 1.25rem;
   background-color: var(--app-surface);
+  border: 1px solid var(--app-border);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
-.stat-tile .stat-value {
-  font-size: 1.75rem;
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+}
+
+.stat-card .stat-card-icon {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  background-color: color-mix(in srgb, var(--app-accent) 15%, transparent);
+  color: var(--app-accent);
+}
+
+.stat-card .stat-value {
+  font-size: 1.5rem;
   font-weight: 800;
-  line-height: 1.1;
+  line-height: 1.2;
 }
 
-.stat-tile .stat-label {
+.stat-card .stat-label {
   font-size: 0.8rem;
   color: var(--app-text-muted);
 }
 
-.stat-tile.stat-tile-success { border-left-color: var(--app-success); }
-.stat-tile.stat-tile-warning { border-left-color: var(--app-warning); }
-.stat-tile.stat-tile-accent2 { border-left-color: var(--app-accent-2); }
+.stat-card.stat-card-warning .stat-card-icon { background-color: color-mix(in srgb, var(--app-warning) 18%, transparent); color: var(--app-warning); }
+.stat-card.stat-card-accent2 .stat-card-icon { background-color: color-mix(in srgb, var(--app-accent-2) 15%, transparent); color: var(--app-accent-2); }
+.stat-card.stat-card-success .stat-card-icon { background-color: color-mix(in srgb, var(--app-success) 15%, transparent); color: var(--app-success); }
 
 /* ============================================================
    Dashed dosya yükleme alanı (Views/Home/Index.cshtml — CV yükleme)
@@ -368,37 +589,146 @@ html {
 }
 
 /* ============================================================
-   Gradient banner CTA (Views/Home/Index.cshtml — karşılama bandı)
+   Karşılama kartı (Views/Home/Index.cshtml) — sade yüzey, gradient
+   sadece CTA butonunda; DESIGN.md'nin "tek vurgu, sakin zemin" ilkesi.
    ============================================================ */
-.gradient-banner {
-  background: var(--app-gradient);
-  color: #fff;
-  border-radius: 1rem;
-  padding: 1.75rem 2rem;
+.hero-card {
+  background-color: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 1.25rem;
+  padding: 2.25rem 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  position: relative;
+  overflow: hidden;
 }
 
-.gradient-banner .btn-light {
+.hero-card .hero-card-decor {
+  position: absolute;
+  right: 1.5rem;
+  bottom: 0;
+  font-size: 6rem;
+  opacity: 0.14;
   color: var(--app-accent);
-  font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
 }
 
 /* ============================================================
-   Mülakat modu / zorluk seviyesi seçim kartları (Views/Interview/Index.cshtml)
+   Sade liste satırı (Son Mülakatlar, Mülakat Geçmişi) — tablo/kart
+   yerine boşlukla ayrılan satırlar, DESIGN.md bölüm 2 ("no borders
+   everywhere") ile tutarlı.
+   ============================================================ */
+.list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.1rem;
+  padding: 1.1rem 0.5rem;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 0.6rem;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.list-row:hover {
+  background-color: var(--app-bg);
+}
+
+.list-row + .list-row {
+  border-top: 1px solid var(--app-border);
+}
+
+.list-row .list-row-icon {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: color-mix(in srgb, var(--app-accent) 12%, transparent);
+  color: var(--app-accent);
+}
+
+.list-row .list-row-title {
+  font-weight: 700;
+  color: var(--app-text);
+  font-size: 0.95rem;
+  margin-bottom: 0.2rem;
+}
+
+.list-row .list-row-subtitle {
+  font-size: 0.8rem;
+  color: var(--app-text-muted);
+  line-height: 1.5;
+}
+
+.list-row .list-row-meta {
+  font-size: 0.78rem;
+  color: var(--app-text-muted);
+  white-space: nowrap;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   Mülakat modu seçim kartları (Views/Interview/Index.cshtml)
+   Seçili kart yükselmiş/gölgeli; seçilmemiş kart de facto bir "cart"
+   olarak ince kenarlıkla ayrılır (tamamen sınırsız/yassı değil) —
+   sayfadaki div'lerin birbirinden net ayrılması için.
    ============================================================ */
 .mode-card {
   cursor: pointer;
+  display: block;
+  border: 1px solid var(--app-border) !important;
   background-color: var(--app-surface);
-  border-color: var(--app-border) !important;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  border-radius: 1rem;
+  padding: 1.5rem !important;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, background-color 0.15s ease-in-out;
 }
 
 .mode-card:hover {
   border-color: var(--app-accent) !important;
 }
 
+.mode-card .mode-card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--app-bg);
+  color: var(--app-text-muted);
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+  transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+}
+
+.mode-card .mode-card-select-indicator {
+  display: none;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--app-accent);
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-top: 0.75rem;
+}
+
 .mode-card:has(input:checked) {
   border-color: var(--app-accent) !important;
-  box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--app-accent) 15%, transparent);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.mode-card:has(input:checked) .mode-card-icon {
+  background-color: color-mix(in srgb, var(--app-accent) 15%, transparent);
+  color: var(--app-accent);
+}
+
+.mode-card:has(input:checked) .mode-card-select-indicator {
+  display: flex;
 }
 
 .mode-card:has(input:focus-visible) {
@@ -406,15 +736,103 @@ html {
   outline-offset: 2px;
 }
 
-.mode-card .mode-card-icon {
-  width: 44px;
-  height: 44px;
+/* ============================================================
+   Değerlendirme raporu markdown içeriği (Views/Interview/Session.cshtml
+   #markdown-evaluation) — marked.js ile üretilen ham HTML'e nefes
+   alanı ve tipografi hiyerarşisi kazandırır.
+   ============================================================ */
+#markdown-evaluation {
+  line-height: 1.75;
+}
+
+#markdown-evaluation h1,
+#markdown-evaluation h2,
+#markdown-evaluation h3 {
+  margin-top: 2rem;
+  margin-bottom: 0.85rem;
+}
+
+#markdown-evaluation h1:first-child,
+#markdown-evaluation h2:first-child,
+#markdown-evaluation h3:first-child {
+  margin-top: 0;
+}
+
+#markdown-evaluation p {
+  margin-bottom: 1.1rem;
+}
+
+#markdown-evaluation ul,
+#markdown-evaluation ol {
+  margin-bottom: 1.1rem;
+  padding-left: 1.4rem;
+}
+
+#markdown-evaluation li {
+  margin-bottom: 0.4rem;
+}
+
+#markdown-evaluation strong {
+  color: var(--app-text);
+}
+
+#markdown-evaluation hr {
+  margin: 1.75rem 0;
+  border-color: var(--app-border);
+}
+
+/* ============================================================
+   Sade native <select>, pill görünümlü (Views/Interview/Index.cshtml
+   — zorluk seviyesi seçici, Stitch mockup'taki "Senior Engineer ⌄"
+   dropdown pill deseni)
+   ============================================================ */
+.select-pill {
+  border-radius: 2rem;
+  border: 1px solid var(--app-border);
+  background-color: var(--app-surface);
+  color: var(--app-text);
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.55rem 2rem 0.55rem 1.1rem;
+}
+
+.select-pill:focus {
+  border-color: var(--app-accent);
+  box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--app-accent) 15%, transparent);
+}
+
+/* ============================================================
+   Uppercase bölüm etiketi (PERFORMANS ÖZETİ, SON MÜLAKATLAR vb.)
+   ============================================================ */
+.section-label {
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--app-text-muted);
+}
+
+/* ============================================================
+   Renkli durum noktası (● 2 Devam Ediyor gibi satır içi vurgular)
+   ============================================================ */
+.status-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background-color: color-mix(in srgb, var(--app-accent) 15%, transparent);
-  color: var(--app-accent);
-  font-size: 1.25rem;
-  margin-bottom: 0.5rem;
+  background-color: var(--app-accent);
+  margin-right: 0.35rem;
+}
+
+.status-dot.status-dot-warning { background-color: var(--app-warning); }
+.status-dot.status-dot-success { background-color: var(--app-success); }
+.status-dot.status-dot-muted { background-color: var(--app-text-muted); }
+
+/* list-row ikonunu daire/ring biçimine çeviren varyant (Ana Sayfa
+   "Son Mülakatlar", Mülakat Portalı geçmişi) */
+.list-row-icon.list-row-icon-ring {
+  border-radius: 50%;
+  background-color: transparent;
+  border: 1px solid var(--app-border);
+  color: var(--app-text-muted);
 }

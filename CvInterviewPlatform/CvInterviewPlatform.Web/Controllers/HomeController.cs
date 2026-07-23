@@ -246,5 +246,11 @@ namespace CvInterviewPlatform.Web.Controllers
 
             return View("Settings", user);
         }
+
+        // Gizlilik Politikası (footer linki)
+        public IActionResult Privacy()
+        {
+            return View();
+        }
     }
 }
