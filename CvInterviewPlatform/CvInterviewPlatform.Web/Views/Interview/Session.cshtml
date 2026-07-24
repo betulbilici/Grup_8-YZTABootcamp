@@ -143,13 +143,16 @@
                         </form>
                         <span id="recordingAnnouncement" class="visually-hidden" aria-live="assertive"></span>
 
-                        <!-- Yükleniyor Göstergesi -->
-                        <div id="loadingIndicator" class="d-none text-center py-4">
-                            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
-                                <span class="visually-hidden">Yükleniyor...</span>
-                            </div>
-                            <h5 class="mt-3 text-primary fw-bold">Cevabınız Değerlendiriliyor...</h5>
-                            <p class="text-muted">İK Uzmanımız cevabınızı analiz ediyor ve bir sonraki adımı hazırlıyor. Lütfen bekleyin.</p>
+                        <!-- Yükleniyor Göstergesi: sıradaki soru ve sesi hazırlanırken,
+                             gelecek soru kartının hatlarını taklit eden "skeleton" gösterge -->
+                        <div id="loadingIndicator" class="d-none py-2" role="status" aria-live="polite">
+                            <p class="text-primary small fw-bold mb-3">
+                                <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+                                Cevabınız değerlendiriliyor, sıradaki soru hazırlanıyor...
+                            </p>
+                            <div class="skeleton-block mb-2" style="height: 1rem; width: 30%;"></div>
+                            <div class="skeleton-block mb-2" style="height: 1.5rem; width: 95%;"></div>
+                            <div class="skeleton-block" style="height: 1.5rem; width: 65%;"></div>
                         </div>
                     </div>
                 </div>

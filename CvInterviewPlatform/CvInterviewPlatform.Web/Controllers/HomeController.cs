@@ -22,14 +22,16 @@ namespace CvInterviewPlatform.Web.Controllers
         private readonly IWebHostEnvironment _env;
         private readonly CvParserService _cvParserService;
         private readonly GeminiService _geminiService;
+        private readonly CvStorageService _cvStorageService;
 
         // Firestore servisini ve sunucu klasör yapısına erişmek için IWebHostEnvironment'ı enjekte ediyoruz
-        public HomeController(FirestoreService firestoreService, IWebHostEnvironment env, CvParserService cvParserService, GeminiService geminiService)
+        public HomeController(FirestoreService firestoreService, IWebHostEnvironment env, CvParserService cvParserService, GeminiService geminiService, CvStorageService cvStorageService)
         {
             _db = firestoreService.Db;
             _env = env;
             _cvParserService = cvParserService;
             _geminiService = geminiService;
+            _cvStorageService = cvStorageService;
         }
 
         // Ana Ekran (Dashboard)
@@ -106,41 +108,56 @@ namespace CvInterviewPlatform.Web.Controllers
             DocumentReference docRef = _db.Collection("Users").Document(username);
             Dictionary<string, object> updates = new Dictionary<string, object>();
 
-            // wwwroot/uploads/cvs klasörünü hedefliyoruz
-            string cvFolder = Path.Combine(_env.WebRootPath, "uploads", "cvs");
-            Directory.CreateDirectory(cvFolder);
+            // Docling parse'ı hâlâ bir dosya yolu istiyor, bu yüzden geçici bir dosyaya
+            // yazıyoruz; kalıcı depolama artık wwwroot değil Cloudflare R2.
+            string objectKey = "cvs/" + username + "_cv" + ext;
+            string tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ext);
 
-            string uniqueCvName = username + "_cv" + ext;
-            string filePath = Path.Combine(cvFolder, uniqueCvName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await cvFile.CopyToAsync(stream);
-            }
-
-            updates["cvUrl"] = "/uploads/cvs/" + uniqueCvName;
-
-            // CV metin içeriğini ayıklamak ve Firestore'a kaydetmek için parser servisini çağırıyoruz
             try
             {
-                string parsedContent = await _cvParserService.ParseDocumentAsync(filePath);
-                if (!string.IsNullOrEmpty(parsedContent))
+                using (var stream = new FileStream(tempPath, FileMode.Create))
                 {
-                    updates["cvContent"] = parsedContent;
-
-                    // Yeni CV'ye göre analiz de güncellensin — eski analiz varsa üzerine yazılır
-                    updates["cvAnalysis"] = await _geminiService.GenerateCvAnalysisAsync(parsedContent);
-
-                    TempData["Success"] = "CV belgeniz başarıyla yüklendi ve yapay zeka analizi hazırlandı.";
+                    await cvFile.CopyToAsync(stream);
                 }
-                else
+
+                using (var uploadStream = System.IO.File.OpenRead(tempPath))
                 {
-                    TempData["Warning"] = "CV dosyanız yüklendi ancak içeriği metne dönüştürülemedi. Yapay zeka mülakat sırasında özgeçmişinizi okuyamayabilir.";
+                    await _cvStorageService.UploadAsync(uploadStream, objectKey, cvFile.ContentType);
+                }
+                updates["cvUrl"] = objectKey;
+
+                // CV metin içeriğini ayıklamak ve Firestore'a kaydetmek için parser servisini çağırıyoruz
+                try
+                {
+                    string parsedContent = await _cvParserService.ParseDocumentAsync(tempPath);
+                    if (!string.IsNullOrEmpty(parsedContent))
+                    {
+                        updates["cvContent"] = parsedContent;
+
+                        // Analizi burada üretmiyoruz — CvAnalysis() action'ı ilk ziyarette
+                        // otomatik üretiyor zaten, upload'ı ekstra bir Gemini çağrısı kadar
+                        // bekletmemek için eski analizi burada temizliyoruz ki bir sonraki
+                        // ziyarette yeni CV'ye göre yeniden üretilsin.
+                        updates["cvAnalysis"] = "";
+
+                        TempData["Success"] = "CV belgeniz başarıyla yüklendi.";
+                    }
+                    else
+                    {
+                        TempData["Warning"] = "CV dosyanız yüklendi ancak içeriği metne dönüştürülemedi. Yapay zeka mülakat sırasında özgeçmişinizi okuyamayabilir.";
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    TempData["Warning"] = "CV dosyanız yüklendi ancak yapay zeka analiz servisi (FastAPI) şu an kapalı olduğu için metin okunamadı.";
                 }
             }
-            catch (System.Exception ex)
+            finally
             {
-                TempData["Warning"] = "CV dosyanız yüklendi ancak yapay zeka analiz servisi (FastAPI) şu an kapalı olduğu için metin okunamadı.";
+                if (System.IO.File.Exists(tempPath))
+                {
+                    System.IO.File.Delete(tempPath);
+                }
             }
 
             await docRef.UpdateAsync(updates);
@@ -175,24 +192,19 @@ namespace CvInterviewPlatform.Web.Controllers
 
             DocumentReference docRef = _db.Collection("Users").Document(username);
 
-            // wwwroot/uploads/profiles klasörünü hedefliyoruz
-            string profileFolder = Path.Combine(_env.WebRootPath, "uploads", "profiles");
-            Directory.CreateDirectory(profileFolder);
-
-            string uniqueProfileName = username + "_profile" + ext;
-            string filePath = Path.Combine(profileFolder, uniqueProfileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            // Kalıcı depolama artık wwwroot değil Cloudflare R2 — Firestore'a ve
+            // Session'a dosyanın kendisi değil R2 obje anahtarı yazılıyor.
+            string objectKey = "profiles/" + username + "_profile" + ext;
+            using (var stream = profilePicture.OpenReadStream())
             {
-                await profilePicture.CopyToAsync(stream);
+                await _cvStorageService.UploadAsync(stream, objectKey, profilePicture.ContentType);
             }
 
-            string profilePictureUrl = "/uploads/profiles/" + uniqueProfileName;
-            await docRef.UpdateAsync("profilePictureUrl", profilePictureUrl);
+            await docRef.UpdateAsync("profilePictureUrl", objectKey);
 
             // Sidebar/topbar'daki avatar Session'dan okunuyor — anında güncellensin diye
             // burada da yazıyoruz, yoksa yeniden giriş yapana kadar eski (harf) avatar görünür.
-            HttpContext.Session.SetString("ProfilePictureUrl", profilePictureUrl);
+            HttpContext.Session.SetString("ProfilePictureUrl", objectKey);
 
             TempData["Success"] = "Profil fotoğrafınız başarıyla güncellendi.";
             return RedirectToAction("Settings");
@@ -213,15 +225,56 @@ namespace CvInterviewPlatform.Web.Controllers
             User user = snapshot.ConvertTo<User>();
 
             // Geriye dönük uyumluluk: CV'si zaten yüklü ama daha önce analiz üretilmemiş
-            // kullanıcılar için (bu özellikten önce yüklenmiş CV'ler), sayfa ilk açıldığında
-            // analiz burada üretilip Firestore'a yazılıyor — CV'yi yeniden yüklemelerine gerek kalmıyor.
+            // kullanıcılar için (bu özellikten önce yüklenmiş CV'ler) analiz burada tetiklenir.
+            // Gemini'yi burada BEKLEMİYORUZ — 13-20sn sürebiliyor, sayfayı bloklamak yerine
+            // arka planda üretilip bittiğinde Firestore'a yazılıyor (bkz. PersistWhenReadyAsync),
+            // sayfa "hazırlanıyor" durumuyla hemen açılıyor ve CvAnalysisStatus() ile polling yapıyor.
             if (!string.IsNullOrEmpty(user.CvContent) && string.IsNullOrEmpty(user.CvAnalysis))
             {
-                user.CvAnalysis = await _geminiService.GenerateCvAnalysisAsync(user.CvContent);
-                await docRef.UpdateAsync("cvAnalysis", user.CvAnalysis);
+                Task<string> analysisTask = _geminiService.GetOrStartCvAnalysisAsync(username, user.CvContent);
+                _ = PersistCvAnalysisWhenReadyAsync(username, analysisTask);
+                ViewBag.AnalysisPending = true;
             }
 
+            // "CV Dosyanı Görüntüle" linki artık bir R2 obje anahtarı değil, süreli
+            // imzalı bir URL istiyor — bunu view'in kendisi üretemediği için burada hazırlıyoruz.
+            ViewBag.CvPreviewUrl = _cvStorageService.ResolvePreviewUrl(user.CvUrl);
+
             return View(user);
+        }
+
+        // CV Analizim sayfasındaki polling script'inin sorduğu durum uç noktası —
+        // Gemini'yi tetiklemez, sadece PersistCvAnalysisWhenReadyAsync'in Firestore'a
+        // yazıp yazmadığını kontrol eder.
+        [HttpGet]
+        public async Task<IActionResult> CvAnalysisStatus()
+        {
+            string username = HttpContext.Session.GetString("Username");
+            if (string.IsNullOrEmpty(username)) return Unauthorized();
+
+            DocumentSnapshot snapshot = await _db.Collection("Users").Document(username).GetSnapshotAsync();
+            if (!snapshot.Exists) return Unauthorized();
+
+            User user = snapshot.ConvertTo<User>();
+            bool ready = !string.IsNullOrEmpty(user.CvAnalysis);
+            return Json(new { ready, analysis = ready ? user.CvAnalysis : null });
+        }
+
+        private async Task PersistCvAnalysisWhenReadyAsync(string username, Task<string> analysisTask)
+        {
+            try
+            {
+                string result = await analysisTask;
+                await _db.Collection("Users").Document(username).UpdateAsync("cvAnalysis", result);
+            }
+            catch (System.Exception ex)
+            {
+                System.Console.Error.WriteLine($"PersistCvAnalysisWhenReadyAsync hata: {ex.Message}");
+            }
+            finally
+            {
+                _geminiService.ClearInFlightCvAnalysis(username);
+            }
         }
 
         // Ayarlar Sayfasını Açan Metot (GET)
@@ -237,6 +290,7 @@ namespace CvInterviewPlatform.Web.Controllers
             if (!snapshot.Exists) return RedirectToAction("SignOut", "Account");
 
             User user = snapshot.ConvertTo<User>();
+            ViewBag.ProfilePicturePreviewUrl = _cvStorageService.ResolvePreviewUrl(user.ProfilePictureUrl);
             return View(user);
         }
 

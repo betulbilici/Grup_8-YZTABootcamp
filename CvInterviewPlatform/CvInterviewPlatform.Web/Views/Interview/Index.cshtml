@@ -72,6 +72,20 @@
             </button>
         </div>
     </form>
+
+    <!-- Yükleniyor Göstergesi: mülakatın ilk sorusu ve sesi yapay zeka tarafından
+         üretilirken (10-15sn sürebiliyor) form burada kaybolup yerine, gelecek soru
+         kartının hatlarını taklit eden bir "skeleton" gösterge geçiyor. -->
+    <div id="startInterviewLoader" class="d-none py-2" role="status" aria-live="polite">
+        <p class="text-body-secondary small mb-3">
+            <span class="spinner-border spinner-border-sm text-primary me-2" aria-hidden="true"></span>
+            Mülakatınız hazırlanıyor, sesli soru da hazırlanıyor...
+        </p>
+        <div class="skeleton-block mb-2" style="height: 1rem; width: 35%;"></div>
+        <div class="skeleton-block mb-2" style="height: 1.5rem; width: 90%;"></div>
+        <div class="skeleton-block mb-3" style="height: 1.5rem; width: 70%;"></div>
+        <div class="skeleton-block" style="height: 2.5rem; width: 180px;"></div>
+    </div>
 </div>
 
 <div class="card border-0 shadow-sm p-4 p-lg-5">
@@ -132,6 +146,15 @@
             });
 
             updateTimeLimitVisibility();
+
+            var startForm = document.getElementById("startInterviewForm");
+            var startLoader = document.getElementById("startInterviewLoader");
+            if (startForm && startLoader) {
+                startForm.addEventListener("submit", function () {
+                    startForm.classList.add("d-none");
+                    startLoader.classList.remove("d-none");
+                });
+            }
         });
     </script>
 }

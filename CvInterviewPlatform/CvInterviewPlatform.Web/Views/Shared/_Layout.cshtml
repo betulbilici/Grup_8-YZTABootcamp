@@ -86,7 +86,7 @@
                             <button type="button" class="topbar-user" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Kullanıcı menüsü">
                                 <span class="avatar-status">
                                     @{
-                                        string topbarProfilePic = Context.Session.GetString("ProfilePictureUrl");
+                                        string topbarProfilePic = Storage.ResolvePreviewUrl(Context.Session.GetString("ProfilePictureUrl"));
                                     }
                                     @if (!string.IsNullOrEmpty(topbarProfilePic))
                                     {

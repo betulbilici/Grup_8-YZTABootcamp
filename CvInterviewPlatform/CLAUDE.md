@@ -25,6 +25,7 @@ Bu bir bootcamp projesidir (Grup 8, YZTA Bootcamp). Sprint bazlı geliştiriliyo
 | Veritabanı | Google Firestore (`Google.Cloud.Firestore` 4.3.0) |
 | Yapay zeka | Gemini 2.5 Flash (`Google.GenAI` 1.12.0) |
 | Belge işleme | Python FastAPI + IBM Docling, ayrı mikroservis |
+| Dosya depolama | Cloudflare R2 (`AWSSDK.S3` — R2, S3 API ile uyumlu), presigned URL ile önizleme |
 | Arayüz | Bootstrap 5, Bootstrap Icons (CDN), marked.js (CDN) |
 | Ses | HTML5 Web Speech API (tarayıcı yerleşik, sunucu maliyeti yok) |
 | Oturum | ASP.NET Session (cookie tabanlı) |
@@ -50,7 +51,8 @@ CvInterviewPlatform/
 │   │   └── ErrorViewModel.cs
 │   ├── Services/
 │   │   ├── GeminiService.cs          ← soru üretimi + değerlendirme
-│   │   └── CvParserService.cs        ← FastAPI'ye HTTP istemcisi
+│   │   ├── CvParserService.cs        ← FastAPI'ye HTTP istemcisi
+│   │   └── CvStorageService.cs       ← Cloudflare R2 (S3 uyumlu), upload + presigned URL
 │   ├── Helpers/
 │   │   └── PasswordHasher.cs         ← SHA256 (zayıf, değiştirilmeli)
 │   ├── Views/
@@ -62,7 +64,7 @@ CvInterviewPlatform/
 │       ├── css/site.css
 │       ├── js/site.js
 │       ├── lib/                      ← bootstrap, jquery (yerel)
-│       └── uploads/{cvs,profiles}/   ← .gitignore'da, PUBLIC ERİŞİLEBİLİR
+│       └── uploads/{cvs,profiles}/   ← .gitignore'da, SADECE R2 öncesi (eski) dokümanlar için — yeni CV/fotoğraf yüklemeleri artık buraya yazılmıyor, R2'ye gidiyor
 └── CvParserService/                  ← Python mikroservis
     ├── main.py                       ← FastAPI, /health ve /parse
     └── requirements.txt
@@ -75,12 +77,18 @@ CvInterviewPlatform/
 **Ön koşullar:**
 - `firebase-key.json` dosyası `CvInterviewPlatform.Web/` içinde olmalı (`.gitignore`'da, takım liderinden alınır)
 - Gemini API anahtarı User Secrets veya `GEMINI_API_KEY` ortam değişkeninde
+- Cloudflare R2 bucket'ı + API token'ı (CV/profil fotoğrafı depolama için, User Secrets'ta)
 
 ```bash
 # 1. Gemini anahtarı (bir kez)
 cd CvInterviewPlatform/CvInterviewPlatform.Web
 dotnet user-secrets init
 dotnet user-secrets set "Gemini:ApiKey" "ANAHTAR"
+
+# 1b. Cloudflare R2 kimlik bilgileri (bir kez) — bucket adı ve Account ID
+# appsettings.json'da düz yazılı (hassas değil), Access Key/Secret buradan girilir
+dotnet user-secrets set "R2:AccessKeyId" "ANAHTAR"
+dotnet user-secrets set "R2:SecretAccessKey" "ANAHTAR"
 
 # 2. Parser mikroservisi (ayrı terminal, önce başlatılmalı)
 cd CvInterviewPlatform/CvParserService
@@ -173,7 +181,7 @@ Bunlar farkında olunan durumlardır. Kod üzerinde çalışırken bunları bile
 
 | Sorun | Detay |
 |---|---|
-| **CV'ler herkese açık** | `wwwroot/uploads/cvs/{username}_cv.pdf` doğrudan URL ile indirilebilir. Kullanıcı adları tahmin edilebilir. |
+| ~~**CV'ler herkese açık**~~ | **Yeni yüklemeler için çözüldü.** CV/profil fotoğrafı artık Cloudflare R2'de (özel bucket), sadece süreli imzalı (presigned) URL ile açılabiliyor — bkz. `CvStorageService`. R2'ye geçmeden önce yüklenmiş dosyalar hâlâ `wwwroot/uploads/` altında ve public (göç yapılmadı). |
 | **CSRF koruması yok** | Projede hiç `[ValidateAntiForgeryToken]` yok |
 | **Zayıf şifre hash'i** | SHA256, salt yok, iterasyon yok |
 | **Yükleme doğrulaması yok** | Sunucu tarafında uzantı/MIME/boyut kontrolü yok. `Path.GetExtension(file.FileName)` kullanıcı girdisini diske taşıyor. |
@@ -181,7 +189,7 @@ Bunlar farkında olunan durumlardır. Kod üzerinde çalışırken bunları bile
 ### Deploy engelleri
 
 - `FirestoreService` `projectId`'yi ("cvinterviewplatform") ve `firebase-key.json` dosya yolunu hardcode ediyor
-- `wwwroot/uploads` yerel diske yazıyor, container yeniden başlayınca kaybolur
+- ~~`wwwroot/uploads` yerel diske yazıyor, container yeniden başlayınca kaybolur~~ — **yeni yüklemeler için çözüldü**, artık Cloudflare R2'ye gidiyor (bkz. `CvStorageService`)
 - Parser servisi varsayılan `127.0.0.1:8000`, prod URL'i tanımlı değil
 
 ### Fonksiyonel

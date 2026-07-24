@@ -1204,3 +1204,31 @@ html {
   border: 1px solid var(--app-border);
   color: var(--app-text-muted);
 }
+
+/* Skeleton/shimmer yükleniyor placeholder'ı (Getir/LinkedIn tarzı) — mülakat
+   başlatma ve sıradaki soru beklenirken düz spinner yerine gelecek içeriğin
+   hatlarını taklit ediyor. */
+.skeleton-block {
+  background: linear-gradient(
+    90deg,
+    var(--app-border) 25%,
+    color-mix(in srgb, var(--app-border) 45%, transparent) 37%,
+    var(--app-border) 63%
+  );
+  background-size: 400% 100%;
+  border-radius: 0.5rem;
+  animation: skeletonShimmer 1.4s ease infinite;
+}
+
+@keyframes skeletonShimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-block { animation: none; }
+}
+
+html[data-app-motion="off"] .skeleton-block {
+  animation: none;
+}

@@ -14,11 +14,13 @@ namespace CvInterviewPlatform.Web.Controllers
     {
         private readonly FirestoreDb _db;
         private readonly GeminiService _geminiService;
+        private readonly AzureTtsService _azureTtsService;
 
-        public InterviewController(FirestoreService firestoreService, GeminiService geminiService)
+        public InterviewController(FirestoreService firestoreService, GeminiService geminiService, AzureTtsService azureTtsService)
         {
             _db = firestoreService.Db;
             _geminiService = geminiService;
+            _azureTtsService = azureTtsService;
         }
 
         // Mülakat Dashboard'u: Geçmiş mülakatları gösterir ve yeni mülakat başlatır.
@@ -122,6 +124,11 @@ namespace CvInterviewPlatform.Web.Controllers
                 });
 
                 await newSessionRef.SetAsync(newSession);
+
+                // Sesi de aynı istekte üretip önbelleğe alıyoruz — kullanıcı zaten
+                // Gemini'nin ~13sn'lik cevabını beklediği bir yükleniyor ekranında,
+                // Azure'ın ~1-2sn'lik gecikmesi bu bekleme içinde fark edilmeden geçiyor.
+                await _azureTtsService.SynthesizeAndCacheAsync(firstQuestion, AzureTtsService.BuildCacheKey(sessionId, 1));
 
                 return RedirectToAction("Session", new { id = sessionId });
             }
@@ -242,6 +249,8 @@ namespace CvInterviewPlatform.Web.Controllers
                     });
 
                     session.CurrentQuestionNumber = nextQuestionNumber;
+
+                    await _azureTtsService.SynthesizeAndCacheAsync(nextQuestion, AzureTtsService.BuildCacheKey(id, nextQuestionNumber));
                 }
                 else
                 {
@@ -316,6 +325,32 @@ namespace CvInterviewPlatform.Web.Controllers
                 Console.Error.WriteLine($"GetHint hata: {ex.Message}");
                 return StatusCode(500);
             }
+        }
+
+        // Sorunun önceden üretilmiş Azure TTS ses klibini döner (bkz. StartInterview/SubmitAnswer)
+        [HttpGet]
+        public async Task<IActionResult> QuestionAudio(string id, int questionNumber)
+        {
+            string username = HttpContext.Session.GetString("Username") ?? "";
+            if (string.IsNullOrEmpty(username))
+            {
+                return Unauthorized();
+            }
+
+            byte[]? audioBytes = _azureTtsService.TryGetCached(AzureTtsService.BuildCacheKey(id, questionNumber));
+            if (audioBytes == null)
+            {
+                return NotFound();
+            }
+
+            // Başkasının mülakat sesine erişimi engelle (aynı sahiplik kontrolü diğer action'larda da var)
+            DocumentSnapshot snapshot = await _db.Collection("Sessions").Document(id).GetSnapshotAsync();
+            if (!snapshot.Exists || snapshot.ConvertTo<InterviewSession>().Username != username)
+            {
+                return Forbid();
+            }
+
+            return File(audioBytes, "audio/mpeg");
         }
 
         // Mülakat Geçmişini Silme (POST)

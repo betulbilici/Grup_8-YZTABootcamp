@@ -105,7 +105,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // 1. Text-to-Speech (Yapay Zeka Soru Okuma)
-    function speakText(text) {
+    // Önce Azure Neural TTS deneniyor (StartInterview/SubmitAnswer sırasında önceden
+    // üretilip önbelleğe alınmış, doğal Türkçe ses — bkz. InterviewController.QuestionAudio).
+    // Önbellekte yoksa veya oynatma tarayıcı tarafından engellenirse (autoplay policy),
+    // tarayıcının kendi speechSynthesis'ine (daha düşük kalite ama her zaman çalışan) düşülüyor.
+    var ttsAudio = null;
+
+    function speakBrowserFallback(text) {
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel(); // Mevcut tüm konuşmaları iptal et
 
@@ -135,11 +141,39 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    function speakText(text) {
+        var audioUrl = "/Interview/QuestionAudio?id=" + encodeURIComponent(sessionId) + "&questionNumber=" + currentQuestionNumber;
+        ttsAudio = new Audio(audioUrl);
+        ttsAudio.onplay = function () {
+            setTtsState(true);
+        };
+        ttsAudio.onended = function () {
+            setTtsState(false);
+        };
+        ttsAudio.onerror = function () {
+            // Önbellekte ses yok (404) ya da başka bir hata — tarayıcı sesine düş
+            speakBrowserFallback(text);
+        };
+        var playPromise = ttsAudio.play();
+        if (playPromise) {
+            playPromise.catch(function () {
+                // Otomatik oynatma tarayıcı tarafından engellendi (autoplay policy) —
+                // kullanıcı "Sesli Oku"ya manuel bastığında bu bir kullanıcı jesti
+                // olduğu için engellenmeyecek.
+                setTtsState(false);
+            });
+        }
+    }
+
     function stopSpeaking() {
+        if (ttsAudio) {
+            ttsAudio.pause();
+            ttsAudio.currentTime = 0;
+        }
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
-            setTtsState(false);
         }
+        setTtsState(false);
     }
 
     function setTtsState(speaking) {
@@ -172,24 +206,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (questionTextElement) {
-        // Tarayıcı seslerinin yüklenmesi için küçük bir gecikme ekliyoruz
         setTimeout(() => {
             triggerAutoPlay();
         }, 800);
-
-        // Tarayıcı sesleri değiştiğinde tetiklenir (bazen ilk yüklemede getVoices boş döner)
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.onvoiceschanged = function () {
-                triggerAutoPlay();
-            };
-        }
     }
 
     const ttsBtn = document.getElementById("ttsBtn");
     if (ttsBtn && questionTextElement) {
         ttsBtn.addEventListener("click", function () {
-            // Tarayıcının kendi konuşma durumunu sorguluyoruz
-            if (window.speechSynthesis && window.speechSynthesis.speaking) {
+            var isCurrentlySpeaking = (ttsAudio && !ttsAudio.paused) || (window.speechSynthesis && window.speechSynthesis.speaking);
+            if (isCurrentlySpeaking) {
                 stopSpeaking();
             } else {
                 speakText(questionTextElement.textContent.trim());
@@ -198,11 +224,17 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // 2. Speech-to-Text (Konuşarak Cevap Verme)
+    // interimResults=true: kullanıcı konuşurken metin anlık (kelime kelime) güncelleniyor,
+    // önceden sadece cümle tamamlanip "final" sayılınca yazı beliriyordu — bu da
+    // konuşmayla yazı arasında gözle görülür bir gecikme hissi veriyordu.
+    let sttBaseText = '';
+    let sttFinalTranscript = '';
+
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         recognition = new SpeechRecognition();
         recognition.continuous = true;
-        recognition.interimResults = false;
+        recognition.interimResults = true;
         recognition.lang = 'tr-TR';
 
         recognition.onstart = function () {
@@ -221,18 +253,15 @@ document.addEventListener("DOMContentLoaded", function () {
         recognition.onresult = function (event) {
             const answerArea = document.getElementById("answer");
             if (answerArea) {
-                let finalTranscript = '';
+                let interimTranscript = '';
                 for (let i = event.resultIndex; i < event.results.length; ++i) {
                     if (event.results[i].isFinal) {
-                        finalTranscript += event.results[i][0].transcript;
+                        sttFinalTranscript += event.results[i][0].transcript;
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
                     }
                 }
-                if (finalTranscript) {
-                    if (answerArea.value && !answerArea.value.endsWith(' ')) {
-                        answerArea.value += ' ';
-                    }
-                    answerArea.value += finalTranscript;
-                }
+                answerArea.value = sttBaseText + sttFinalTranscript + interimTranscript;
             }
         };
     } else {
@@ -271,6 +300,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 recognition.stop();
             } else {
                 stopSpeaking(); // Kayıt başlarken hoparlörü sustur (geri beslemeyi önlemek için)
+                const answerArea = document.getElementById("answer");
+                sttBaseText = answerArea && answerArea.value
+                    ? (answerArea.value.endsWith(' ') ? answerArea.value : answerArea.value + ' ')
+                    : '';
+                sttFinalTranscript = '';
                 recognition.start();
             }
         });

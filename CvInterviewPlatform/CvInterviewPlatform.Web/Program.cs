@@ -8,7 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Firestore Servisini .NET sistemine tekil (Singleton) olarak kaydediyoruz
 builder.Services.AddSingleton<FirestoreService>();
 builder.Services.AddSingleton<GeminiService>();
+builder.Services.AddSingleton<CvStorageService>();
 builder.Services.AddHttpClient<CvParserService>();
+builder.Services.AddHttpClient<AzureTtsService>();
 
 // Session servislerini projeye ekliyoruz ve ayarlarn yapyoruz
 // Session servislerini projeye ekliyoruz ve ayarlarn yapyoruz

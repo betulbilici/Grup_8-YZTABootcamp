@@ -35,7 +35,7 @@
             <a class="d-flex align-items-center text-decoration-none flex-grow-1" asp-controller="Home" asp-action="Settings">
                 <span class="avatar-status me-2">
                     @{
-                        string sidebarProfilePic = Context.Session.GetString("ProfilePictureUrl");
+                        string sidebarProfilePic = Storage.ResolvePreviewUrl(Context.Session.GetString("ProfilePictureUrl"));
                     }
                     @if (!string.IsNullOrEmpty(sidebarProfilePic))
                     {
