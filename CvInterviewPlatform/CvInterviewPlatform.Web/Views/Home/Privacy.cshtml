@@ -1,6 +1,87 @@
-﻿@{
-    ViewData["Title"] = "Privacy Policy";
+@{
+    ViewData["Title"] = "Gizlilik Politikası";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 fw-bold mb-0">Gizlilik Politikası</h1>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-ghost btn-sm fw-bold"><i class="bi bi-arrow-left me-1"></i> Panele Dön</a>
+</div>
+
+<div class="card border-0 shadow-sm p-4 p-lg-5 mb-4">
+    <p class="text-body-secondary mb-0">
+        CV Interview AI, Yapay Zeka Teknoloji Akademisi (YZTA) Bootcamp kapsamında
+        Grup 8 tarafından geliştirilen bir eğitim projesidir; ticari bir ürün değildir
+        ve gelir amacı gütmez. Bu sayfa, platformu kullanırken hangi verilerin
+        toplandığını, nasıl işlendiğini ve hangi üçüncü taraf servislerin kullanıldığını
+        olabildiğince açık şekilde anlatır. Son güncelleme: Temmuz 2026.
+    </p>
+</div>
+
+<div class="card border-0 shadow-sm p-4 p-lg-5 mb-4">
+    <h2 class="h5 fw-bold mb-3 text-body"><i class="bi bi-people-fill me-2"></i>Grup 8</h2>
+    <div class="row g-2 text-body-secondary">
+        <div class="col-sm-6"><i class="bi bi-person-fill me-1 text-body-secondary"></i>Aslıhan Yeşilyurt Şengül <span class="small">(Scrum Master)</span></div>
+        <div class="col-sm-6"><i class="bi bi-person-fill me-1 text-body-secondary"></i>Pelin Çelik <span class="small">(Product Owner)</span></div>
+        <div class="col-sm-6"><i class="bi bi-person-fill me-1 text-body-secondary"></i>Betül Bilici</div>
+        <div class="col-sm-6"><i class="bi bi-person-fill me-1 text-body-secondary"></i>Abdulkadir Süslü</div>
+        <div class="col-sm-6"><i class="bi bi-person-fill me-1 text-body-secondary"></i>Burak Ege Kaya <span class="small">(Developer)</span></div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm p-4 p-lg-5 mb-4">
+    <h2 class="h5 fw-bold mb-3 text-body"><i class="bi bi-database-fill-gear me-2"></i>Toplanan Veriler</h2>
+    <ul class="text-body-secondary mb-0">
+        <li class="mb-2"><strong class="text-body">Hesap bilgileri:</strong> kullanıcı adı, ad-soyad, Gmail adresi, telefon numarası ve şifrenizin hash'lenmiş hâli (şifrenizin kendisi hiçbir yerde düz metin olarak saklanmaz).</li>
+        <li class="mb-2"><strong class="text-body">CV ve profil fotoğrafı:</strong> yüklediğiniz özgeçmiş dosyası ve bu dosyadan yapay zeka tarafından çıkarılan metin içeriği, ayrıca profil fotoğrafınız.</li>
+        <li class="mb-2"><strong class="text-body">Mülakat verileri:</strong> başlattığınız her mülakat oturumunda üretilen sorular, yazdığınız/söylediğiniz cevaplar ve yapay zeka tarafından üretilen değerlendirme raporu.</li>
+        <li class="mb-0"><strong class="text-body">Google ile giriş kullanılırsa:</strong> Google hesabınızdan yalnızca ad, soyad ve e-posta bilgisi alınır; Google şifreniz platforma hiçbir şekilde ulaşmaz.</li>
+    </ul>
+</div>
+
+<div class="card border-0 shadow-sm p-4 p-lg-5 mb-4">
+    <h2 class="h5 fw-bold mb-3 text-body"><i class="bi bi-cpu-fill me-2"></i>Verileriniz Nasıl Kullanılır</h2>
+    <p class="text-body-secondary mb-0">
+        CV içeriğiniz ve mülakat geçmişiniz, size özel mülakat soruları üretmek ve
+        cevaplarınızı değerlendiren bir rapor oluşturmak amacıyla Google Gemini yapay
+        zeka modeline gönderilir. Bu veriler reklam, profil oluşturma veya üçüncü
+        taraflara satış amacıyla kullanılmaz — platformun tek işlevi olan mülakat
+        simülasyonunu çalıştırmak dışında bir amaca hizmet etmez.
+    </p>
+</div>
+
+<div class="card border-0 shadow-sm p-4 p-lg-5 mb-4">
+    <h2 class="h5 fw-bold mb-3 text-body"><i class="bi bi-diagram-3-fill me-2"></i>Kullanılan Üçüncü Taraf Servisler</h2>
+    <ul class="text-body-secondary mb-0">
+        <li class="mb-2"><strong class="text-body">Google Gemini API:</strong> mülakat sorularının üretilmesi ve cevaplarınızın değerlendirilmesi için.</li>
+        <li class="mb-2"><strong class="text-body">Google Cloud Firestore:</strong> hesap ve mülakat verilerinizin saklandığı veritabanı.</li>
+        <li class="mb-2"><strong class="text-body">Cloudflare R2:</strong> CV dosyanız ve profil fotoğrafınız burada saklanır; bu dosyalar herkese açık değildir, yalnızca süreli ve imzalı bağlantılarla erişilebilir.</li>
+        <li class="mb-0"><strong class="text-body">Google OAuth:</strong> yalnızca "Google ile giriş yap" seçeneğini kullanırsanız devreye girer.</li>
+    </ul>
+    <p class="text-body-secondary small mt-3 mb-0">
+        Mülakat sorularının seslendirilmesi (metin okuma) tamamen yerel/açık kaynak bir
+        model ile yapılır — bunun için hiçbir ses verisi üçüncü bir servise gönderilmez.
+    </p>
+</div>
+
+<div class="card border-0 shadow-sm p-4 p-lg-5 mb-4">
+    <h2 class="h5 fw-bold mb-3 text-body"><i class="bi bi-shield-lock-fill me-2"></i>Saklama ve Güvenlik</h2>
+    <p class="text-body-secondary mb-0">
+        Şifreniz asla düz metin olarak saklanmaz. Oturum bilgileriniz tarayıcı çerezinde
+        (session cookie) tutulur ve yalnızca giriş durumunuzu hatırlamak için kullanılır;
+        reklam veya takip amaçlı çerez kullanılmaz. Bu bir bootcamp projesi olduğu için
+        production ortamındaki güvenlik önlemleri ticari bir üründeki kadar kapsamlı
+        olmayabilir — hassas bilgilerinizi (kimlik numarası, banka bilgisi vb.) CV'nize
+        eklememenizi öneririz.
+    </p>
+</div>
+
+<div class="card border-0 shadow-sm p-4 p-lg-5">
+    <h2 class="h5 fw-bold mb-3 text-body"><i class="bi bi-person-check-fill me-2"></i>Haklarınız</h2>
+    <p class="text-body-secondary mb-0">
+        Ayarlar sayfasından hesap bilgilerinizi (ad, e-posta, telefon, şifre) istediğiniz
+        zaman güncelleyebilir, mülakat geçmişinizdeki her bir oturumu tek tek
+        silebilirsiniz. Hesabınızın tamamen silinmesini talep etmek için ekip üyelerinden
+        birine ulaşmanız yeterlidir; bu bir bootcamp projesi olduğu için hesap silme
+        işlemi şu an için otomatik değil, elle yapılmaktadır.
+    </p>
+</div>

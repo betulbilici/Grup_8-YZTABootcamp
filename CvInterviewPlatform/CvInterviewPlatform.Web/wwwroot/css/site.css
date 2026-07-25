@@ -17,7 +17,7 @@
   --app-bg: #faf6ee;
   --app-surface: #fffdf8;
   --app-text: #2a2620;
-  --app-text-muted: #7a7367;
+  --app-text-muted: #766f63;
   --app-border: #e8e0d2;
   --app-accent: #4f46e5;
   --app-accent-2: #7c3aed;
@@ -30,8 +30,34 @@
      açık yüzey kullanıyor). */
   --app-sidebar-bg: #fffdf8;
   --app-sidebar-text: #2a2620;
-  --app-sidebar-text-muted: #7a7367;
+  --app-sidebar-text-muted: #766f63;
   --app-sidebar-border: #e8e0d2;
+
+  /* Bootstrap'ın varsayılan link mavisi (#0d6efd) ve ikincil metin rengi
+     (#6c757d) krem zeminde (#faf6ee) WCAG AA 4.5:1'i az altında kalıyordu
+     (axe DevTools ile ölçüldü: sırasıyla 4.17 ve 4.35). İkisi de aynı
+     tonda, hafifçe koyulaştırılmış hallerine çekildi — görsel fark yok
+     denecek kadar az, kontrast 4.5:1 üzerine çıkıyor. */
+  --bs-link-color: #0266f9;
+  --bs-link-color-rgb: 2, 102, 249;
+  --bs-link-hover-color: #0454d1;
+  --bs-link-hover-color-rgb: 4, 84, 209;
+  --bs-secondary-color: #636b73;
+  --bs-secondary-color-rgb: 99, 107, 115;
+  /* .text-secondary gibi sınıflar --bs-secondary-color'ı değil bu token'ı
+     okuyor — badge zemini (--bs-secondary-bg, Bootstrap varsayılanı #e9ecef)
+     dahil üç farklı zeminde de (app-bg, app-surface, secondary-bg) 4.5:1'i
+     geçecek tek bir koyu ton seçildi, ayrı ayrı optimize etmeye gerek kalmadı. */
+  --bs-secondary: #636b73;
+  --bs-secondary-rgb: 99, 107, 115;
+}
+
+/* .btn-outline-secondary kendi sınıfına gömülü sabit --bs-btn-color kullanıyor
+   (yukarıdaki --bs-secondary-color override'ını görmüyor) — aynı kontrast
+   düzeltmesi burada da ayrıca uygulanıyor. */
+[data-bs-theme="light"] .btn-outline-secondary {
+  --bs-btn-color: #636b73;
+  --bs-btn-border-color: #636b73;
 }
 
 [data-bs-theme="dark"] {
@@ -329,7 +355,11 @@
 
 /* Renk körlüğü güvenli — Okabe-Ito paleti; sadece anlam taşıyan renkleri
    (accent + Bootstrap'ın success/warning/danger token'ları) değiştiriyor,
-   zemin/metin aktif açık/koyu temadan geliyor. */
+   zemin/metin aktif açık/koyu temadan geliyor.
+   Doğrulandı: Machado et al. (2009) protanopi/döteranopi/tritanopi simülasyon
+   matrisleriyle 4 rengin tüm ikili kombinasyonu test edildi, CIELAB Delta E
+   en düşük 16.5 (tritanopi'de accent/success) — 10 üzeri "net ayrışık" eşiğinin
+   rahatça üstünde, hiçbir çift karışmıyor. Ton değişikliğine gerek yok. */
 [data-app-palette="colorblind-safe"] {
   --app-accent: #0072b2;
   --app-accent-2: #009e73;
@@ -473,6 +503,274 @@ html {
   text-align: start;
 }
 
+/* Modern SaaS buton sistemi — Bootstrap'ın varsayılan köşe yarıçapı (6px)
+   ve düz/keskin butonları "eski usül form" hissi veriyordu. Global olarak
+   büyütüyoruz ki .btn, .form-control, .card gibi Bootstrap'ın kendi
+   --bs-border-radius'u okuyan her şey otomatik güncellensin. */
+:root {
+  --bs-border-radius: 0.6rem;
+  --bs-border-radius-sm: 0.45rem;
+  --bs-border-radius-lg: 0.85rem;
+}
+
+.btn {
+  font-weight: 600;
+}
+
+/* Ghost buton: "Panele Dön" gibi ikincil gezinme aksiyonları için —
+   outline-secondary'nin kalın kenarlığı yerine sade, düşük vurgulu bir
+   görünüm. Modern SaaS panellerinde geri dönüş butonları genelde böyle. */
+.btn-ghost {
+  background-color: transparent;
+  border: 1px solid transparent;
+  color: var(--app-text-muted);
+}
+
+.btn-ghost:hover, .btn-ghost:focus {
+  background-color: var(--app-border);
+  color: var(--app-text);
+  border-color: transparent;
+}
+
+/* Topbar'daki tema/erişilebilirlik ikon butonları — eskiden Bootstrap'ın
+   varsayılan outline-secondary + dropdown-toggle oku ile "form elemanı"
+   gibi duruyordu. Dairesel, kenarlıksız, hover'da hafif zeminli ikon
+   buton daha modern app-shell hissi veriyor; ok işareti de kaldırıldı
+   çünkü tek ikonun kendisi zaten tıklanabilir olduğunu belli ediyor. */
+.topbar-icon-btn {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background-color: transparent;
+  color: var(--app-text-muted);
+  font-size: 1.05rem;
+}
+
+.topbar-icon-btn:hover,
+.topbar-icon-btn[aria-expanded="true"] {
+  background-color: var(--app-border);
+  color: var(--app-text);
+}
+
+.topbar-icon-btn.dropdown-toggle::after {
+  display: none;
+}
+
+/* Sidebar çıkış butonu — aynı dairesel ikon-buton dilinde, danger tonunda */
+.sidebar-logout-btn {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background-color: transparent;
+  color: var(--app-danger);
+  flex-shrink: 0;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.sidebar-logout-btn:hover {
+  background-color: color-mix(in srgb, var(--app-danger) 15%, transparent);
+}
+
+/* Profil fotoğrafı yükleme — diğer uygulamalardaki (Slack, GitHub, Notion)
+   yaygın desen: ayrı "Dosya Seç" + "Yükle" butonu çifti yerine avatarın
+   kendisi tıklanabilir, hover'da kamera ikonlu bir katman beliriyor, dosya
+   seçilince form otomatik gönderiliyor (bkz. Settings.cshtml script'i). */
+.avatar-upload-trigger {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Fotoğrafın tamamını kaplayan koyu bir "gölge" katmanı yerine — sağ alt
+   köşede küçük, sabit duran bir kamera rozeti (aynı yeşil çevrimiçi
+   noktasının kamera ikonlu, accent renkli hâli). Hover'da yalnızca hafifçe
+   büyüyor, fotoğrafı karartan bir efekt yok. */
+.avatar-upload-overlay {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--app-gradient);
+  color: #fff;
+  font-size: 0.7rem;
+  border: 2px solid var(--app-surface);
+  transition: transform 0.15s ease-in-out;
+}
+
+.avatar-upload-trigger:hover .avatar-upload-overlay,
+.avatar-upload-trigger:focus-within .avatar-upload-overlay {
+  transform: scale(1.15);
+}
+
+/* Özel dosya seçici — native <input type=file>'ın tarayıcıya göre
+   değişen (ve uygulamanın tasarım diline hiç uymayan) "Dosya Seç /
+   Dosya seçilmedi" görünümünü tamamen gizleyip yerine markaya uygun
+   bir buton + ayrı bir dosya adı göstergesi koyuyor. Gerçek input hâlâ
+   DOM'da ve tıklanabilir alanı kaplıyor (opacity:0) — JS tarafında
+   value okuma/submit davranışı birebir aynı kalıyor. */
+.file-picker {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.file-picker input[type="file"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  margin: 0;
+}
+
+.file-picker-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: var(--bs-border-radius);
+  background-color: var(--app-surface);
+  border: 1px solid var(--app-border);
+  color: var(--app-text);
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  pointer-events: none;
+  transition: border-color 0.15s ease-in-out, color 0.15s ease-in-out;
+}
+
+.file-picker:hover .file-picker-btn {
+  border-color: var(--app-accent);
+  color: var(--app-accent);
+}
+
+.file-picker-filename {
+  font-size: 0.85rem;
+  color: var(--app-text-muted);
+}
+
+/* CTA butonlarındaki ok ikonu — statik "-->" hissi yerine hover'da hafifçe
+   sağa kayan bir mikro-etkileşim. bi-arrow-right yerine daha ince/kısa
+   bi-arrow-right-short kullanılıyor, kalın buton metninin yanında daha
+   "Lovable/Linear tarzı" oturuyor. */
+.btn .bi-arrow-right-short {
+  display: inline-block;
+  transition: transform 0.15s ease-in-out;
+}
+
+.btn:hover .bi-arrow-right-short {
+  transform: translateX(3px);
+}
+
+/* Mülakat geçmişi satırları artık tek bir kartın içinde ince çizgilerle
+   bölünmüş liste değil, kendi başına hafif zeminli ayrı kartlar — Lovable
+   tarzı SaaS panellerindeki "sonuç kartı" hissi. */
+/* Performans Özeti — büyük bir sayı + altında yalnız duran nokta işaretli
+   metin yerine, iki net istatistik kutucuğu yan yana (dashboard'larda yaygın
+   "stat tile" deseni). */
+.stat-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.stat-tile-value {
+  font-weight: 800;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--app-text);
+}
+
+.stat-tile-label {
+  font-size: 0.8rem;
+  color: var(--app-text-muted);
+}
+
+.session-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  border-radius: var(--bs-border-radius-lg);
+  background-color: var(--app-bg);
+  border: 1px solid var(--app-border);
+  transition: border-color 0.15s ease-in-out, transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  /* <a> olarak kullanılabilsin diye (Ana Sayfa "Son Mülakatlar" widget'ı) */
+  text-decoration: none;
+  color: inherit;
+}
+
+.session-card:hover {
+  border-color: var(--app-accent);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.07);
+}
+
+.session-card + .session-card {
+  margin-top: 0.65rem;
+}
+
+.session-card .session-card-title {
+  font-weight: 700;
+  color: var(--app-text);
+  font-size: 0.95rem;
+  margin-bottom: 0.2rem;
+}
+
+.session-card .session-card-subtitle {
+  font-size: 0.8rem;
+  color: var(--app-text-muted);
+}
+
+.session-card .session-card-meta {
+  font-size: 0.78rem;
+  color: var(--app-text-muted);
+  white-space: nowrap;
+}
+
+/* Silme ikonu — outline-danger'ın kutulu görünümü yerine sessiz bir ghost
+   ikon buton; ana aksiyonlardan (Sonuçları Gör/Devam Et) görsel olarak
+   geri planda kalması amaçlanıyor. */
+.icon-btn-ghost-danger {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background-color: transparent;
+  color: var(--app-text-muted);
+  flex-shrink: 0;
+  transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+}
+
+.icon-btn-ghost-danger:hover {
+  background-color: color-mix(in srgb, var(--app-danger) 15%, transparent);
+  color: var(--app-danger);
+}
+
 /* Modern buton hissi: hafif kalkma + gölge. Bootstrap'ın kendi buton hover'ı
    (renk dolumu) zaten çalışıyor ama "flat/durgun" hissediliyordu — burada
    uygulamanın diğer yerlerindeki (stat-card, mode-card) kalkma efektiyle
@@ -546,13 +844,28 @@ html {
   overflow-y: auto;
 }
 
-.app-sidebar .sidebar-brand {
-  color: var(--app-sidebar-text);
+/* Not: bilerek .app-sidebar ile sınırlandırılmamış — aynı "sidebar-brand"
+   sınıfı Account/SignIn, Register, ForgotPassword sayfalarındaki auth-hero
+   panelinde de kullanılıyor (bkz. SignIn.cshtml). Eskiden bu kural yalnızca
+   .app-sidebar içinde tanımlıydı; auth sayfalarında hiç eşleşmediği için
+   "CV Interview AI" markası oralarda stilsiz kalıp Bootstrap'ın varsayılan
+   mavi/altı çizili link görünümüne (ve koyu modda okunaksız bir renge)
+   düşüyordu. */
+.sidebar-brand {
+  color: var(--app-text);
   font-weight: 700;
   font-size: 1.1rem;
   text-decoration: none;
   display: block;
+  /* block olduğu için varsayılanda tüm satır genişliğini kaplayıp metnin
+     çok sağındaki boş alana tıklamayı da linke basmış gibi davranıyordu —
+     genişliği içeriğe (yazının kendisine) sabitliyoruz. */
+  width: fit-content;
   margin-bottom: 0.25rem;
+}
+
+.sidebar-brand:hover {
+  color: var(--app-accent);
 }
 
 .app-sidebar .sidebar-tagline {
@@ -750,6 +1063,24 @@ html {
   border-radius: 50%;
   background-color: var(--app-success);
   border: 2px solid var(--app-sidebar-bg);
+}
+
+/* R2 presigned URL'i her sayfa isteğinde yeniden imzalandığı için (bkz.
+   CvStorageService.GetPresignedUrl) tarayıcı önbelleği sayfadan sayfaya
+   aynı görseli yeniden kullanamıyor — her navigasyonda gerçek bir ağ
+   indirmesi gerekiyor. Bu yüzden fotoğraf her zaman görünür değil; bu
+   sırada boş/kırık görsel yerine harf-baş harfi (avatar-fallback) her
+   zaman altta hazır duruyor, gerçek fotoğraf sadece TAM yüklendiğinde
+   (site.js'teki .is-loaded sınıfı) üstüne yumuşakça beliriyor. */
+.avatar-photo-fade {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.avatar-photo-fade.is-loaded {
+  opacity: 1;
 }
 
 /* ============================================================
@@ -1072,21 +1403,35 @@ html {
   transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
 }
 
-.mode-card .mode-card-select-indicator {
-  display: none;
-  align-items: center;
-  gap: 0.35rem;
-  color: var(--app-accent);
-  font-weight: 700;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  margin-top: 0.75rem;
+/* Seçim göstergesi artık kartın altında yalnız duran "SEÇİLİ →" metni
+   değil, sağ üst köşede bir onay rozeti — Stripe/Linear tarzı plan/mod
+   seçim kartlarındaki yaygın desen, ok ikonu da böylece ortadan kalkıyor. */
+.mode-card {
+  position: relative;
 }
 
+.mode-card .mode-card-check {
+  display: none;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  background: var(--app-gradient);
+  color: #fff;
+  font-size: 0.85rem;
+}
+
+/* Seçili kart artık tek başına sert/koyu bir kenarlıkla ayrışmıyor —
+   kenarlık ince kalıp, hafif accent tonlu bir zemin dolgusu + accent
+   renkli (siyah değil) yumuşak gölge ile bütünlüklü bir vurgu oluşuyor. */
 .mode-card:has(input:checked) {
   border-color: var(--app-accent) !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  background-color: color-mix(in srgb, var(--app-accent) 6%, var(--app-surface));
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--app-accent) 18%, transparent);
 }
 
 .mode-card:has(input:checked) .mode-card-icon {
@@ -1094,7 +1439,7 @@ html {
   color: var(--app-accent);
 }
 
-.mode-card:has(input:checked) .mode-card-select-indicator {
+.mode-card:has(input:checked) .mode-card-check {
   display: flex;
 }
 
@@ -1130,10 +1475,40 @@ html {
   margin-bottom: 1.1rem;
 }
 
-.markdown-content ul,
 .markdown-content ol {
   margin-bottom: 1.1rem;
   padding-left: 1.4rem;
+}
+
+.markdown-content ol li::marker {
+  color: var(--app-accent);
+  font-weight: 700;
+}
+
+/* Yapay zekanın ürettiği madde işaretli listeler (güçlü yönler, önerilen
+   pozisyonlar vb.) tarayıcının varsayılan siyah "•" işaretiyle geliyordu —
+   uygulamanın renkli/pastel diliyle hiç uyuşmuyordu. Kendi nokta işaretimizi
+   çiziyoruz. */
+.markdown-content ul {
+  list-style: none;
+  margin-bottom: 1.1rem;
+  padding-left: 0;
+}
+
+.markdown-content ul li {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.markdown-content ul li::before {
+  content: "";
+  position: absolute;
+  left: 0.3rem;
+  top: 0.6em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--app-accent);
 }
 
 .markdown-content li {

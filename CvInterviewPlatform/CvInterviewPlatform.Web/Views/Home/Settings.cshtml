@@ -5,7 +5,7 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 fw-bold mb-0">Hesap Ayarları</h1>
-    <a asp-action="Index" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i> Panele Dön</a>
+    <a asp-action="Index" class="btn btn-ghost btn-sm fw-bold"><i class="bi bi-arrow-left me-1"></i> Panele Dön</a>
 </div>
 
 @if (ViewBag.Error != null || TempData["Error"] != null)
@@ -25,25 +25,22 @@
 }
 
 <div class="card border-0 shadow-sm p-4 p-lg-5 mb-4">
-    <form asp-action="UploadProfilePicture" method="post" enctype="multipart/form-data" class="d-flex align-items-center gap-3 flex-wrap">
-        <span class="avatar-status">
-            @if (!string.IsNullOrEmpty(Model.ProfilePictureUrl))
-            {
-                <img src="@ViewBag.ProfilePicturePreviewUrl" alt="Profil Fotoğrafı" style="width:64px;height:64px;" />
-            }
-            else
-            {
+    <form asp-action="UploadProfilePicture" method="post" enctype="multipart/form-data" class="d-flex align-items-center gap-3 flex-wrap" id="profilePicForm">
+        <label for="profilePictureInput" class="avatar-upload-trigger" title="Fotoğrafı değiştirmek için tıklayın">
+            <span class="avatar-status">
                 <span class="avatar-fallback" style="width:64px;height:64px;font-size:1.4rem;">@Model.FirstName.Substring(0, 1).ToUpper()</span>
-            }
-        </span>
+                @if (!string.IsNullOrEmpty(Model.ProfilePictureUrl))
+                {
+                    <img src="@ViewBag.ProfilePicturePreviewUrl" alt="Profil Fotoğrafı" class="avatar-photo-fade" style="width:64px;height:64px;" />
+                }
+            </span>
+            <span class="avatar-upload-overlay" id="avatarUploadOverlay" aria-hidden="true"><i class="bi bi-camera-fill"></i></span>
+            <input type="file" id="profilePictureInput" name="profilePicture" accept=".png,.jpg,.jpeg,.webp" class="visually-hidden" aria-label="Profil fotoğrafı seç" />
+        </label>
         <div class="flex-grow-1">
-            <h4 class="fw-bold mb-0 text-body">@Model.FirstName @Model.LastName</h4>
+            <h2 class="h4 fw-bold mb-0 text-body">@Model.FirstName @Model.LastName</h2>
             <div class="text-body-secondary small">@Model.Email</div>
-        </div>
-        <div class="d-flex align-items-center gap-2">
-            <label for="profilePictureInput" class="visually-hidden">Profil fotoğrafı seç</label>
-            <input type="file" id="profilePictureInput" name="profilePicture" class="form-control form-control-sm" accept=".png,.jpg,.jpeg,.webp" style="max-width: 220px;" />
-            <button type="submit" class="btn btn-outline-secondary btn-sm fw-bold text-nowrap"><i class="bi bi-arrow-repeat me-1"></i>Fotoğrafı Güncelle</button>
+            <div class="text-body-secondary small" id="profilePicHint"><i class="bi bi-camera-fill me-1"></i>Değiştirmek için fotoğrafa tıklayın</div>
         </div>
     </form>
 </div>
@@ -52,7 +49,7 @@
     <div class="card border-0 shadow-sm p-4 p-lg-5 mb-4">
         <div class="row g-4">
             <div class="col-md-4">
-                <h5 class="fw-bold mb-2 text-body">Kişisel Bilgiler</h5>
+                <h3 class="h5 fw-bold mb-2 text-body"><i class="bi bi-person-vcard-fill me-2 text-body-secondary"></i>Kişisel Bilgiler</h3>
                 <p class="text-body-secondary small mb-0">Mülakat senaryolarınızı kişiselleştirmek için kullanılan temel profil bilgileriniz.</p>
             </div>
             <div class="col-md-8">
@@ -89,7 +86,7 @@
     <div class="card border-0 shadow-sm p-4 p-lg-5">
         <div class="row g-4">
             <div class="col-md-4">
-                <h5 class="fw-bold mb-2 text-body">Güvenlik</h5>
+                <h3 class="h5 fw-bold mb-2 text-body"><i class="bi bi-shield-lock-fill me-2 text-body-secondary"></i>Güvenlik</h3>
                 <p class="text-body-secondary small mb-0">Şifrenizi değiştirmek istemiyorsanız bu alanı boş bırakabilirsiniz.</p>
             </div>
             <div class="col-md-8">
@@ -108,3 +105,26 @@
         </div>
     </div>
 </form>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Diğer birçok uygulamada olduğu gibi (Slack, GitHub, Notion vb.)
+            // ayrı bir "Yükle" butonuna gerek yok — dosya seçilir seçilmez
+            // form otomatik gönderiliyor.
+            var picInput = document.getElementById("profilePictureInput");
+            var picForm = document.getElementById("profilePicForm");
+            var picHint = document.getElementById("profilePicHint");
+            if (picInput && picForm) {
+                picInput.addEventListener("change", function () {
+                    if (picInput.files && picInput.files.length > 0) {
+                        if (picHint) {
+                            picHint.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Yükleniyor...';
+                        }
+                        picForm.submit();
+                    }
+                });
+            }
+        });
+    </script>
+}

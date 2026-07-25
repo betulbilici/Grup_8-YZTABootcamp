@@ -117,6 +117,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             speechUtterance = new SpeechSynthesisUtterance(text);
             speechUtterance.lang = 'tr-TR';
+            speechUtterance.rate = 1.25;
 
             // Türkçe ses seçimi yapmaya çalışıyoruz
             const voices = window.speechSynthesis.getVoices();
@@ -144,6 +145,10 @@ document.addEventListener("DOMContentLoaded", function () {
     function speakText(text) {
         var audioUrl = "/Interview/QuestionAudio?id=" + encodeURIComponent(sessionId) + "&questionNumber=" + currentQuestionNumber;
         ttsAudio = new Audio(audioUrl);
+        // Piper'ın doğal okuma temposu biraz ağır geliyordu — 1x yerine 1.25x
+        // oynatma hızı, tarayıcının kendi pitch-koruma algoritmasıyla (Chrome/
+        // Firefox varsayılanı) sesi tizleştirmeden hızlandırıyor.
+        ttsAudio.playbackRate = 1.25;
         ttsAudio.onplay = function () {
             setTtsState(true);
         };

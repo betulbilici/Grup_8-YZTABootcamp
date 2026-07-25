@@ -17,6 +17,10 @@ __pycache__/
 venv/
 env/
 
+## Piper TTS ses modeli (63MB, elle indirilir — bkz. CvParserService/README ya da CLAUDE.md)
+CvInterviewPlatform/CvParserService/voices/*.onnx
+CvInterviewPlatform/CvParserService/voices/*.onnx.json
+
 ## Firebase Secret Key
 firebase-key.json
 **/firebase-key.json

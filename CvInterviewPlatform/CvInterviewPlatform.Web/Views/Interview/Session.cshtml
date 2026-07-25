@@ -49,10 +49,11 @@
     }
 </style>
 
-<!-- MarkedJS (Markdown render etmek için) CDN'i -->
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<!-- html2pdf.js (Değerlendirme Raporunu PDF İndirmek için) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<!-- MarkedJS (Markdown render etmek için), yerel — sayfa hızı için CDN yerine bin -->
+<script src="~/lib/marked/marked.min.js"></script>
+<!-- html2pdf.js kaldırıldı: hiç kullanılmıyordu (PDF için tarayıcının kendi
+     yazdırma motoru tercih edilmiş, bkz. CLAUDE.md), gereksiz ~200KB indirme
+     ve bir CDN bağımlılığı daha az. -->
 
 <div id="interviewSessionRoot"
      data-session-id="@Model.SessionId"
@@ -67,8 +68,8 @@
             <h1 class="h2 fw-bold text-body mb-1">@Model.JobTitle Mülakatı</h1>
             <p class="text-muted mb-0">Başlangıç: @Model.StartedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</p>
         </div>
-        <a asp-action="Index" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-1"></i> Panale Dön
+        <a asp-action="Index" class="btn btn-ghost fw-bold">
+            <i class="bi bi-arrow-left me-1"></i> Panele Dön
         </a>
     </div>
 
@@ -98,7 +99,8 @@
                 </div>
                 <div class="progress mb-4" style="height: 4px; background-color: var(--app-border);">
                     <div class="progress-bar" role="progressbar" style="width: @progressPercent%; background: var(--app-gradient);"
-                         aria-valuenow="@progressPercent" aria-valuemin="0" aria-valuemax="100"></div>
+                         aria-valuenow="@progressPercent" aria-valuemin="0" aria-valuemax="100"
+                         aria-label="Mülakat ilerlemesi: @(Model.TotalQuestions) sorudan @(Math.Min(Model.CurrentQuestionNumber - 1, Model.TotalQuestions))'i tamamlandı"></div>
                 </div>
 
                 <!-- Aktif Soru Alanı -->

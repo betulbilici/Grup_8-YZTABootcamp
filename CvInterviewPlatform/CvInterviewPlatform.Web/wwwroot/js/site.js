@@ -122,3 +122,30 @@
         defaultValue: "on"
     });
 })();
+
+// --- Profil fotoğrafı yumuşak yükleme ---
+// R2 presigned URL'i her sayfa isteğinde yeniden imzalandığı için tarayıcı
+// önbelleği devreye giremiyor, gerçek bir ağ indirmesi gerekiyor. Görsel
+// tamamen yüklenene kadar altta duran harf-avatarı görünür kalıyor, foto
+// hazır olur olmaz üstüne yumuşakça beliriyor — "başta gözükmeyip sonra
+// birden gelme" hissi yerine kontrollü bir geçiş.
+(function () {
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".avatar-photo-fade").forEach(function (img) {
+            function reveal() {
+                img.classList.add("is-loaded");
+            }
+            function hideOnError() {
+                // Yükleme başarısız olursa kırık resim ikonu göstermek yerine
+                // altındaki harf-avatarı olduğu gibi bırakıyoruz.
+                img.style.display = "none";
+            }
+            if (img.complete && img.naturalWidth > 0) {
+                reveal();
+            } else {
+                img.addEventListener("load", reveal);
+                img.addEventListener("error", hideOnError);
+            }
+        });
+    });
+})();

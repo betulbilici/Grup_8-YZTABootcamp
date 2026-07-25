@@ -125,6 +125,10 @@ namespace CvInterviewPlatform.Web.Controllers
                     await _cvStorageService.UploadAsync(uploadStream, objectKey, cvFile.ContentType);
                 }
                 updates["cvUrl"] = objectKey;
+                // Aynı obje anahtarı yeniden yazıldı — önbellekteki eski presigned
+                // URL'i temizle, yoksa "CV Dosyanı Görüntüle" linki tarayıcı
+                // önbelleğinden eski dosyayı gösterebilir.
+                _cvStorageService.InvalidatePreviewUrlCache(objectKey);
 
                 // CV metin içeriğini ayıklamak ve Firestore'a kaydetmek için parser servisini çağırıyoruz
                 try
@@ -205,6 +209,10 @@ namespace CvInterviewPlatform.Web.Controllers
             // Sidebar/topbar'daki avatar Session'dan okunuyor — anında güncellensin diye
             // burada da yazıyoruz, yoksa yeniden giriş yapana kadar eski (harf) avatar görünür.
             HttpContext.Session.SetString("ProfilePictureUrl", objectKey);
+            // Aynı obje anahtarı yeniden yazıldı (ör. aynı uzantıyla ikinci kez
+            // fotoğraf değiştirme) — önbellekteki eski presigned URL'i temizle,
+            // yoksa tarayıcı aynı URL'i tanıyıp eski fotoğrafı önbellekten gösterir.
+            _cvStorageService.InvalidatePreviewUrlCache(objectKey);
 
             TempData["Success"] = "Profil fotoğrafınız başarıyla güncellendi.";
             return RedirectToAction("Settings");

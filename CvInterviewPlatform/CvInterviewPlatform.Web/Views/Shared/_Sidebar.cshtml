@@ -5,7 +5,7 @@
     bool isLoggedIn = Context.Session.GetString("Username") != null;
 }
 <aside class="app-sidebar">
-    <a class="sidebar-brand" asp-area="" asp-controller="Home" asp-action="Index">CV Match AI</a>
+    <a class="sidebar-brand" asp-area="" asp-controller="Home" asp-action="Index">CV Interview AI</a>
     <span class="sidebar-tagline">Profesyonel Hazırlık</span>
 
     @if (isLoggedIn)
@@ -35,20 +35,17 @@
             <a class="d-flex align-items-center text-decoration-none flex-grow-1" asp-controller="Home" asp-action="Settings">
                 <span class="avatar-status me-2">
                     @{
-                        string sidebarProfilePic = Storage.ResolvePreviewUrl(Context.Session.GetString("ProfilePictureUrl"));
+                        string? sidebarProfilePic = ViewData["ResolvedProfilePicUrl"] as string;
                     }
+                    <span class="avatar-fallback">@(Context.Session.GetString("FirstName")?.Substring(0, 1).ToUpper())</span>
                     @if (!string.IsNullOrEmpty(sidebarProfilePic))
                     {
-                        <img src="@sidebarProfilePic" alt="Profil Fotoğrafı" />
-                    }
-                    else
-                    {
-                        <span class="avatar-fallback">@(Context.Session.GetString("FirstName")?.Substring(0, 1).ToUpper())</span>
+                        <img src="@sidebarProfilePic" alt="Profil Fotoğrafı" class="avatar-photo-fade" />
                     }
                 </span>
                 <span class="small fw-semibold">@Context.Session.GetString("FirstName")</span>
             </a>
-            <a class="btn btn-sm btn-outline-danger" asp-controller="Account" asp-action="SignOut" title="Çıkış Yap">
+            <a class="sidebar-logout-btn" asp-controller="Account" asp-action="SignOut" title="Çıkış Yap" aria-label="Çıkış Yap">
                 <i class="bi bi-box-arrow-right"></i>
             </a>
         </div>

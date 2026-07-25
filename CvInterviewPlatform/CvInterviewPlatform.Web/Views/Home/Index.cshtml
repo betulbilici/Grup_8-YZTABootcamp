@@ -48,23 +48,32 @@
                 oturum başlatarak kendinizi geliştirmeye devam edin.
             </p>
             <a asp-controller="Interview" asp-action="Index" class="btn btn-gradient btn-lg fw-bold">
-                Mülakata Başla <i class="bi bi-arrow-right ms-1"></i>
+                Mülakata Başla <i class="bi bi-arrow-right-short ms-1"></i>
             </a>
         </div>
 
         <div class="card border-0 shadow-sm p-4 p-lg-5 mb-4">
             <div class="section-label mb-3">Performans Özeti</div>
-            <div class="d-flex align-items-baseline gap-3 flex-wrap">
-                <span class="fw-bold text-body" style="font-size: 2.5rem; line-height: 1;">@ViewBag.CompletedCount</span>
-                <span class="text-body-secondary">Tamamlanan Mülakat</span>
+            <div class="row g-3">
+                <div class="col-6">
+                    <div class="stat-tile">
+                        <span class="stat-tile-value">@ViewBag.CompletedCount</span>
+                        <span class="stat-tile-label">Tamamlanan Mülakat</span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="stat-tile">
+                        <span class="stat-tile-value">@ViewBag.InProgressCount</span>
+                        <span class="stat-tile-label">Devam Ediyor</span>
+                    </div>
+                </div>
             </div>
-            <div class="mt-3">
-                <span class="text-body-secondary small"><span class="status-dot"></span>@ViewBag.InProgressCount Devam Ediyor</span>
-                @if (ViewBag.LastJobTitle != null)
-                {
-                    <span class="text-body-secondary small ms-4"><span class="status-dot status-dot-muted"></span>Son hedef: @ViewBag.LastJobTitle</span>
-                }
-            </div>
+            @if (ViewBag.LastJobTitle != null)
+            {
+                <div class="text-body-secondary small mt-3 pt-3 border-top">
+                    <i class="bi bi-flag-fill me-1"></i>Son hedef: <strong class="text-body">@ViewBag.LastJobTitle</strong>
+                </div>
+            }
         </div>
 
         <div class="card border-0 shadow-sm p-4 p-lg-5">
@@ -83,7 +92,7 @@
             }
             else
             {
-                <h5 class="fw-bold mb-2 text-body">Özgeçmiş</h5>
+                <h2 class="h5 fw-bold mb-2 text-body">Özgeçmiş</h2>
                 <p class="text-body-secondary small mb-3">Yapay zekanın sizi tanıyabilmesi için CV'nizi yükleyin.</p>
             }
 
@@ -92,7 +101,11 @@
                     <i class="bi bi-cloud-arrow-up-fill dropzone-icon"></i>
                     <p class="fw-bold mb-1">CV'nizi buraya sürükleyin</p>
                     <p class="small text-body-secondary mb-3">veya bilgisayarınızdan seçin (PDF, DOCX, TXT, MD, PNG, JPG)</p>
-                    <input type="file" id="cvFileInput" name="cvFile" class="form-control" accept=".pdf,.docx,.txt,.md,.png,.jpg,.jpeg" />
+                    <div class="file-picker">
+                        <input type="file" id="cvFileInput" name="cvFile" accept=".pdf,.docx,.txt,.md,.png,.jpg,.jpeg" aria-label="CV dosyası seç" />
+                        <span class="file-picker-btn"><i class="bi bi-folder2-open"></i> Dosya Seç</span>
+                        <span class="file-picker-filename" id="cvFileName">Dosya seçilmedi</span>
+                    </div>
                 </div>
                 <button type="submit" id="saveBtn" class="btn btn-gradient fw-bold"><i class="bi bi-check2-circle me-1"></i> CV'yi Kaydet</button>
             </form>
@@ -102,7 +115,7 @@
                 <div class="spinner-border text-primary" role="status" style="width: 2.5rem; height: 2.5rem;">
                     <span class="visually-hidden">Yükleniyor...</span>
                 </div>
-                <h5 class="mt-3 fw-bold">CV'niz Yapay Zeka Tarafından Analiz Ediliyor...</h5>
+                <h3 class="h5 mt-3 fw-bold">CV'niz Yapay Zeka Tarafından Analiz Ediliyor...</h3>
                 <p class="text-body-secondary small mb-0">Yapay zekamız CV metnini okuyor ve veritabanına kaydediyor. Bu işlem birkaç saniye sürebilir, lütfen sayfayı yenilemeyin veya kapatmayın.</p>
             </div>
 
@@ -131,16 +144,16 @@
                 <div>
                     @foreach (var session in recentSessions)
                     {
-                        <a asp-controller="Interview" asp-action="Session" asp-route-id="@session.SessionId" class="list-row">
-                            <span class="list-row-icon list-row-icon-ring"><i class="bi bi-mic-fill"></i></span>
+                        <a asp-controller="Interview" asp-action="Session" asp-route-id="@session.SessionId" class="session-card">
+                            <span class="status-dot @(session.IsCompleted ? "status-dot-muted" : "")" style="flex-shrink: 0;"></span>
                             <div class="flex-grow-1">
-                                <div class="list-row-title">@session.JobTitle</div>
-                                <div class="list-row-subtitle">@(session.Mode == "Realistic" ? "Gerçekçi" : "Hazırlık") &middot; @session.DifficultyLevel</div>
+                                <div class="session-card-title">@session.JobTitle</div>
+                                <div class="session-card-subtitle">@(session.Mode == "Realistic" ? "Gerçekçi" : "Hazırlık") &middot; @session.DifficultyLevel</div>
                                 <span class="badge @(session.IsCompleted ? "bg-success-subtle text-success" : "bg-warning-subtle text-warning-emphasis") border-0 mt-1" style="font-size: 0.68rem;">
                                     @(session.IsCompleted ? "Tamamlandı" : "Devam Ediyor")
                                 </span>
                             </div>
-                            <span class="list-row-meta">@RelativeTime(session.StartedAt)</span>
+                            <span class="session-card-meta">@RelativeTime(session.StartedAt)</span>
                         </a>
                     }
                 </div>
@@ -154,7 +167,16 @@
         document.addEventListener("DOMContentLoaded", function() {
             var form = document.getElementById("uploadForm");
             var cvInput = document.getElementById("cvFileInput");
+            var cvFileName = document.getElementById("cvFileName");
             var loader = document.getElementById("uploadLoader");
+
+            if (cvInput && cvFileName) {
+                cvInput.addEventListener("change", function () {
+                    cvFileName.textContent = cvInput.files && cvInput.files.length > 0
+                        ? cvInput.files[0].name
+                        : "Dosya seçilmedi";
+                });
+            }
 
             var toggleUploadBtn = document.getElementById("toggleUploadBtn");
             if (toggleUploadBtn && form) {

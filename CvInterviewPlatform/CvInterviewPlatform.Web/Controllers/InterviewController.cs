@@ -14,13 +14,13 @@ namespace CvInterviewPlatform.Web.Controllers
     {
         private readonly FirestoreDb _db;
         private readonly GeminiService _geminiService;
-        private readonly AzureTtsService _azureTtsService;
+        private readonly PiperTtsService _piperTtsService;
 
-        public InterviewController(FirestoreService firestoreService, GeminiService geminiService, AzureTtsService azureTtsService)
+        public InterviewController(FirestoreService firestoreService, GeminiService geminiService, PiperTtsService piperTtsService)
         {
             _db = firestoreService.Db;
             _geminiService = geminiService;
-            _azureTtsService = azureTtsService;
+            _piperTtsService = piperTtsService;
         }
 
         // Mülakat Dashboard'u: Geçmiş mülakatları gösterir ve yeni mülakat başlatır.
@@ -127,8 +127,8 @@ namespace CvInterviewPlatform.Web.Controllers
 
                 // Sesi de aynı istekte üretip önbelleğe alıyoruz — kullanıcı zaten
                 // Gemini'nin ~13sn'lik cevabını beklediği bir yükleniyor ekranında,
-                // Azure'ın ~1-2sn'lik gecikmesi bu bekleme içinde fark edilmeden geçiyor.
-                await _azureTtsService.SynthesizeAndCacheAsync(firstQuestion, AzureTtsService.BuildCacheKey(sessionId, 1));
+                // Piper'ın altsaniyelik gecikmesi bu bekleme içinde fark edilmeden geçiyor.
+                await _piperTtsService.SynthesizeAndCacheAsync(firstQuestion, PiperTtsService.BuildCacheKey(sessionId, 1));
 
                 return RedirectToAction("Session", new { id = sessionId });
             }
@@ -250,7 +250,7 @@ namespace CvInterviewPlatform.Web.Controllers
 
                     session.CurrentQuestionNumber = nextQuestionNumber;
 
-                    await _azureTtsService.SynthesizeAndCacheAsync(nextQuestion, AzureTtsService.BuildCacheKey(id, nextQuestionNumber));
+                    await _piperTtsService.SynthesizeAndCacheAsync(nextQuestion, PiperTtsService.BuildCacheKey(id, nextQuestionNumber));
                 }
                 else
                 {
@@ -327,7 +327,7 @@ namespace CvInterviewPlatform.Web.Controllers
             }
         }
 
-        // Sorunun önceden üretilmiş Azure TTS ses klibini döner (bkz. StartInterview/SubmitAnswer)
+        // Sorunun önceden üretilmiş Piper TTS ses klibini döner (bkz. StartInterview/SubmitAnswer)
         [HttpGet]
         public async Task<IActionResult> QuestionAudio(string id, int questionNumber)
         {
@@ -337,7 +337,7 @@ namespace CvInterviewPlatform.Web.Controllers
                 return Unauthorized();
             }
 
-            byte[]? audioBytes = _azureTtsService.TryGetCached(AzureTtsService.BuildCacheKey(id, questionNumber));
+            byte[]? audioBytes = _piperTtsService.TryGetCached(PiperTtsService.BuildCacheKey(id, questionNumber));
             if (audioBytes == null)
             {
                 return NotFound();
@@ -350,7 +350,7 @@ namespace CvInterviewPlatform.Web.Controllers
                 return Forbid();
             }
 
-            return File(audioBytes, "audio/mpeg");
+            return File(audioBytes, "audio/wav");
         }
 
         // Mülakat Geçmişini Silme (POST)

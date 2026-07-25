@@ -8,7 +8,7 @@
 
 ## Proje
 
-**CV Match AI** — yapay zeka destekli mülakat hazırlık ve simülasyon platformu.
+**CV Interview AI** — yapay zeka destekli mülakat hazırlık ve simülasyon platformu.
 Kullanıcı CV'sini yükler, hedef pozisyonu girer, yapay zeka İK uzmanı personasıyla 5 soruluk bir mülakat yapar ve sonunda detaylı bir değerlendirme raporu alır.
 
 Bu bir bootcamp projesidir (Grup 8, YZTA Bootcamp). Sprint bazlı geliştiriliyor, README'de sprint kayıtları tutuluyor.
@@ -27,7 +27,8 @@ Bu bir bootcamp projesidir (Grup 8, YZTA Bootcamp). Sprint bazlı geliştiriliyo
 | Belge işleme | Python FastAPI + IBM Docling, ayrı mikroservis |
 | Dosya depolama | Cloudflare R2 (`AWSSDK.S3` — R2, S3 API ile uyumlu), presigned URL ile önizleme |
 | Arayüz | Bootstrap 5, Bootstrap Icons (CDN), marked.js (CDN) |
-| Ses | HTML5 Web Speech API (tarayıcı yerleşik, sunucu maliyeti yok) |
+| Ses (TTS) | Piper TTS (`tr_TR-dfki-medium`, CvParserService içinde `/tts` endpoint'i) — hesap/API key gerektirmez, tamamen yerel. Önbellekte yoksa veya oynatma engellenirse tarayıcının `speechSynthesis`'ine düşülür |
+| Ses (STT) | HTML5 Web Speech API (`webkitSpeechRecognition`, tarayıcı yerleşik) |
 | Oturum | ASP.NET Session (cookie tabanlı) |
 
 ---
@@ -66,8 +67,9 @@ CvInterviewPlatform/
 │       ├── lib/                      ← bootstrap, jquery (yerel)
 │       └── uploads/{cvs,profiles}/   ← .gitignore'da, SADECE R2 öncesi (eski) dokümanlar için — yeni CV/fotoğraf yüklemeleri artık buraya yazılmıyor, R2'ye gidiyor
 └── CvParserService/                  ← Python mikroservis
-    ├── main.py                       ← FastAPI, /health ve /parse
-    └── requirements.txt
+    ├── main.py                       ← FastAPI, /health, /parse ve /tts (Piper)
+    ├── requirements.txt
+    └── voices/                       ← .gitignore'da, Piper ses modeli elle indirilir (bkz. Çalıştırma)
 ```
 
 ---
@@ -92,7 +94,12 @@ dotnet user-secrets set "R2:SecretAccessKey" "ANAHTAR"
 
 # 2. Parser mikroservisi (ayrı terminal, önce başlatılmalı)
 cd CvInterviewPlatform/CvParserService
+python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
+
+# 2b. Piper TTS ses modeli (bir kez, ~63MB) — main.py bunu otomatik indirmiyor
+python -m piper.download_voices --download-dir voices tr_TR-dfki-medium
+
 python main.py                    # http://127.0.0.1:8000
 
 # 3. Web uygulaması

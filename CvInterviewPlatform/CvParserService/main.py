@@ -1,11 +1,16 @@
+import io
 import os
 import tempfile
+import wave
 import logging
 from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.responses import Response
+from pydantic import BaseModel
 from docling.datamodel.base_models import InputFormat
 from docling.datamodel.accelerator_options import AcceleratorOptions
 from docling.datamodel.pipeline_options import PdfPipelineOptions
 from docling.document_converter import DocumentConverter, PdfFormatOption
+from piper import PiperVoice
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -15,6 +20,25 @@ app = FastAPI(title="Docling CV Parser Service")
 
 ALLOWED_EXTENSIONS = {".pdf", ".docx", ".txt", ".md", ".png", ".jpg", ".jpeg"}
 MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024
+MAX_TTS_TEXT_LENGTH = 2000
+
+# Piper TTS: mülakat sorularını seslendirmek için kullanılan, tamamen yerel
+# (hesap/API key/kota gerektirmeyen) nöral TTS motoru. Model dosyası
+# `voices/` altında bir kere indirilir, ilk çalıştırmada burada yoksa
+# `python -m piper.download_voices --download-dir voices tr_TR-dfki-medium`
+# ile indirilmeli — Docling gibi bu da otomatik indirilmiyor, elle yapılır
+# çünkü Hugging Face'ten 63MB'lık bir indirme ilk deploy'u yavaşlatmasın diye
+# bilinçli olarak startup'a bağlanmadı.
+VOICE_MODEL_PATH = os.path.join(os.path.dirname(__file__), "voices", "tr_TR-dfki-medium.onnx")
+try:
+    tts_voice = PiperVoice.load(VOICE_MODEL_PATH) if os.path.exists(VOICE_MODEL_PATH) else None
+    if tts_voice is None:
+        logger.warning(f"Piper ses modeli bulunamadı: {VOICE_MODEL_PATH}. /tts endpoint'i 503 dönecek.")
+    else:
+        logger.info("Piper TTS (tr_TR-dfki-medium) başarıyla yüklendi.")
+except Exception as e:
+    logger.error(f"Piper ses modeli yüklenemedi: {e}")
+    tts_voice = None
 
 # Initialize Docling DocumentConverter at startup
 logger.info("Initializing IBM Docling DocumentConverter...")
@@ -45,7 +69,33 @@ def health_check():
         "status": "ok",
         "converter_ready": converter is not None,
         "supported_formats": sorted(ALLOWED_EXTENSIONS),
+        "tts_ready": tts_voice is not None,
     }
+
+
+class TtsRequest(BaseModel):
+    text: str
+
+
+@app.post("/tts")
+def synthesize_speech(payload: TtsRequest):
+    if tts_voice is None:
+        raise HTTPException(status_code=503, detail="Piper ses modeli yüklenmedi.")
+
+    text = payload.text.strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="Boş metin seslendirilemez.")
+    if len(text) > MAX_TTS_TEXT_LENGTH:
+        raise HTTPException(status_code=400, detail=f"Metin {MAX_TTS_TEXT_LENGTH} karakter sınırını aşıyor.")
+
+    try:
+        buffer = io.BytesIO()
+        with wave.open(buffer, "wb") as wav_file:
+            tts_voice.synthesize_wav(text, wav_file)
+        return Response(content=buffer.getvalue(), media_type="audio/wav")
+    except Exception as e:
+        logger.error(f"TTS sentez hatası: {e}")
+        raise HTTPException(status_code=500, detail=f"Ses üretimi başarısız: {str(e)}")
 
 @app.post("/parse")
 async def parse_document(file: UploadFile = File(...)):

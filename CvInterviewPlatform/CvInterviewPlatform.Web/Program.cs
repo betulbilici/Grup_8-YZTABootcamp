@@ -5,18 +5,24 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.StaticFiles;
 
 var builder = WebApplication.CreateBuilder(args);
+// CvStorageService'in presigned URL'leri Session'da önbelleğe alabilmesi için
+// (bkz. CvStorageService.ResolvePreviewUrl) singleton bir servisten o anki
+// HttpContext'e erişim gerekiyor — bu, .NET'te bunun standart yolu.
+builder.Services.AddHttpContextAccessor();
 // Firestore Servisini .NET sistemine tekil (Singleton) olarak kaydediyoruz
 builder.Services.AddSingleton<FirestoreService>();
 builder.Services.AddSingleton<GeminiService>();
 builder.Services.AddSingleton<CvStorageService>();
 builder.Services.AddHttpClient<CvParserService>();
-builder.Services.AddHttpClient<AzureTtsService>();
+builder.Services.AddHttpClient<PiperTtsService>();
 
 // Session servislerini projeye ekliyoruz ve ayarlarn yapyoruz
 // Session servislerini projeye ekliyoruz ve ayarlarn yapyoruz
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // Oturum 30 dakika ilem yaplmazsa der
+    // 5 soruluk bir mülakat (5x5dk) + düşünme/AI bekleme süreleriyle 30 dakikaya
+    // yakın/onu aşan sürebiliyordu, oturum mülakat ortasında düşme riski vardı.
+    options.IdleTimeout = TimeSpan.FromMinutes(60);
     options.Cookie.HttpOnly = true; // Gvenlik iin: Session erezlerine JavaScript ile eriilemez
     options.Cookie.IsEssential = true; // KVKK/GDPR erez onaylarna taklmamas iin zorunlu iaretliyoruz
 });

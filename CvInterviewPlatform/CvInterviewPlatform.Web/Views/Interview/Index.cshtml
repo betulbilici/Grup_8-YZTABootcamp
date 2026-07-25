@@ -28,20 +28,20 @@
         <div class="row g-3 mb-4">
             <div class="col-md-6">
                 <label class="mode-card p-4 h-100 mb-0" for="modePreparation">
+                    <span class="mode-card-check"><i class="bi bi-check-lg"></i></span>
                     <input class="visually-hidden" type="radio" name="mode" id="modePreparation" value="Preparation" checked />
                     <span class="mode-card-icon"><i class="bi bi-mortarboard-fill"></i></span>
                     <span class="fw-bold text-body d-block fs-5 mb-1">Hazırlık Modu</span>
                     <span class="small text-body-secondary">Süre baskısı yok, ipucu alabilirsin, soruyu tekrar dinleyebilirsin.</span>
-                    <span class="mode-card-select-indicator">SEÇİLİ <i class="bi bi-arrow-right"></i></span>
                 </label>
             </div>
             <div class="col-md-6">
                 <label class="mode-card p-4 h-100 mb-0" for="modeRealistic">
+                    <span class="mode-card-check"><i class="bi bi-check-lg"></i></span>
                     <input class="visually-hidden" type="radio" name="mode" id="modeRealistic" value="Realistic" />
                     <span class="mode-card-icon"><i class="bi bi-lightning-fill"></i></span>
                     <span class="fw-bold text-body d-block fs-5 mb-1">Gerçekçi Mod</span>
                     <span class="small text-body-secondary">Soru başına 1 dakika, ipucu yok, gerçek mülakat temposu.</span>
-                    <span class="mode-card-select-indicator">SEÇİLİ <i class="bi bi-arrow-right"></i></span>
                 </label>
             </div>
         </div>
@@ -68,7 +68,7 @@
                 </select>
             </div>
             <button type="submit" class="btn btn-gradient fw-bold px-4">
-                Hazırlığa Başla <i class="bi bi-arrow-right ms-1"></i>
+                Hazırlığa Başla <i class="bi bi-arrow-right-short ms-1"></i>
             </button>
         </div>
     </form>
@@ -100,26 +100,26 @@
         <div>
             @foreach (var session in Model)
             {
-                <div class="list-row" style="cursor: default;">
+                <div class="session-card">
                     <span class="status-dot @(session.IsCompleted ? "status-dot-muted" : "")" style="flex-shrink: 0;"></span>
                     <div class="flex-grow-1">
-                        <div class="list-row-title">@session.JobTitle</div>
-                        <div class="list-row-subtitle">
+                        <div class="session-card-title">@session.JobTitle</div>
+                        <div class="session-card-subtitle">
                             @(session.Mode == "Realistic" ? "Gerçekçi" : "Hazırlık") &middot; @session.DifficultyLevel
                         </div>
                     </div>
-                    <span class="list-row-meta me-3">@session.StartedAt.ToLocalTime().ToString("dd.MM.yyyy")</span>
+                    <span class="session-card-meta me-2 d-none d-sm-inline">@session.StartedAt.ToLocalTime().ToString("dd.MM.yyyy")</span>
                     <div class="d-flex align-items-center gap-2">
                         @if (session.IsCompleted)
                         {
-                            <a asp-action="Session" asp-route-id="@session.SessionId" class="btn btn-outline-secondary btn-sm fw-bold">Sonuçları Gör</a>
+                            <a asp-action="Session" asp-route-id="@session.SessionId" class="btn btn-outline-secondary btn-sm fw-bold">Sonuçları Gör <i class="bi bi-arrow-right-short ms-1"></i></a>
                         }
                         else
                         {
-                            <a asp-action="Session" asp-route-id="@session.SessionId" class="btn btn-gradient btn-sm fw-bold">Devam Et</a>
+                            <a asp-action="Session" asp-route-id="@session.SessionId" class="btn btn-gradient btn-sm fw-bold">Devam Et <i class="bi bi-arrow-right-short ms-1"></i></a>
                         }
                         <form asp-action="DeleteSession" asp-route-id="@session.SessionId" method="post" onsubmit="return confirm('Bu mülakat geçmişini silmek istediğinize emin misiniz? Bu işlem geri alınamaz.');" class="d-inline">
-                            <button type="submit" class="btn btn-outline-danger btn-sm" title="Mülakat Geçmişini Sil">
+                            <button type="submit" class="icon-btn-ghost-danger" aria-label="Mülakat Geçmişini Sil" title="Mülakat Geçmişini Sil">
                                 <i class="bi bi-trash3-fill"></i>
                             </button>
                         </form>

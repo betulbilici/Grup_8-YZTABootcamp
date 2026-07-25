@@ -1,6 +1,7 @@
 using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -13,10 +14,17 @@ namespace CvInterviewPlatform.Web.Services
         private readonly AmazonS3Client _client;
         private readonly string _bucketName;
         private readonly ILogger<CvStorageService> _logger;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public CvStorageService(IConfiguration configuration, ILogger<CvStorageService> logger)
+        // Aynı obje için üretilen presigned URL, gerçek süresi dolmadan bir süre
+        // önce (bu tampon kadar) "bayat" sayılıp yenileniyor — tam sınırda bir
+        // istek arada kalıp 403 almasın diye.
+        private static readonly TimeSpan RefreshBuffer = TimeSpan.FromMinutes(10);
+
+        public CvStorageService(IConfiguration configuration, ILogger<CvStorageService> logger, IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
             _bucketName = configuration["R2:BucketName"] ?? "";
             string accountId = configuration["R2:AccountId"] ?? "";
             string accessKey = configuration["R2:AccessKeyId"] ?? "";
@@ -65,11 +73,53 @@ namespace CvInterviewPlatform.Web.Services
         // hâlâ eski yerel yol biçimini (/uploads/...) taşıyor — bunlar olduğu gibi
         // döndürülüyor, yeni yüklemelerden gelen R2 obje anahtarları ise presigned
         // URL'e çevriliyor.
+        //
+        // Presigned URL'i her çağrıda yeniden üretmek yerine Session'da (obje
+        // anahtarı başına) önbelleğe alıyoruz. Sebebi maliyet değil (imzalama
+        // yerelde, R2'ye ağ çağrısı gitmiyor) — sorun, URL her seferinde farklı
+        // olduğu için tarayıcının aynı fotoğrafı sayfa geçişlerinde yeniden
+        // indirmek zorunda kalmasıydı. Aynı oturumda süresi dolana kadar aynı
+        // URL'i döndürerek tarayıcı önbelleği artık gerçekten çalışabiliyor.
         public string? ResolvePreviewUrl(string? storedValue)
         {
             if (string.IsNullOrEmpty(storedValue)) return null;
             if (storedValue.StartsWith("/uploads/")) return storedValue;
-            return GetPresignedUrl(storedValue);
+
+            ISession? session = _httpContextAccessor.HttpContext?.Session;
+            if (session == null)
+            {
+                // İstek bağlamı dışında çağrılırsa (olağan değil) önbelleksiz devam et.
+                return GetPresignedUrl(storedValue);
+            }
+
+            string urlKey = "presignedUrl:" + storedValue;
+            string expiryKey = "presignedUrlExpiry:" + storedValue;
+
+            string? cachedUrl = session.GetString(urlKey);
+            string? cachedExpiryRaw = session.GetString(expiryKey);
+            if (!string.IsNullOrEmpty(cachedUrl)
+                && DateTime.TryParse(cachedExpiryRaw, out DateTime cachedExpiry)
+                && cachedExpiry - RefreshBuffer > DateTime.UtcNow)
+            {
+                return cachedUrl;
+            }
+
+            string freshUrl = GetPresignedUrl(storedValue);
+            session.SetString(urlKey, freshUrl);
+            session.SetString(expiryKey, DateTime.UtcNow.AddMinutes(60).ToString("o"));
+            return freshUrl;
+        }
+
+        // Bir dosya yeniden yüklenip aynı obje anahtarının altındaki içerik
+        // değiştiğinde (ör. profil fotoğrafı güncelleme) önbellekteki eski
+        // presigned URL'i temizler — aksi halde tarayıcı, URL aynı kaldığı için
+        // eski fotoğrafı önbellekten göstermeye devam edebilirdi.
+        public void InvalidatePreviewUrlCache(string objectKey)
+        {
+            ISession? session = _httpContextAccessor.HttpContext?.Session;
+            if (session == null) return;
+            session.Remove("presignedUrl:" + objectKey);
+            session.Remove("presignedUrlExpiry:" + objectKey);
         }
     }
 }
