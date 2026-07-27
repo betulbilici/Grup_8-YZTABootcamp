@@ -1,4 +1,4 @@
-﻿using Google.Cloud.Firestore;
+using Google.Cloud.Firestore;
 using System;
 using System.IO;
 
@@ -14,7 +14,7 @@ namespace CvInterviewPlatform.Web
             string keyPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "firebase-key.json");
 
             // Görseldeki proje ID'nizi buraya doğrudan entegre ettim
-            string projectId = "cvinterviewplatform";
+            string projectId = "cv-interview-platform-prod";
 
             // Veritabanı bağlantı ayarlarını yapılandırıyoruz
             FirestoreDbBuilder builder = new FirestoreDbBuilder
