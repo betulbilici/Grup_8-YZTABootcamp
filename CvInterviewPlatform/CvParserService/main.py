@@ -156,4 +156,9 @@ async def parse_document(file: UploadFile = File(...)):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    # 0.0.0.0: sadece localhost'a sabitlenirse ayrı bir container/host'ta
+    # deploy edildiğinde .NET tarafından hiç erişilemez. HOST/PORT env
+    # değişkenleri ile override edilebilir (çoğu PaaS PORT'u kendisi enjekte eder).
+    host = os.environ.get("HOST", "0.0.0.0")
+    port = int(os.environ.get("PORT", "8000"))
+    uvicorn.run(app, host=host, port=port)

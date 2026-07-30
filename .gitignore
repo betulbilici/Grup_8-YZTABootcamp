@@ -21,9 +21,11 @@ env/
 CvInterviewPlatform/CvParserService/voices/*.onnx
 CvInterviewPlatform/CvParserService/voices/*.onnx.json
 
-## Firebase Secret Key
+## Firebase Secret Key (hem tire hem alt çizgili varyant - ikisi de görülmüş)
 firebase-key.json
 **/firebase-key.json
+firebase_key.json
+**/firebase_key.json
 
 ## Temporary helper scripts
 update_program.py

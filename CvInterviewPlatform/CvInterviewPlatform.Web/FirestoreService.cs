@@ -1,4 +1,6 @@
+using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Firestore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
 
@@ -8,19 +10,28 @@ namespace CvInterviewPlatform.Web
     {
         private readonly FirestoreDb _db;
 
-        public FirestoreService()
+        public FirestoreService(IConfiguration configuration)
         {
-            // Çıktı dizinine kopyalanan JSON dosyasının yolunu buluyoruz
-            string keyPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "firebase-key.json");
+            string projectId = configuration["Firestore:ProjectId"]
+                ?? Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID")
+                ?? "cv-interview-platform-prod";
 
-            // Görseldeki proje ID'nizi buraya doğrudan entegre ettim
-            string projectId = "cv-interview-platform-prod";
+            // Deploy ortamında container'a elle dosya bırakmak pratik değil,
+            // bu yüzden servis hesabı anahtarının JSON içeriği tek bir env
+            // değişkeninden (FIRESTORE_CREDENTIALS_JSON) okunabiliyor. Yerel
+            // geliştirmede bu değişken tanımlı değilse eskisi gibi proje
+            // kökündeki firebase-key.json dosyasına düşülüyor.
+            string? credentialsJson = configuration["Firestore:CredentialsJson"]
+                ?? Environment.GetEnvironmentVariable("FIRESTORE_CREDENTIALS_JSON");
 
-            // Veritabanı bağlantı ayarlarını yapılandırıyoruz
+            GoogleCredential credential = !string.IsNullOrEmpty(credentialsJson)
+                ? GoogleCredential.FromJson(credentialsJson)
+                : GoogleCredential.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "firebase-key.json"));
+
             FirestoreDbBuilder builder = new FirestoreDbBuilder
             {
                 ProjectId = projectId,
-                CredentialsPath = keyPath
+                GoogleCredential = credential
             };
 
             // Bağlantıyı inşa ediyoruz

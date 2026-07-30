@@ -45,13 +45,16 @@ CvInterviewPlatform/
 │   ├── Controllers/
 │   │   ├── AccountController.cs      ← kayıt, giriş, şifre sıfırlama, çıkış
 │   │   ├── HomeController.cs         ← panel, dosya yükleme, ayarlar
-│   │   └── InterviewController.cs    ← mülakat akışının tamamı
+│   │   ├── InterviewController.cs    ← mülakat akışının tamamı
+│   │   └── AdminController.cs        ← soru havuzu admin paneli (bkz. QuestionPoolService)
 │   ├── Models/
-│   │   ├── User.cs
+│   │   ├── User.cs                   ← IsAdmin alanı: soru havuzu admin paneline erişim
 │   │   ├── InterviewSession.cs       ← InterviewStep sınıfı da burada
+│   │   ├── QuestionPool.cs           ← QuestionPoolEntry (onaylı havuz) + PendingRole (onay bekleyen)
 │   │   └── ErrorViewModel.cs
 │   ├── Services/
-│   │   ├── GeminiService.cs          ← soru üretimi + değerlendirme
+│   │   ├── GeminiService.cs          ← soru üretimi + değerlendirme + EmbedTextAsync (embedding)
+│   │   ├── QuestionPoolService.cs    ← rol+seviye bazlı semantic cache (bkz. aşağıda)
 │   │   ├── CvParserService.cs        ← FastAPI'ye HTTP istemcisi
 │   │   └── CvStorageService.cs       ← Cloudflare R2 (S3 uyumlu), upload + presigned URL
 │   ├── Helpers/
@@ -60,7 +63,8 @@ CvInterviewPlatform/
 │   │   ├── Shared/_Layout.cshtml
 │   │   ├── Account/{SignIn,Register,ForgotPassword}.cshtml
 │   │   ├── Home/{Index,Settings,Privacy}.cshtml
-│   │   └── Interview/{Index,Session}.cshtml
+│   │   ├── Interview/{Index,Session}.cshtml
+│   │   └── Admin/PendingRoles.cshtml
 │   └── wwwroot/
 │       ├── css/site.css
 │       ├── js/site.js
@@ -111,6 +115,30 @@ dotnet run
 
 ---
 
+## Deploy
+
+Kod hiçbir yerde `localhost`/proje ID'si hardcode etmiyor — tamamı config/environment variable üzerinden okunuyor, yerel geliştirme davranışı değişmeden. Deploy ederken set edilmesi gereken environment variable'lar:
+
+**Web uygulaması (`CvInterviewPlatform.Web`)**
+| Değişken | Zorunlu mu | Açıklama |
+|---|---|---|
+| `GEMINI_API_KEY` | Evet | Gemini API anahtarı (`Gemini:ApiKey` config karşılığı) |
+| `FIRESTORE_PROJECT_ID` | Hayır (varsayılan `cv-interview-platform-prod`) | Farklı bir Firestore projesine bağlanmak için |
+| `FIRESTORE_CREDENTIALS_JSON` | Evet (prod'da) | Servis hesabı anahtarının **tam JSON içeriği**, tek satır string olarak. Container'a dosya bırakmaya gerek kalmıyor — yerel geliştirmede bu tanımlı değilse otomatik olarak `firebase-key.json` dosyasına düşülüyor (bkz. `FirestoreService.cs`) |
+| `R2__AccessKeyId`, `R2__SecretAccessKey` | Evet | Cloudflare R2 kimlik bilgileri (çift alt çizgi `__`, .NET'in yerleşik env-var-to-config eşleme kuralı — `R2:AccessKeyId` config anahtarına karşılık gelir) |
+| `Authentication__Google__ClientId`, `Authentication__Google__ClientSecret` | Google ile giriş kullanılacaksa | aynı `__` kuralı |
+| `ParserService__BaseUrl` | Evet (prod'da) | `CvParserService`'in deploy edildiği gerçek URL (örn. `https://cv-parser.example.com`) — set edilmezse `http://127.0.0.1:8000`'e düşer, ayrı container'da çalışmaz |
+
+**Parser mikroservisi (`CvParserService`)**
+| Değişken | Zorunlu mu | Açıklama |
+|---|---|---|
+| `PORT` | Hayır (varsayılan `8000`) | Çoğu PaaS bunu kendisi enjekte eder |
+| `HOST` | Hayır (varsayılan `0.0.0.0`) | Varsayılan zaten dış erişime açık; sadece özel bir ihtiyaç varsa değiştir |
+
+`R2:BucketName`/`R2:AccountId` ve Gemini model adı gibi hassas olmayan değerler `appsettings.json`'da düz yazılı kalabilir — sadece gerçek sırlar (API key'ler, servis hesabı JSON'ı) environment variable'dan gelmeli.
+
+---
+
 ## Veri modeli
 
 ### Firestore koleksiyonları
@@ -128,6 +156,17 @@ username, jobTitle, startedAt, currentQuestionNumber,
 isCompleted, history[], finalEvaluation?
 ```
 `history` bir `InterviewStep` dizisidir: `{ question, answer, askedAt }`
+
+**`QuestionPools`** — admin onaylı, rol+seviye bazlı soru havuzu (semantic cache)
+```
+roleLabel, difficultyLevel, embedding (List<double>, 768 boyut), questions[], approvedAt
+```
+
+**`PendingRoles`** — havuzda eşleşme bulunamadığında (Gemini canlı soru ürettiğinde) düşen, admin onayı bekleyen kayıt
+```
+jobTitle, difficultyLevel, embedding, sampleQuestions[] (en fazla 5), occurrenceCount, firstSeenAt, status ("pending"|"approved"|"dismissed")
+```
+`QuestionPoolService.TryGetPooledQuestionAsync` her soru üretiminden önce çağrılır: `jobTitle` embedding'i (Gemini `gemini-embedding-001`, `GeminiService.EmbedTextAsync`) ile `QuestionPools`'taki (aynı `difficultyLevel`) kayıtlara karşı **uygulama içinde brute-force cosine similarity** hesaplanır (Firestore'un idiomatic .NET client'ında native vektör araması/`FindNearest` yok, sadece düşük seviye protobuf katmanında var — bu yüzden bilinçli olarak brute-force tercih edildi). Eşik (`0.85`) üstü eşleşme + bu oturumda sorulmamış bir soru varsa HIT (Gemini'ye gidilmez), yoksa MISS (mevcut Gemini akışı çalışır, `RecordPendingRoleAsync` fire-and-forget çağrılır). `/Admin/PendingRoles` sayfasından (sadece `User.IsAdmin == true`) onaylanan kayıt `QuestionPools`'a taşınır.
 
 ### Önemli davranışlar
 
@@ -195,9 +234,9 @@ Bunlar farkında olunan durumlardır. Kod üzerinde çalışırken bunları bile
 
 ### Deploy engelleri
 
-- `FirestoreService` `projectId`'yi ("cvinterviewplatform") ve `firebase-key.json` dosya yolunu hardcode ediyor
+- ~~`FirestoreService` `projectId`'yi ve `firebase-key.json` dosya yolunu hardcode ediyor~~ — **çözüldü**. `projectId` artık config/`FIRESTORE_PROJECT_ID`'den okunuyor (varsayılan hâlâ prod ID); servis hesabı anahtarı da `FIRESTORE_CREDENTIALS_JSON` env değişkeninden (tam JSON içeriği) okunabiliyor, tanımlı değilse eskisi gibi yerel `firebase-key.json` dosyasına düşülüyor. Detay: bkz. yukarıdaki "Deploy" bölümü.
 - ~~`wwwroot/uploads` yerel diske yazıyor, container yeniden başlayınca kaybolur~~ — **yeni yüklemeler için çözüldü**, artık Cloudflare R2'ye gidiyor (bkz. `CvStorageService`)
-- Parser servisi varsayılan `127.0.0.1:8000`, prod URL'i tanımlı değil
+- ~~Parser servisi varsayılan `127.0.0.1:8000`~~ — **çözüldü**. `main.py` artık `HOST`/`PORT` env değişkenlerini okuyor, varsayılan `0.0.0.0:8000` (ayrı container'dan erişilebilir). `.NET` tarafında da `ParserService:BaseUrl`'in deploy anında gerçek URL'e set edilmesi gerekiyor (kod zaten configurable'dı, sadece değerin girilmesi gerekiyor).
 
 ### Fonksiyonel
 
