@@ -1,0 +1,70 @@
+@model List<CvInterviewPlatform.Web.Models.PendingRole>
+@{
+    ViewData["Title"] = "Soru Havuzu - Onay Bekleyen Roller";
+}
+
+<div class="mb-4">
+    <h1 class="h2 fw-bold mb-1 text-body">Onay Bekleyen Roller</h1>
+    <p class="text-body-secondary mb-0">Gemini'nin canlı ürettiği, henüz soru havuzuna eklenmemiş rol+seviye kombinasyonları. Onaylarsan bir sonraki aynı mülakat isteği havuzdan karşılanır.</p>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+    </div>
+}
+@if (TempData["Error"] != null || ViewBag.Error != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> @(TempData["Error"] ?? ViewBag.Error)
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+    </div>
+}
+
+<div class="card border-0 shadow-sm p-4 p-lg-5">
+    <div class="section-label mb-4">Bekleyen Roller</div>
+
+    @if (Model == null || !Model.Any())
+    {
+        <p class="text-body-secondary small mb-0">Şu an onay bekleyen bir rol yok. Havuzda eşleşmeyen her yeni rol+seviye kombinasyonu burada listelenir.</p>
+    }
+    else
+    {
+        <div class="d-flex flex-column gap-3">
+            @foreach (var pending in Model)
+            {
+                <div class="session-card flex-column align-items-stretch">
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+                        <div>
+                            <div class="session-card-title">@pending.JobTitle</div>
+                            <div class="session-card-subtitle">@pending.DifficultyLevel &middot; @pending.OccurrenceCount kez görüldü</div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <form asp-controller="Admin" asp-action="ApprovePendingRole" asp-route-id="@pending.Id" method="post">
+                                <button type="submit" class="btn btn-gradient btn-sm fw-bold" aria-label="@(pending.JobTitle) rolünü soru havuzuna ekle">
+                                    <i class="bi bi-plus-circle-fill me-1"></i> Havuza Ekle
+                                </button>
+                            </form>
+                            <form asp-controller="Admin" asp-action="DismissPendingRole" asp-route-id="@pending.Id" method="post" onsubmit="return confirm('Bu bekleyen rolü yoksaymak istediğinize emin misiniz?');">
+                                <button type="submit" class="icon-btn-ghost-danger" aria-label="@(pending.JobTitle) rolünü yoksay" title="Yoksay">
+                                    <i class="bi bi-x-circle"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="section-label d-block mb-2">Örnek Sorular</span>
+                        <ul class="mb-0 small text-body-secondary">
+                            @foreach (var question in pending.SampleQuestions)
+                            {
+                                <li>@question</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

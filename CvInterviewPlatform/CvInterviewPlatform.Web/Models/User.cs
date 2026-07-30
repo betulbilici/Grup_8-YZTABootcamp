@@ -39,5 +39,11 @@ namespace CvInterviewPlatform.Web.Models
         // Eski kullanıcı dokümanlarında bu alan yok, varsayılan null geriye dönük uyumluluğu sağlıyor.
         [FirestoreProperty("cvAnalysis")]
         public string? CvAnalysis { get; set; } = null;
+
+        // Soru havuzu admin panelini (AdminController) görebilme yetkisi. Self-servis
+        // bir atama akışı yok — ilk admin(ler) Firestore console'dan elle true yapılır.
+        // Eski kullanıcı dokümanlarında bu alan yok, varsayılan false geriye dönük uyumluluğu sağlıyor.
+        [FirestoreProperty("isAdmin")]
+        public bool IsAdmin { get; set; } = false;
     }
 }

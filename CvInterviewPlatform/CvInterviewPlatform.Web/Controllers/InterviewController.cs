@@ -15,12 +15,14 @@ namespace CvInterviewPlatform.Web.Controllers
         private readonly FirestoreDb _db;
         private readonly GeminiService _geminiService;
         private readonly PiperTtsService _piperTtsService;
+        private readonly QuestionPoolService _questionPoolService;
 
-        public InterviewController(FirestoreService firestoreService, GeminiService geminiService, PiperTtsService piperTtsService)
+        public InterviewController(FirestoreService firestoreService, GeminiService geminiService, PiperTtsService piperTtsService, QuestionPoolService questionPoolService)
         {
             _db = firestoreService.Db;
             _geminiService = geminiService;
             _piperTtsService = piperTtsService;
+            _questionPoolService = questionPoolService;
         }
 
         // Mülakat Dashboard'u: Geçmiş mülakatları gösterir ve yeni mülakat başlatır.
@@ -114,8 +116,15 @@ namespace CvInterviewPlatform.Web.Controllers
                     History = new List<InterviewStep>()
                 };
 
-                // 1. Soru üretimi (CV içeriği dahil edildi)
-                string firstQuestion = await _geminiService.GenerateQuestionAsync(newSession, cvContent, 1);
+                // 1. Soru üretimi: önce onaylı soru havuzunda bu rol+seviyeye hazır bir
+                // soru var mı bakılır (varsa Gemini'ye hiç gidilmez), yoksa canlı üretilir
+                // ve havuz için "yeni rol tespit edildi" kaydı arka planda düşürülür.
+                string? firstQuestion = await _questionPoolService.TryGetPooledQuestionAsync(jobTitle, validatedDifficulty, Enumerable.Empty<string>());
+                if (firstQuestion == null)
+                {
+                    firstQuestion = await _geminiService.GenerateQuestionAsync(newSession, cvContent, 1);
+                    _ = _questionPoolService.RecordPendingRoleAsync(jobTitle, validatedDifficulty, firstQuestion);
+                }
                 newSession.History.Add(new InterviewStep
                 {
                     Question = firstQuestion,
@@ -237,9 +246,17 @@ namespace CvInterviewPlatform.Web.Controllers
 
                 if (session.CurrentQuestionNumber < session.TotalQuestions)
                 {
-                    // Sıradaki soruyu oluşturup ekliyoruz (CV içeriği dahil edildi)
+                    // Sıradaki soruyu oluşturuyoruz: önce soru havuzuna bakılır (bu
+                    // mülakatta zaten sorulmuş sorular hariç tutularak), yoksa Gemini
+                    // canlı üretir ve havuz için kayıt arka planda düşürülür.
                     int nextQuestionNumber = session.CurrentQuestionNumber + 1;
-                    string nextQuestion = await _geminiService.GenerateQuestionAsync(session, cvContent, nextQuestionNumber);
+                    IEnumerable<string> alreadyAsked = session.History.Select(h => h.Question);
+                    string? nextQuestion = await _questionPoolService.TryGetPooledQuestionAsync(session.JobTitle, session.DifficultyLevel, alreadyAsked);
+                    if (nextQuestion == null)
+                    {
+                        nextQuestion = await _geminiService.GenerateQuestionAsync(session, cvContent, nextQuestionNumber);
+                        _ = _questionPoolService.RecordPendingRoleAsync(session.JobTitle, session.DifficultyLevel, nextQuestion);
+                    }
 
                     session.History.Add(new InterviewStep
                     {

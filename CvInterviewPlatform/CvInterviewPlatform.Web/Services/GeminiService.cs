@@ -13,6 +13,7 @@ namespace CvInterviewPlatform.Web.Services
     {
         private readonly Client _client;
         private const string ModelName = "gemini-2.5-flash";
+        private const string EmbeddingModelName = "gemini-embedding-001";
 
         // CV analizi süresi Gemini'nin cevap hızına bağlı (13-20sn) — aynı kullanıcı
         // için sayfa birden çok kez ziyaret edilirse/yenilenirse mükerrer Gemini
@@ -44,6 +45,26 @@ namespace CvInterviewPlatform.Web.Services
         public void ClearInFlightCvAnalysis(string username)
         {
             _inFlightCvAnalyses.TryRemove(username, out _);
+        }
+
+        // Soru havuzu (QuestionPoolService) için embedding üretir. Diğer metotların aksine
+        // burada hata yutulmuyor — embedding üretilemezse çağıran taraf (QuestionPoolService)
+        // bunu bir "cache miss" olarak ele alıp mevcut canlı soru üretim akışına düşmeli.
+        public async Task<List<double>> EmbedTextAsync(string text)
+        {
+            var response = await _client.Models.EmbedContentAsync(
+                model: EmbeddingModelName,
+                contents: text,
+                config: new EmbedContentConfig { OutputDimensionality = 768 }
+            );
+
+            List<double>? values = response.Embeddings?[0]?.Values;
+            if (values == null)
+            {
+                throw new InvalidOperationException("Gemini embedding yanıtı boş döndü.");
+            }
+
+            return values;
         }
 
         private Content GetSystemInstruction()
