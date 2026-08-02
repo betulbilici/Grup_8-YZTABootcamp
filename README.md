@@ -205,8 +205,8 @@ Projemizin ilk sprint sürecini; fikir geliştirme, pazar araştırması, rol da
 
 </details>
 
-</details> <!-- 2. Arada açık kalan başka bir alt sekmeyi kapatır -->
-</details> <!-- 3. 🚨 SPRINT 1 ANA SEKMESİNİ KESİN OLARAK KAPATIR VE MÜHÜRLER! -->
+</details>
+</details> 
 
 <!-- ANA SEKME: SPRINT 2-->
 <details>
@@ -308,7 +308,7 @@ Projemizin ilk sprint sürecini; fikir geliştirme, pazar araştırması, rol da
 
 
 
-</details> <!-- 📊 Proje Yönetimi sekmesinin kapanışı -->
+</details> 
 
 
 <br>
@@ -367,7 +367,7 @@ Projemizin ikinci sprint süreci; yapay zeka entegrasyonlarının tamamlanması,
 
 </details>
 
-</details> <!-- 📈 Sprint Notları sekmesinin kapanışı -->
+</details> 
 <!-- 🛠️ YEREL KURULUM VE ÇALIŞTIRMA REHBERİ AÇILIR SEKME -->
 <details>
 <summary><h2>🛠️İlave Notlar</h2></summary>
@@ -417,7 +417,115 @@ Uygulama çalıştıktan sonra tarayıcınızdan erişim sağlayabilirsiniz.
 Uygulamamızı geliştirirken Gemini ücretsiz öğrenci versiyonundan yararlandığımıza dair:
 <img width="1600" height="470" alt="ucretsizkanit" src="https://github.com/user-attachments/assets/82deeae3-4bcf-40ef-b1b9-16efd9da636c" />
 
-</details> <!-- 1. İlave Notlar sekmesini kapatır -->
-</details> <!-- 2. Arada açık kalan başka bir alt sekmeyi kapatır -->
-</details> <!-- 🚀 Sprint 2 Süreci ana sekmesinin kapanışı -->
+</details> 
+</details> 
+</details> 
 
+</details>
+</details> 
+
+<!-- ANA SEKME: SPRINT 2-->
+<details>
+  <summary><h2>🏃‍♂️ Sprint 3 </h2></summary>
+  <br>
+
+<!-- 🖼️ SPRINT 2 ALT SEKME: SİTE EKRAN GÖRÜNTÜLERİ -->
+<details>
+<summary><h3>🖼️ Site Ekran Görüntüleri</h3></summary>
+<br>
+
+  Ekibimizin bu sprintte son haline getirdiği yapay zeka entegrasyonlu arayüz geliştirmeleri ve kullanıcı akışına ait güncel ekran görüntüleri aşağıda listelenmiştir:
+
+  <img width="1600" height="739" alt="1" src="https://github.com/user-attachments/assets/50083678-a76a-4247-972d-f82b007908be" />
+  <img width="1600" height="739" alt="2" src="https://github.com/user-attachments/assets/0df798ef-f6e7-44c3-918b-9283cdb9be09" />
+  <img width="1600" height="739" alt="3" src="https://github.com/user-attachments/assets/3d894bf1-0de7-4056-a41d-4bf615d41961" />
+  <img width="1600" height="739" alt="4" src="https://github.com/user-attachments/assets/178d2fa6-d23a-4668-af26-3995f5606a88" />
+  <img width="1600" height="739" alt="5" src="https://github.com/user-attachments/assets/6e7dfb4d-67fe-433b-8fbb-0950feb16eeb" />
+  <img width="1600" height="739" alt="6" src="https://github.com/user-attachments/assets/72feba41-e6d3-48f9-a76d-1dbeb9e810c3" />
+  <img width="1600" height="739" alt="7" src="https://github.com/user-attachments/assets/14ec020d-c2c3-4e26-98c2-8741f6977c29" />
+  <img width="1600" height="739" alt="8" src="https://github.com/user-attachments/assets/9b64fa72-2e5b-4a80-9659-85a1557812c5" />
+  <img width="1600" height="739" alt="9" src="https://github.com/user-attachments/assets/8c8e764c-96c5-4c43-aacc-6872e33f8d2b" />
+  <img width="1600" height="739" alt="10" src="https://github.com/user-attachments/assets/49bcf274-66b3-47e8-a8c9-e7c0f49a7f3c" />
+  <img width="1600" height="739" alt="11" src="https://github.com/user-attachments/assets/c928a4a1-f82d-4792-9dbe-debe109131b5" />
+  <img width="1600" height="739" alt="12" src="https://github.com/user-attachments/assets/9fdab0b9-f73a-49f0-9de7-e3142a58f93b" />
+  <img width="1600" height="739" alt="13" src="https://github.com/user-attachments/assets/ff5d730f-3ac5-4dea-a865-17b52ab3718f" />
+  <img width="1600" height="739" alt="14" src="https://github.com/user-attachments/assets/89e2ef1a-ca62-4fc2-8213-8c19dbd1b3cd" />
+  <img width="1600" height="739" alt="15" src="https://github.com/user-attachments/assets/e257ddd2-5948-448d-8d0f-f7255e8f7f6a" />
+  <img width="1600" height="739" alt="16" src="https://github.com/user-attachments/assets/d7d1b959-5e1e-4ed7-a1a2-be22644ad869" />
+
+ </details> 
+
+<br> 
+
+<!-- SPRINT 3  SEKME: PROJE YÖNETİMİ -->
+<details>
+  <summary><h3>📊 Proje Yönetimi</h3></summary>
+  <br>
+  Projemizin üçüncü sprint sürecini planlarken, görev dağılımlarını ve iş akışlarını takip etmek için kullandığımız yönetim panolarımız:
+  <img width="1440" height="754" alt="Ekran Resmi 2026-08-02 11 31 40" src="https://github.com/user-attachments/assets/80bcf96d-a41c-4afb-b3c6-fb79e47ef9c9" />
+<img width="1439" height="753" alt="Ekran Resmi 2026-08-02 11 32 09" src="https://github.com/user-attachments/assets/c012c338-f7c3-4f60-af34-a0ec9e798d98" />
+<img width="1437" height="747" alt="Ekran Resmi 2026-08-02 11 32 22" src="https://github.com/user-attachments/assets/51075a21-5318-452c-a520-6df34602ab54" />
+
+---
+
+ 🔗 Product Backlog
+
+TRELLO LİNK GELİCEK
+
+</details>
+ 
+ <details>
+<summary><h3>📅 Daily Scrum Toplantıları</h3></summary>
+<br>
+<img width="837" height="2048" alt="1 foto" src="https://github.com/user-attachments/assets/a5871cc8-6c8a-4599-93e3-5fde10e81d2f" />
+<img width="837" height="2048" alt="2 foto" src="https://github.com/user-attachments/assets/338673f0-b792-47be-9cb1-1e1f37f5c975" />
+<img width="837" height="2048" alt="3 foto" src="https://github.com/user-attachments/assets/455e44e0-44f1-4024-a572-c7a0b2461ac5" />
+<img width="837" height="2048" alt="4 foto" src="https://github.com/user-attachments/assets/c657924e-2ff8-498f-a160-59133e339967" />
+<img width="837" height="2048" alt="5 foto" src="https://github.com/user-attachments/assets/79119bcb-a3bb-43c4-a868-2dcf050cb199" />
+<img width="837" height="2048" alt="6 foto" src="https://github.com/user-attachments/assets/10a5a268-c25d-4c7c-a440-9d440d587773" />
+
+
+</details> 
+
+<br>
+
+<!-- SPRINT 3 ALT SEKME: SPRINT NOTLARI -->
+<details>
+<summary><h3>📈 Sprint Notları</h3></summary>
+<br>
+
+🎯 **Hedeflenen ve Tamamlanan Sprint Puanı: 22
+
+---
+
+**Puanlama Mantığı**
+
+<img width="100%" alt="puan mantığı" src="https://github.com/user-attachments/assets/4a32fa65-474e-42be-8b44-c2485819f807" />
+
+<br>
+<details>
+<summary><h3>📋 Sprint Değerlendirmesi</h3></summary>
+<br>
+Üçüncü sprint sürecimiz; platformun UI/UX optimizasyonlarının tamamlanması, erişilebilirlik standartlarının üst seviyeye çıkarılması, farklı mülakat türlerinin entegrasyonu ve sunum/demo hazırlıkları doğrultusunda başarıyla tamamlanmıştır. Sprint boyunca gerçekleştirilen faaliyetler şu şekildedir:
+
+* **Sistem ve API Güvenlik Testleri:** Yapay zeka servislerinin kararlılığını ölçmek ve sistem güvenliğini doğrulamak amacıyla API Key odaklı kapsamlı test süreçleri yürütülmüştür.
+* **Geliştirici ve Koordinasyon Toplantıları:** Sprint mimarisini ve teknik iş bölümünü netleştirmek adına ekip bünyesinde Developer toplantıları gerçekleştirilmiştir.
+* **Kurumsal Kimlik ve Logo Tasarımı:** Platformun marka kimliğini tamamlayacak logo tasarımı bitirilerek sisteme entegre edilmiştir.
+* **Çeşitlendirilmiş Mülakat Modları:** Kullanıcı deneyimini zenginleştirmek amacıyla platforma iki farklı türde mülakat versiyonu kazandırılmıştır.
+* **Kapsamlı Erişilebilirlik (A11y) İyileştirmeleri:** Platformu tüm kullanıcılar için kapsayıcı hale getirmek adına renk paleti optimizasyonları, ekran okuyucu uyumlu yazılı özellikler ve sesli yönlendirmeleri içeren işitsel erişilebilirlik geliştirmeleri tamamlanmıştır.
+* **Arayüz Özelleştirmesi ve Karanlık Mod:** Kullanıcı konforunu artırmak amacıyla sisteme Karanlık Mod seçeneği eklenmiştir.
+* **Aday Değerlendirme ve ATS/Rol Uyum Skoru:** Yüklenen CV'ler ile hedeflenen pozisyon gereksinimlerini karşılaştırarak adaya otomatik uyum skoru çıkartan ATS (Applicant Tracking System) analiz algoritması entegre edilmiştir.
+* **Genişletilmiş Dosya Format Desteği:** CV yükleme süreçlerinde esneklik sağlamak adına PDF dışındaki alternatif dosya formatlarının da sisteme yüklenebilmesine olanak tanınmıştır.
+* **Profil ve Fotoğraf Yönetimi Revizyonu:** Profil ekranındaki kullanıcı deneyimini iyileştirmek adına fotoğraf yükleme özelliği profil ayarları alanına taşınmıştır.
+* **Tanıtım Videosu ve Demo Hazırlıkları:** Projenin lansmanı ve jüri sunumları doğrultusunda video kurgu toplantısı gerçekleştirilmiş, tanıtım videosunun kurgusu hazırlanmış ve canlı ürün demo kaydı başarıyla alınmıştır.
+
+**Özetle;** Sprint 3 süreci boyunca hedeflenen tüm kullanıcı arayüzü geliştirmeleri, erişilebilirlik standartları ve test senaryoları eksiksiz tamamlanmış; platform jüri sunumuna ve canlı kullanımına tam hazır hale getirilmiştir.
+
+* **Sprint Değerlendirme Katılımcıları:** Aslıhan Yeşilyurt Şengül, Pelin Çelik, Betül Bilici, Abdulkadir Süslü, Burak Ege Kaya
+</details>
+<br>
+<details>
+<summary><h3>🔄 Sprint Retrospective </h3></summary>
+  Üçüncü sprintimizin tamamlanmasıyla birlikte, ilk günden bu yana yürüttüğümüz tüm süreçlerin genel bir değerlendirmesini yapmak ve uygulamanın gelecek hedeflerini planlamak üzere bir araya geldik. Toplantımızda, hazırladığımız final tanıtım ve demo videosunu hep birlikte izleyerek detaylı geri bildirimlerimizi paylaştık ve ürünümüzün geldiği noktayı değerlendirdik. Tüm süreç boyunca sergilenen yüksek özveri, güçlü iletişim ve ekip ruhu dolayısıyla birbirimizi tebrik ettikten sonra, projemizin başarısını ve tüm teknik detaylarını en iyi şekilde yansıtabilmek adına ekip olarak jüri sunumu hazırlıklarımıza başladık.
+
+</details><br>
