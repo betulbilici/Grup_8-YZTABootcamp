@@ -1,4 +1,4 @@
-# Takım_8-YZTABootcamp
+# InterWinnerAI
 ### 👥 Takım Üyeleri
 
 | İsim | Unvan |
@@ -470,7 +470,7 @@ Uygulamamızı geliştirirken Gemini ücretsiz öğrenci versiyonundan yararland
 
  🔗 Product Backlog
 
-TRELLO LİNK GELİCEK
+[Trello Board](https://trello.com/b/tTYeoFwn/3rd-sprint)
 
 </details>
  
