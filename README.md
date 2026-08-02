@@ -528,4 +528,14 @@ Uygulamamızı geliştirirken Gemini ücretsiz öğrenci versiyonundan yararland
 <summary><h3>🔄 Sprint Retrospective </h3></summary>
   Üçüncü sprintimizin tamamlanmasıyla birlikte, ilk günden bu yana yürüttüğümüz tüm süreçlerin genel bir değerlendirmesini yapmak ve uygulamanın gelecek hedeflerini planlamak üzere bir araya geldik. Toplantımızda, hazırladığımız final tanıtım ve demo videosunu hep birlikte izleyerek detaylı geri bildirimlerimizi paylaştık ve ürünümüzün geldiği noktayı değerlendirdik. Tüm süreç boyunca sergilenen yüksek özveri, güçlü iletişim ve ekip ruhu dolayısıyla birbirimizi tebrik ettikten sonra, projemizin başarısını ve tüm teknik detaylarını en iyi şekilde yansıtabilmek adına ekip olarak jüri sunumu hazırlıklarımıza başladık.
 
-</details><br>
+</details>
+
+</details>
+
+<details>
+<summary><h3>🎥 Tanıtım Videosu</h3></summary>
+<br>
+
+*  **[Tanıtım Videosu](https://drive.google.com/file/d/14QD6c-W_XxSFyXutVMCeDD6t1CmpflQA/view?usp=sharing)**
+
+</details>
